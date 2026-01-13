@@ -1,0 +1,91 @@
+{% extends "_html_taban.html.j2" %}
+
+
+{% block breadcrumbs %}
+<nav class="breadcrumbs">
+    <div class="breadcrumbs-item">
+        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> Ana Sayfa</a>
+    </div>
+    <div class="breadcrumbs-item">
+        <a href="/eklenti/{{ eklenti_adi }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+    </div>
+    <div class="breadcrumbs-item">
+        <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ title }}</span>
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block icerik %}
+
+<div class="detail-container">
+    <div class="player-header">
+        <h1 class="player-title"><i class="fas fa-play-circle"></i> {{ title }}</h1>
+    </div>
+
+    <div class="source-selection">
+        <h3><i class="fas fa-server"></i> Kaynaklar</h3>
+        <div id="video-links-ui" class="source-list"></div>
+    </div>
+
+    <div id="video-player-container">
+        <div id="video-player-wrapper">
+            <div id="loading-overlay" class="player-loading" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            <video id="video-player" controls playsinline>
+                Tarayıcınız video etiketini desteklemiyor.
+            </video>
+        </div>
+    </div>
+
+    <div class="player-controls-section">
+        <div class="control-buttons">
+            {% if icerik_url %}
+            <a href="/icerik/{{ eklenti_adi }}?url={{ icerik_url }}" class="button button-secondary">
+                <i class="fas fa-arrow-left"></i> İçerik
+            </a>
+            {% endif %}
+            <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
+                <i class="fas fa-th"></i> Eklenti
+            </a>
+            <button id="toggle-diagnostics" class="button button-secondary">
+                <i class="fas fa-bug"></i> Tanılama
+            </button>
+            <a href="#" target="_blank" id="watch-party-button" class="button button-secondary">
+                <i class="fas fa-users"></i> WatchBuddy (Web)
+            </a>
+            <a href="#" id="watch-party-app-button" class="button button-secondary" style="display: none;">
+                <i class="fas fa-mobile-alt"></i> WatchBuddy (APP)
+            </a>
+        </div>
+    </div>
+
+    <div id="diagnostics-panel">
+        <div class="diagnostics-header">
+            <h3>Tanılama Bilgileri</h3>
+            <div class="diagnostics-toolbar">
+                <button id="clear-logs" class="button button-diagnostic">Temizle</button>
+                <button id="copy-logs" class="button button-diagnostic">Kopyala</button>
+                <button id="download-logs" class="button button-diagnostic">İndir</button>
+            </div>
+        </div>
+        <pre id="diagnostics-log"></pre>
+    </div>
+
+    <div id="video-links-data" style="display: none;">
+        {% for link in links %}
+            <div class="video-link-item" data-name="{{ link.name }}" data-url="{{ link.url }}" data-referer="{{ link.referer|default('', true) }}" data-user-agent="{{ link.user_agent|default('', true) }}">
+                {% for subtitle in link.subtitles %}
+                    <div class="subtitle-item" data-name="{{ subtitle.name }}" data-url="{{ subtitle.url }}"></div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="module" src="{{ url_for('static_home', path='JS/player.min.js') }}" defer crossorigin="anonymous"></script>
+{% endblock %}

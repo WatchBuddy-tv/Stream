@@ -1,0 +1,202 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* ==================== VİDEO OYNATICI SAYFASI ==================== */
+
+/* Player Container */
+#video-player-container {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background-color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#video-player-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  background-color: #000;
+}
+
+#video-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+/* Player Controls Section */
+.player-controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Player Header */
+.player-header {
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-sm);
+}
+
+.player-title {
+  font-size: var(--font-size-xl);
+  color: var(--primary-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Source Selection */
+.source-selection h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-md);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.source-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+/* Default state (Inactive) */
+.source-list .button {
+  min-width: auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  background-color: var(--card-bg-color);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+.source-list .button:hover {
+  background-color: var(--card-bg-hover);
+  color: var(--text-color);
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+}
+
+/* Active state */
+.source-list .button.active {
+  background-color: var(--primary-color);
+  color: var(--background-color); /* Dark text on orange background for contrast */
+  border-color: var(--primary-color);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.4); /* Matches button.css hover shadow */
+}
+
+/* Control Buttons */
+.control-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.control-buttons .button {
+  flex: 1;
+}
+
+/* Diagnostics Panel */
+#diagnostics-panel {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background-color: var(--background-alt);
+  border-radius: var(--border-radius);
+  display: none;
+  border: 1px solid var(--border-light);
+}
+
+.diagnostics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.diagnostics-header h3 {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--text-muted);
+}
+
+.diagnostics-toolbar {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.button-diagnostic {
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  min-height: 24px !important;
+  min-width: auto !important;
+  line-height: 1 !important;
+}
+
+#diagnostics-log {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  background-color: var(--background-color);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Log Entry Styles */
+.log-entry { border-bottom: 1px solid var(--border-light); padding: 4px 0; overflow-y: hidden; }
+.log-entry-header { display: flex; gap: 8px; margin-bottom: 2px; }
+.log-entry-time { color: var(--text-muted); font-size: 11px; }
+.log-entry-info { color: var(--info-color, #3498db); font-weight: bold; }
+.log-entry-warn { color: var(--warning-color, #f1c40f); font-weight: bold; }
+.log-entry-error { color: var(--error-color, #e74c3c); font-weight: bold; }
+.log-entry-message { color: var(--text-color); }
+.log-entry-data { margin-left: 20px; font-size: 11px; color: var(--text-muted); }
+
+/* Mobile: Control buttons in single row */
+@media (max-width: 767px) {
+  .control-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Safety for very small screens */
+  }
+  
+  .control-buttons .button {
+    flex: 1;
+    white-space: nowrap;
+    min-width: auto; /* Allow shrinking if needed */
+    padding-left: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
+  }
+}
+
+/* Desktop: Source selection inline */
+@media (min-width: 768px) {
+  .source-selection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+  }
+
+  .source-selection h3 {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+}
