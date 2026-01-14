@@ -399,7 +399,7 @@ export default class VideoPlayer {
             
             // Web Butonu guncelle
             if (watchPartyButton) {
-                watchPartyButton.href = `https://web.watchbuddy.tv/room/${newRoomId}?${wpParams.toString()}`;
+                watchPartyButton.href = `https://watchbuddy.tv/room/${newRoomId}?${wpParams.toString()}`;
             }
 
             // Uygulama (Deep Link) Butonu guncelle
