@@ -96,6 +96,36 @@ export const createHlsXhrSetup = (userAgent, referer, context) => {
 export const createHlsConfig = (userAgent, referer, context, useProxy = null) => {
     const isProxyEnabled = useProxy ?? (window.PROXY_ENABLED !== false);
     
+    // Fallback Fragment Loader: Önce doğrudan dene, CORS/Ağ hatası (code 0) alırsan proxy'le
+    class FallbackFragmentLoader extends Hls.DefaultConfig.loader {
+        constructor(config) {
+            super(config);
+        }
+
+        load(ctx, cfg, callbacks) {
+            const originalOnError = callbacks.onError;
+            
+            // Hata yakalayıcıyı özelleştir
+            callbacks.onError = (response, context, loader, stats) => {
+                const isDirectUrl = !context.url.includes('/proxy/video');
+                const isNetworkError = response.code === 0 || response.code === 403;
+
+                if (isProxyEnabled && isDirectUrl && isNetworkError) {
+                    const proxyUrl = buildProxyUrl(context.url, userAgent, referer, 'video');
+                    // context.url'i güncelleyip tekrar dene
+                    context.url = proxyUrl;
+                    super.load(context, cfg, callbacks);
+                    return;
+                }
+                
+                // Proxy zaten denenmişse veya başka bir hataysa orijinal handler'ı çağır
+                if (originalOnError) originalOnError(response, context, loader, stats);
+            };
+
+            super.load(ctx, cfg, callbacks);
+        }
+    }
+    
     return {
         debug: false,
         enableWorker: true,
@@ -105,6 +135,7 @@ export const createHlsConfig = (userAgent, referer, context, useProxy = null) =>
         maxBufferLength: 30,
         maxMaxBufferLength: 600,
         startLevel: -1,
-        xhrSetup: isProxyEnabled ? createHlsXhrSetup(userAgent, referer, context) : undefined
+        xhrSetup: isProxyEnabled ? createHlsXhrSetup(userAgent, referer, context) : undefined,
+        fLoader: isProxyEnabled ? FallbackFragmentLoader : undefined
     };
 };
