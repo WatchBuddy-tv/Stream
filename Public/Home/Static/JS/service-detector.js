@@ -60,14 +60,15 @@ export const buildProxyUrl = (url, userAgent = '', referer = '', endpoint = 'vid
     params.append('url', url);
     if (userAgent) params.append('user_agent', userAgent);
     if (referer) params.append('referer', referer);
-    
+
+    const proxyBase = getProxyBaseUrl();
+
     // Subtitle için her zaman aynı origin (Python proxy) kullan
     // Video <track> elementleri cross-origin kısıtlamalarına tabidir
     if (endpoint === 'subtitle') {
         return `${proxyBase}/proxy/${endpoint}?${params.toString()}`;
     }
     
-    const proxyBase = getProxyBaseUrl();
     if (proxyBase) {
         return `${proxyBase}/proxy/${endpoint}?${params.toString()}`;
     }
