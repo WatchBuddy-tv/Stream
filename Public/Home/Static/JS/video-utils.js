@@ -104,12 +104,15 @@ export const buildProxyUrlWithMode = (url, userAgent, referer, mode) => {
     return proxyUrl;
 };
 
-export const createHlsXhrSetup = (userAgent, referer, context, mode = ProxyMode.MANIFEST_ONLY) => {
+export const createHlsXhrSetup = (userAgent, referer, context, initialMode = ProxyMode.MANIFEST_ONLY) => {
     return (xhr, requestUrl) => {
         const proxyOrigin = getProxyBaseUrl();
         const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u') || requestUrl.includes('master.txt');
         const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
         const isSegment = !isManifest && !isKey;
+        
+        // Use dynamic mode from context (updated by fallback)
+        const currentMode = context.currentProxyMode || initialMode;
 
         // 1. Already a proxy URL - skip
         if (requestUrl.includes('/proxy/video?url=')) {
@@ -117,19 +120,19 @@ export const createHlsXhrSetup = (userAgent, referer, context, mode = ProxyMode.
         }
 
         // 2. NONE mode - everything direct
-        if (mode === ProxyMode.NONE) {
+        if (currentMode === ProxyMode.NONE) {
             return;
         }
 
         // 3. FULL mode - proxy everything including segments
-        if (mode === ProxyMode.FULL && isSegment) {
+        if (currentMode === ProxyMode.FULL && isSegment) {
             const proxyUrl = buildProxyUrlWithMode(requestUrl, userAgent, referer, ProxyMode.FULL);
             xhr.open('GET', proxyUrl, true);
             return;
         }
 
         // 4. MANIFEST_ONLY mode - segments direct
-        if (mode === ProxyMode.MANIFEST_ONLY && requestUrl.startsWith('http') && isSegment) {
+        if (currentMode === ProxyMode.MANIFEST_ONLY && requestUrl.startsWith('http') && isSegment) {
             return; 
         }
         
