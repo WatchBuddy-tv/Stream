@@ -2,6 +2,13 @@
 
 import { getProxyBaseUrl, buildProxyUrl } from './service-detector.min.js';
 
+// Proxy Mode Enum (matching Flutter)
+export const ProxyMode = {
+    NONE: 'none',           // Direct CDN access
+    MANIFEST_ONLY: 'manifest', // Only manifest through proxy
+    FULL: 'full'            // All requests through proxy
+};
+
 export const detectFormat = (url, format = null) => {
     const lowerUrl = url.toLowerCase();
     
@@ -25,6 +32,34 @@ export const detectFormat = (url, format = null) => {
     }
     
     return format || 'native';
+};
+
+// Suggest initial proxy mode based on URL patterns
+export const suggestInitialMode = (url) => {
+    const lower = url.toLowerCase();
+    
+    // Known protection parameters - start with manifest proxy
+    const protectionParams = ['md5=', 'expires=', 'expire=', 'token=', 'hmac=', 'hash=', 'auth=', 'sign='];
+    if (protectionParams.some(p => lower.includes(p))) {
+        return ProxyMode.MANIFEST_ONLY;
+    }
+    
+    // Everything else - try direct first
+    return ProxyMode.NONE;
+};
+
+// Get next fallback mode
+export const getNextMode = (current) => {
+    switch (current) {
+        case ProxyMode.NONE:
+            return ProxyMode.MANIFEST_ONLY;
+        case ProxyMode.MANIFEST_ONLY:
+            return ProxyMode.FULL;
+        case ProxyMode.FULL:
+            return null; // No more fallback
+        default:
+            return ProxyMode.MANIFEST_ONLY;
+    }
 };
 
 export const parseRemoteUrl = (url) => {
@@ -53,31 +88,52 @@ export const parseRemoteUrl = (url) => {
     return { origin: null, baseUrl: null };
 };
 
-export const createHlsXhrSetup = (userAgent, referer, context, forceProxy = false) => {
+// Build proxy URL with mode support
+export const buildProxyUrlWithMode = (url, userAgent, referer, mode) => {
+    if (mode === ProxyMode.NONE) {
+        return url;
+    }
+    
+    let proxyUrl = buildProxyUrl(url, userAgent, referer, 'video');
+    
+    // Add force_proxy for FULL mode
+    if (mode === ProxyMode.FULL) {
+        proxyUrl += (proxyUrl.includes('?') ? '&' : '?') + 'force_proxy=1';
+    }
+    
+    return proxyUrl;
+};
+
+export const createHlsXhrSetup = (userAgent, referer, context, mode = ProxyMode.MANIFEST_ONLY) => {
     return (xhr, requestUrl) => {
         const proxyOrigin = getProxyBaseUrl();
-        const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u');
+        const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u') || requestUrl.includes('master.txt');
         const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
         const isSegment = !isManifest && !isKey;
 
-        // 1. Zaten bir proxy URL'i içindeysek (Recursive proxy engelleme)
+        // 1. Already a proxy URL - skip
         if (requestUrl.includes('/proxy/video?url=')) {
             return;
         }
 
-        // 2. Zorunlu Proxy Modu: Segmentler dahil her şeyi proxy üzerinden geçir
-        if (forceProxy && isSegment) {
-            const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
+        // 2. NONE mode - everything direct
+        if (mode === ProxyMode.NONE) {
+            return;
+        }
+
+        // 3. FULL mode - proxy everything including segments
+        if (mode === ProxyMode.FULL && isSegment) {
+            const proxyUrl = buildProxyUrlWithMode(requestUrl, userAgent, referer, ProxyMode.FULL);
             xhr.open('GET', proxyUrl, true);
             return;
         }
 
-        // 3. Normal Mod: Segmentler doğrudan (Bant Genişliği Tasarrufu)
-        if (requestUrl.startsWith('http') && isSegment) {
+        // 4. MANIFEST_ONLY mode - segments direct
+        if (mode === ProxyMode.MANIFEST_ONLY && requestUrl.startsWith('http') && isSegment) {
             return; 
         }
         
-        // 4. Yanlış çözümlenmiş path düzeltmeleri (Manifest path'leri)
+        // 5. Fix wrongly resolved paths
         if (requestUrl.startsWith(proxyOrigin) && !requestUrl.includes('/proxy/')) {
             const path = requestUrl.substring(proxyOrigin.length);
             if (context.lastLoadedOrigin) {
@@ -87,7 +143,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, forceProxy = fals
             }
         }
 
-        // 5. Standart durum: Manifest ve Key dosyalarını her zaman proxy'le
+        // 6. Manifests and Keys always through proxy
         try {
             if (isManifest || isKey) {
                 const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
@@ -104,40 +160,63 @@ export const createHlsXhrSetup = (userAgent, referer, context, forceProxy = fals
     };
 };
 
-export const createHlsConfig = (userAgent, referer, context, useProxy = null) => {
-    const isProxyEnabled = useProxy ?? (window.PROXY_ENABLED !== false);
-    // useProxy boolean ise (forcedProxy'den geliyorsa) zorunlu proxy modunu aktar
-    const isForced = typeof useProxy === 'boolean' && useProxy;
+export const createHlsConfig = (userAgent, referer, context, mode = null) => {
+    // Determine initial mode
+    const initialMode = mode ?? (window.PROXY_ENABLED !== false ? ProxyMode.MANIFEST_ONLY : ProxyMode.NONE);
     
-    // Fallback Fragment Loader: Önce doğrudan dene, CORS/Ağ hatası (code 0) alırsan proxy'le
-    class FallbackFragmentLoader extends Hls.DefaultConfig.loader {
+    // Track current mode for fallback (stored in context for persistence)
+    context.currentProxyMode = context.currentProxyMode ?? initialMode;
+    
+    // Smart Fallback Fragment Loader
+    class SmartFallbackLoader extends Hls.DefaultConfig.loader {
         constructor(config) {
             super(config);
+            this._retryCount = 0;
         }
 
         load(ctx, cfg, callbacks) {
             const originalOnError = callbacks.onError;
+            const currentMode = context.currentProxyMode;
             
-            // Hata yakalayıcıyı özelleştir
-            callbacks.onError = (response, context, loader, stats) => {
-                const isDirectUrl = !context.url.includes('/proxy/video');
+            callbacks.onError = (response, loaderContext, loader, stats) => {
+                const isDirectUrl = !loaderContext.url.includes('/proxy/video');
                 const isNetworkError = response.code === 0 || response.code === 403;
+                const isProxyUrl = loaderContext.url.includes('/proxy/video');
+                const isFullProxy = loaderContext.url.includes('force_proxy=1');
 
-                if (isProxyEnabled && isDirectUrl && isNetworkError) {
-                    const proxyUrl = buildProxyUrl(context.url, userAgent, referer, 'video');
-                    console.warn(`[HLS Fallback] Fragment failed (code ${response.code}). Retrying via proxy...`);
+                // Determine next mode based on current state
+                let nextMode = null;
+                if (isNetworkError) {
+                    if (isDirectUrl) {
+                        nextMode = ProxyMode.MANIFEST_ONLY;
+                    } else if (isProxyUrl && !isFullProxy) {
+                        nextMode = ProxyMode.FULL;
+                    }
+                }
+
+                if (nextMode && this._retryCount < 2) {
+                    this._retryCount++;
+                    console.warn(`[HLS Fallback] Error (code ${response.code}), escalating to ${nextMode.toUpperCase()}...`);
                     
-                    // context.url'i güncelleyip tekrar dene
-                    context.url = proxyUrl;
+                    // Update context mode for future requests
+                    context.currentProxyMode = nextMode;
                     
-                    // Mevcut loader'ı sıfırlayıp tekrar yükle
+                    // Build new URL with escalated mode
+                    const newUrl = buildProxyUrlWithMode(
+                        isProxyUrl ? decodeURIComponent(loaderContext.url.match(/url=([^&]+)/)?.[1] || loaderContext.url) : loaderContext.url,
+                        userAgent,
+                        referer,
+                        nextMode
+                    );
+                    
+                    loaderContext.url = newUrl;
                     this.abort();
-                    super.load(context, cfg, callbacks);
+                    super.load(loaderContext, cfg, callbacks);
                     return;
                 }
                 
-                // Proxy zaten denenmişse veya başka bir hataysa orijinal handler'ı çağır
-                if (originalOnError) originalOnError(response, context, loader, stats);
+                // All modes exhausted or non-recoverable error
+                if (originalOnError) originalOnError(response, loaderContext, loader, stats);
             };
 
             super.load(ctx, cfg, callbacks);
@@ -153,7 +232,7 @@ export const createHlsConfig = (userAgent, referer, context, useProxy = null) =>
         maxBufferLength: 30,
         maxMaxBufferLength: 600,
         startLevel: -1,
-        xhrSetup: isProxyEnabled ? createHlsXhrSetup(userAgent, referer, context, isForced) : undefined,
-        fLoader: isProxyEnabled && !isForced ? FallbackFragmentLoader : undefined
+        xhrSetup: createHlsXhrSetup(userAgent, referer, context, context.currentProxyMode),
+        fLoader: SmartFallbackLoader
     };
 };
