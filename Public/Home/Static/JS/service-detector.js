@@ -64,7 +64,7 @@ export const buildProxyUrl = (url, userAgent = '', referer = '', endpoint = 'vid
     // Subtitle için her zaman aynı origin (Python proxy) kullan
     // Video <track> elementleri cross-origin kısıtlamalarına tabidir
     if (endpoint === 'subtitle') {
-        return `${window.location.origin}/proxy/${endpoint}?${params.toString()}`;
+        return `${proxyBase}/proxy/${endpoint}?${params.toString()}`;
     }
     
     const proxyBase = getProxyBaseUrl();
