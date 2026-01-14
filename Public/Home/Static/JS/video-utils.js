@@ -172,11 +172,17 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
         constructor(config) {
             super(config);
             this._retryCount = 0;
+            this._hasLoaded = false;
         }
 
         load(ctx, cfg, callbacks) {
+            // If already loaded, create fresh state
+            if (this._hasLoaded) {
+                this._hasLoaded = false;
+            }
+            
             const originalOnError = callbacks.onError;
-            const currentMode = context.currentProxyMode;
+            const self = this;
             
             callbacks.onError = (response, loaderContext, loader, stats) => {
                 const isDirectUrl = !loaderContext.url.includes('/proxy/video');
@@ -194,24 +200,83 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                     }
                 }
 
-                if (nextMode && this._retryCount < 2) {
-                    this._retryCount++;
+                if (nextMode && self._retryCount < 2) {
+                    self._retryCount++;
                     console.warn(`[HLS Fallback] Error (code ${response.code}), escalating to ${nextMode.toUpperCase()}...`);
                     
                     // Update context mode for future requests
                     context.currentProxyMode = nextMode;
                     
-                    // Build new URL with escalated mode
-                    const newUrl = buildProxyUrlWithMode(
-                        isProxyUrl ? decodeURIComponent(loaderContext.url.match(/url=([^&]+)/)?.[1] || loaderContext.url) : loaderContext.url,
-                        userAgent,
-                        referer,
-                        nextMode
-                    );
+                    // Extract original URL
+                    const originalUrl = isProxyUrl 
+                        ? decodeURIComponent(loaderContext.url.match(/url=([^&]+)/)?.[1] || loaderContext.url) 
+                        : loaderContext.url;
                     
-                    loaderContext.url = newUrl;
-                    this.abort();
-                    super.load(loaderContext, cfg, callbacks);
+                    // Build new URL with escalated mode
+                    const newUrl = buildProxyUrlWithMode(originalUrl, userAgent, referer, nextMode);
+                    
+                    // Create a fresh XHR request manually (avoid loader reuse)
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', newUrl, true);
+                    xhr.responseType = loaderContext.responseType || '';
+                    
+                    xhr.onload = () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            const data = xhr.response;
+                            callbacks.onSuccess(
+                                { data, url: newUrl },
+                                { ...stats, loaded: xhr.response.length || 0 },
+                                loaderContext,
+                                null
+                            );
+                        } else {
+                            if (originalOnError) originalOnError(
+                                { code: xhr.status, text: xhr.statusText },
+                                loaderContext, loader, stats
+                            );
+                        }
+                    };
+                    
+                    xhr.onerror = () => {
+                        // Try next escalation or give up
+                        if (self._retryCount < 2 && nextMode === ProxyMode.MANIFEST_ONLY) {
+                            context.currentProxyMode = ProxyMode.FULL;
+                            const fullUrl = buildProxyUrlWithMode(originalUrl, userAgent, referer, ProxyMode.FULL);
+                            console.warn(`[HLS Fallback] Retry failed, escalating to FULL...`);
+                            
+                            const xhr2 = new XMLHttpRequest();
+                            xhr2.open('GET', fullUrl, true);
+                            xhr2.responseType = loaderContext.responseType || '';
+                            xhr2.onload = () => {
+                                if (xhr2.status >= 200 && xhr2.status < 300) {
+                                    callbacks.onSuccess(
+                                        { data: xhr2.response, url: fullUrl },
+                                        { ...stats, loaded: xhr2.response.length || 0 },
+                                        loaderContext, null
+                                    );
+                                } else {
+                                    if (originalOnError) originalOnError(
+                                        { code: xhr2.status, text: xhr2.statusText },
+                                        loaderContext, loader, stats
+                                    );
+                                }
+                            };
+                            xhr2.onerror = () => {
+                                if (originalOnError) originalOnError(
+                                    { code: 0, text: 'Network error' },
+                                    loaderContext, loader, stats
+                                );
+                            };
+                            xhr2.send();
+                        } else {
+                            if (originalOnError) originalOnError(
+                                { code: 0, text: 'Network error' },
+                                loaderContext, loader, stats
+                            );
+                        }
+                    };
+                    
+                    xhr.send();
                     return;
                 }
                 
@@ -219,6 +284,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                 if (originalOnError) originalOnError(response, loaderContext, loader, stats);
             };
 
+            this._hasLoaded = true;
             super.load(ctx, cfg, callbacks);
         }
     }
