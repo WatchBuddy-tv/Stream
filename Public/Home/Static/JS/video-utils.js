@@ -5,7 +5,13 @@ import { getProxyBaseUrl, buildProxyUrl } from './service-detector.min.js';
 export const detectFormat = (url, format = null) => {
     const lowerUrl = url.toLowerCase();
     
-    if (lowerUrl.includes('.m3u8') || lowerUrl.includes('/hls/') || lowerUrl.includes('/m3u8/') || format === 'hls') {
+    // HLS detection (including non-standard extensions)
+    if (lowerUrl.includes('.m3u8') || 
+        lowerUrl.includes('/hls/') || 
+        lowerUrl.includes('/m3u8/') || 
+        lowerUrl.includes('master.txt') || 
+        lowerUrl.includes('/manifests/') ||
+        format === 'hls') {
         return 'hls';
     }
     if (lowerUrl.includes('.mp4') || lowerUrl.includes('/mp4/') || format === 'mp4') {
