@@ -47,26 +47,31 @@ export const parseRemoteUrl = (url) => {
     return { origin: null, baseUrl: null };
 };
 
-export const createHlsXhrSetup = (userAgent, referer, context) => {
+export const createHlsXhrSetup = (userAgent, referer, context, forceProxy = false) => {
     return (xhr, requestUrl) => {
         const proxyOrigin = getProxyBaseUrl();
         const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u');
         const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
+        const isSegment = !isManifest && !isKey;
 
         // 1. Zaten bir proxy URL'i içindeysek (Recursive proxy engelleme)
         if (requestUrl.includes('/proxy/video?url=')) {
             return;
         }
 
-        // 2. Proxy manifest'i rewrite etti ve bize doğrudan bir CDN URL'i verdi
-        // Eğer bu bir segment ise (.ts, .m4s vb.) doğrudan gitmeyi dene.
-        if (requestUrl.startsWith('http') && !isManifest && !isKey) {
-            // goProxy/pyProxy bunu bizim için "doğrudan çekilsin" diye rewrite etmiştir.
-            // Bu durumda tekrar proxy'leme!
+        // 2. Zorunlu Proxy Modu: Segmentler dahil her şeyi proxy üzerinden geçir
+        if (forceProxy && isSegment) {
+            const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
+            xhr.open('GET', proxyUrl, true);
+            return;
+        }
+
+        // 3. Normal Mod: Segmentler doğrudan (Bant Genişliği Tasarrufu)
+        if (requestUrl.startsWith('http') && isSegment) {
             return; 
         }
         
-        // 3. Yanlış çözümlenmiş path düzeltmeleri (Manifest path'leri)
+        // 4. Yanlış çözümlenmiş path düzeltmeleri (Manifest path'leri)
         if (requestUrl.startsWith(proxyOrigin) && !requestUrl.includes('/proxy/')) {
             const path = requestUrl.substring(proxyOrigin.length);
             if (context.lastLoadedOrigin) {
@@ -76,7 +81,7 @@ export const createHlsXhrSetup = (userAgent, referer, context) => {
             }
         }
 
-        // 4. Standart durum: Manifest ve Key dosyalarını her zaman proxy'le
+        // 5. Standart durum: Manifest ve Key dosyalarını her zaman proxy'le
         try {
             if (isManifest || isKey) {
                 const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
@@ -95,6 +100,8 @@ export const createHlsXhrSetup = (userAgent, referer, context) => {
 
 export const createHlsConfig = (userAgent, referer, context, useProxy = null) => {
     const isProxyEnabled = useProxy ?? (window.PROXY_ENABLED !== false);
+    // useProxy boolean ise (forcedProxy'den geliyorsa) zorunlu proxy modunu aktar
+    const isForced = typeof useProxy === 'boolean' && useProxy;
     
     // Fallback Fragment Loader: Önce doğrudan dene, CORS/Ağ hatası (code 0) alırsan proxy'le
     class FallbackFragmentLoader extends Hls.DefaultConfig.loader {
@@ -112,8 +119,13 @@ export const createHlsConfig = (userAgent, referer, context, useProxy = null) =>
 
                 if (isProxyEnabled && isDirectUrl && isNetworkError) {
                     const proxyUrl = buildProxyUrl(context.url, userAgent, referer, 'video');
+                    console.warn(`[HLS Fallback] Fragment failed (code ${response.code}). Retrying via proxy...`);
+                    
                     // context.url'i güncelleyip tekrar dene
                     context.url = proxyUrl;
+                    
+                    // Mevcut loader'ı sıfırlayıp tekrar yükle
+                    this.abort();
                     super.load(context, cfg, callbacks);
                     return;
                 }
@@ -135,7 +147,7 @@ export const createHlsConfig = (userAgent, referer, context, useProxy = null) =>
         maxBufferLength: 30,
         maxMaxBufferLength: 600,
         startLevel: -1,
-        xhrSetup: isProxyEnabled ? createHlsXhrSetup(userAgent, referer, context) : undefined,
-        fLoader: isProxyEnabled ? FallbackFragmentLoader : undefined
+        xhrSetup: isProxyEnabled ? createHlsXhrSetup(userAgent, referer, context, isForced) : undefined,
+        fLoader: isProxyEnabled && !isForced ? FallbackFragmentLoader : undefined
     };
 };
