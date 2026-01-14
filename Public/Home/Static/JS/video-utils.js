@@ -49,35 +49,24 @@ export const parseRemoteUrl = (url) => {
 
 export const createHlsXhrSetup = (userAgent, referer, context) => {
     return (xhr, requestUrl) => {
-        // 1. Already a full proxy URL - extract and save base URL, don't re-proxy
-        if (requestUrl.includes('/proxy/video?url=')) {
-            const match = requestUrl.match(/url=([^&]+)/);
-            if (match) {
-                try {
-                    const decodedUrl = decodeURIComponent(match[1]);
-                    const proxyBase = getProxyBaseUrl();
-                    let finalRemoteUrl = decodedUrl;
-                    
-                    // Handle nested proxy (error case)
-                    if (decodedUrl.startsWith(proxyBase)) {
-                        const innerMatch = decodedUrl.match(/\/proxy\/video\?url=([^&]+)/);
-                        if (innerMatch) {
-                            finalRemoteUrl = decodeURIComponent(innerMatch[1]);
-                        }
-                    }
+        const proxyOrigin = getProxyBaseUrl();
+        const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u');
+        const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
 
-                    if (finalRemoteUrl.startsWith('http')) {
-                        context.lastLoadedBaseUrl = finalRemoteUrl.substring(0, finalRemoteUrl.lastIndexOf('/') + 1);
-                        context.lastLoadedOrigin = new URL(finalRemoteUrl).origin;
-                    }
-                } catch (e) { /* ignore */ }
-            }
-            return; // Don't re-proxy
+        // 1. Zaten bir proxy URL'i içindeysek (Recursive proxy engelleme)
+        if (requestUrl.includes('/proxy/video?url=')) {
+            return;
+        }
+
+        // 2. Proxy manifest'i rewrite etti ve bize doğrudan bir CDN URL'i verdi
+        // Eğer bu bir segment ise (.ts, .m4s vb.) doğrudan gitmeyi dene.
+        if (requestUrl.startsWith('http') && !isManifest && !isKey) {
+            // goProxy/pyProxy bunu bizim için "doğrudan çekilsin" diye rewrite etmiştir.
+            // Bu durumda tekrar proxy'leme!
+            return; 
         }
         
-        const proxyOrigin = getProxyBaseUrl();
-
-        // 2. Incorrectly resolved absolute paths (manifest paths starting with /)
+        // 3. Yanlış çözümlenmiş path düzeltmeleri (Manifest path'leri)
         if (requestUrl.startsWith(proxyOrigin) && !requestUrl.includes('/proxy/')) {
             const path = requestUrl.substring(proxyOrigin.length);
             if (context.lastLoadedOrigin) {
@@ -87,32 +76,19 @@ export const createHlsXhrSetup = (userAgent, referer, context) => {
             }
         }
 
-        // 3. Incorrectly resolved relative paths (manifest relative paths added to proxy address)
-        if (requestUrl.includes('/proxy/') && !requestUrl.includes('/proxy/video?url=')) {
-            const parts = requestUrl.split('/proxy/');
-            const relativePath = parts[parts.length - 1];
-
-            if (context.lastLoadedBaseUrl) {
-                const correctUrl = context.lastLoadedBaseUrl.replace(/\/$/, '') + '/' + relativePath.replace(/^\//, '');
-                xhr.open('GET', buildProxyUrl(correctUrl, userAgent, referer, 'video'), true);
-                return;
-            }
-        }
-
-        // 4. Normal URLs - wrap with proxy
+        // 4. Standart durum: Manifest ve Key dosyalarını her zaman proxy'le
         try {
-            const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
-            
-            // Save base URL if http
-            if (requestUrl.startsWith('http')) {
-                context.lastLoadedBaseUrl = requestUrl.substring(0, requestUrl.lastIndexOf('/') + 1);
-                context.lastLoadedOrigin = new URL(requestUrl).origin;
+            if (isManifest || isKey) {
+                const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
+                xhr.open('GET', proxyUrl, true);
+                
+                if (requestUrl.startsWith('http')) {
+                    context.lastLoadedBaseUrl = requestUrl.substring(0, requestUrl.lastIndexOf('/') + 1);
+                    context.lastLoadedOrigin = new URL(requestUrl).origin;
+                }
             }
-            
-            xhr.open('GET', proxyUrl, true);
         } catch (e) {
             console.error('HLS Proxy Error:', e);
-            xhr.open('GET', buildProxyUrl(requestUrl, userAgent, referer, 'video'), true);
         }
     };
 };
