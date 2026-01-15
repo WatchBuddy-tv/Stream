@@ -292,14 +292,16 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
         }
     }
     
+    const isApple = /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && !window.MSStream;
+
     return {
         debug: false,
-        enableWorker: true,
+        enableWorker: !isApple, // Apple cihazlarda worker bazen sorun çıkarabiliyor
         capLevelToPlayerSize: true,
         maxLoadingDelay: 4,
         minAutoBitrate: 0,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 600,
+        maxBufferLength: isApple ? 15 : 30, // Apple cihazlarda daha düşük buffer
+        maxMaxBufferLength: isApple ? 30 : 600,
         startLevel: -1,
         xhrSetup: createHlsXhrSetup(userAgent, referer, context, context.currentProxyMode),
         fLoader: SmartFallbackLoader

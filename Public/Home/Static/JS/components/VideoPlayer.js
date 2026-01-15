@@ -167,9 +167,14 @@ export default class VideoPlayer {
             this.loadingTimeout = null;
         }
 
-        // Mevcut track'leri temizle
-        while (this.videoPlayer.firstChild) {
-            this.videoPlayer.removeChild(this.videoPlayer.firstChild);
+        // Mevcut track'leri temizle (safely)
+        if (this.videoPlayer) {
+            this.videoPlayer.pause();
+            this.videoPlayer.removeAttribute('src');
+            this.videoPlayer.load();
+            while (this.videoPlayer.firstChild) {
+                this.videoPlayer.removeChild(this.videoPlayer.firstChild);
+            }
         }
     }
 
@@ -498,7 +503,15 @@ export default class VideoPlayer {
                 hls.attachMedia(this.videoPlayer);
             } catch (error) {
                 this.logger.error('HLS yükleme hatası', error.message);
-                this.onVideoError();
+                // Fallback: Hls.js başarısız olursa native dene
+                if (this.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    this.logger.info('Hls.js hatası sonrası native fallback deneniyor...');
+                    const proxyUrl = buildServiceProxyUrl(originalUrl, userAgent, referer, 'video');
+                    this.videoPlayer.src = proxyUrl;
+                    this.videoPlayer.load();
+                } else {
+                    this.onVideoError();
+                }
             }
         } else if (this.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
             // Native HLS desteği var (Safari, iOS)
@@ -529,6 +542,7 @@ export default class VideoPlayer {
             }
 
             this.videoPlayer.src = proxyUrl;
+            this.videoPlayer.load(); // Bazı tarayıcılarda (Safari/Mobile) şart
         } catch (error) {
             this.logger.error('Video yükleme hatası', error.message);
             this.onVideoError();
