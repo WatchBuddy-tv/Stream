@@ -408,8 +408,8 @@ export default class VideoPlayer {
                 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
                 if (isMobile) {
                     watchPartyAppButton.style.display = 'inline-flex';
-                    // watchbuddy://join/ROOM_ID?params...
-                    watchPartyAppButton.href = `watchbuddy://join/${newRoomId}?${wpParams.toString()}`;
+                    // watchbuddy://room/ROOM_ID?params...
+                    watchPartyAppButton.href = `watchbuddy://room/${newRoomId}?${wpParams.toString()}`;
                 } else {
                     watchPartyAppButton.style.display = 'none';
                 }
