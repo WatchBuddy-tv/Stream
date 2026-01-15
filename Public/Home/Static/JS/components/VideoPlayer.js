@@ -291,6 +291,16 @@ export default class VideoPlayer {
         this.videoPlayer.addEventListener('loadedmetadata', () => this.onVideoLoaded());
         this.videoPlayer.addEventListener('canplay', () => this.onVideoCanPlay());
         this.videoPlayer.addEventListener('error', () => this.onVideoError());
+        
+        // Ara tamponlama (buffering) durumları için overlay
+        this.videoPlayer.addEventListener('waiting', () => {
+            if (this.loadingOverlay) this.loadingOverlay.style.display = 'flex';
+            this.logger.info('Video tamponlanıyor...');
+        });
+        
+        this.videoPlayer.addEventListener('playing', () => {
+            if (this.loadingOverlay) this.loadingOverlay.style.display = 'none';
+        });
 
         // Orijinal URL'i al
         const originalUrl = selectedVideo.url;
