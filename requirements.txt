@@ -13,4 +13,4 @@ python-dotenv
 pymongo
 csscompressor
 rjsmin
-KekikStream>=2.3.8
+KekikStream>=2.3.9
