@@ -2,7 +2,7 @@
 
 import VideoLogger from './VideoLogger.min.js';
 import { detectGoServices, buildProxyUrl as buildServiceProxyUrl } from '../service-detector.min.js';
-import { detectFormat, parseRemoteUrl, createHlsConfig } from '../video-utils.min.js';
+import { detectFormat, parseRemoteUrl, createHlsConfig, suggestInitialMode, ProxyMode } from '../video-utils.min.js';
 
 export default class VideoPlayer {
     constructor() {
@@ -451,7 +451,10 @@ export default class VideoPlayer {
 
             try {
                 // HLS.js yapılandırması - use shared config factory
-                const hlsConfig = createHlsConfig(userAgent, referer, this, true);
+                const initialMode = window.PROXY_ENABLED === false
+                    ? ProxyMode.NONE
+                    : suggestInitialMode(originalUrl);
+                const hlsConfig = createHlsConfig(userAgent, referer, this, initialMode);
 
                 const hls = new Hls(hlsConfig);
                 this.currentHls = hls;
