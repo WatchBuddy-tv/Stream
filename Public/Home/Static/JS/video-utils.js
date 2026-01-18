@@ -52,6 +52,8 @@ export const suggestInitialMode = (url) => {
 export const getNextMode = (current) => {
     switch (current) {
         case ProxyMode.NONE:
+            return ProxyMode.MANIFEST_ONLY;
+        case ProxyMode.MANIFEST_ONLY:
             return ProxyMode.FULL;
         case ProxyMode.FULL:
             return null; // No more fallback
