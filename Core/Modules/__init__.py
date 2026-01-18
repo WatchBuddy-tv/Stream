@@ -51,19 +51,19 @@ async def lifespan(app: FastAPI):
     await global_request.start()
 
     # ! Eğer eklenti ana sayfası erişilemiyorsa atla
-    sem  = asyncio.Semaphore(MAX_CONCURRENT_CHECKS)
-    lock = asyncio.Lock()
+    # sem  = asyncio.Semaphore(MAX_CONCURRENT_CHECKS)
+    # lock = asyncio.Lock()
 
-    plugin_names = list(plugin_manager.get_plugin_names())
+    # plugin_names = list(plugin_manager.get_plugin_names())
 
-    async with asyncio.TaskGroup() as tg:
-        for name in plugin_names:
-            if name in ("RecTV", "BıdıkTV"):
-                continue
+    # async with asyncio.TaskGroup() as tg:
+    #     for name in plugin_names:
+    #         if name in ("RecTV", "BıdıkTV"):
+    #             continue
 
-            tg.create_task(_check_plugin(name, sem, lock))
+    #         tg.create_task(_check_plugin(name, sem, lock))
 
-    konsol.log(f"[green]Eklenti erişim kontrolleri tamamlandı. (maks {MAX_CONCURRENT_CHECKS} eşzamanlı)")
+    # konsol.log(f"[green]Eklenti erişim kontrolleri tamamlandı. (maks {MAX_CONCURRENT_CHECKS} eşzamanlı)")
 
     yield
 
