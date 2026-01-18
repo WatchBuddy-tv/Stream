@@ -52,8 +52,6 @@ export const suggestInitialMode = (url) => {
 export const getNextMode = (current) => {
     switch (current) {
         case ProxyMode.NONE:
-            return ProxyMode.MANIFEST_ONLY;
-        case ProxyMode.MANIFEST_ONLY:
             return ProxyMode.FULL;
         case ProxyMode.FULL:
             return null; // No more fallback
@@ -193,12 +191,12 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                 const isProxyUrl = loaderContext.url.includes('/proxy/video');
                 const isFullProxy = loaderContext.url.includes('force_proxy=1');
 
-                // Determine next mode based on current state
+                // Determine next mode based on current state (None -> Manifest -> Full)
                 let nextMode = null;
                 if (isNetworkError) {
-                    if (isDirectUrl) {
+                    if (context.currentProxyMode === ProxyMode.NONE) {
                         nextMode = ProxyMode.MANIFEST_ONLY;
-                    } else if (isProxyUrl && !isFullProxy) {
+                    } else if (context.currentProxyMode === ProxyMode.MANIFEST_ONLY) {
                         nextMode = ProxyMode.FULL;
                     }
                 }
@@ -209,6 +207,11 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                     
                     // Update context mode for future requests
                     context.currentProxyMode = nextMode;
+
+                    // Notify room via socket (if available)
+                    if (context.onModeEscalated) {
+                        context.onModeEscalated(nextMode);
+                    }
                     
                     // Extract original URL
                     const originalUrl = isProxyUrl 
@@ -304,6 +307,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
         maxMaxBufferLength: isApple ? 30 : 600,
         startLevel: -1,
         xhrSetup: createHlsXhrSetup(userAgent, referer, context, context.currentProxyMode),
-        fLoader: SmartFallbackLoader
+        pLoader: SmartFallbackLoader,  // Playlist (manifest) loader - CORS fallback
+        fLoader: SmartFallbackLoader   // Fragment loader
     };
 };
