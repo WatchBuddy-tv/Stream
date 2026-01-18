@@ -324,7 +324,8 @@ export default class VideoPlayer {
                 
                 // Content-Type'dan HLS kontrolü
                 const isHLSByContentType = contentType.includes('mpegurl') || 
-                                           contentType.includes('mpeg');
+                                           contentType.includes('mpeg') ||
+                                           contentType.includes('text/html');
                 
                 // URL pattern'den HLS kontrolü (Content-Type boş veya yanlışsa fallback)
                 const urlFormat = detectFormat(originalUrl);
