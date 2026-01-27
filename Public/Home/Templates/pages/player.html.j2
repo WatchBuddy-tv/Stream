@@ -147,19 +147,13 @@
         {% endfor %}
     </div>
 
-    <!-- Seçim Modalı (Altyazı / Ses) -->
-    <div id="selection-modal" class="subtitle-modal" style="display: none;">
-        <div class="subtitle-modal-backdrop"></div>
-        <div class="subtitle-modal-content">
-            <div class="subtitle-modal-header">
-                <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span>Seçim Yapın</span></h3>
-                <button class="subtitle-modal-close" id="selection-modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="subtitle-modal-body" id="selection-list">
-                <!-- Seçenekler buraya dinamik olarak eklenecek -->
-            </div>
+    <!-- Seçim Dropdown (Altyazı / Ses) -->
+    <div id="selection-modal" class="selection-dropdown" style="display: none;">
+        <div class="selection-dropdown-header">
+            <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span>Seçim Yapın</span></h3>
+        </div>
+        <div class="selection-dropdown-body" id="selection-list">
+            <!-- Seçenekler buraya dinamik olarak eklenecek -->
         </div>
     </div>
 </div>

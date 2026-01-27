@@ -421,15 +421,19 @@ export default class VideoPlayer {
                 this.videoData[this.currentVideoIndex].subtitles && 
                 this.videoData[this.currentVideoIndex].subtitles.length > 1) {
                 
-                this.showSelectionModal(
-                    'Altyazı Seç', 
-                    'fa-closed-captioning', 
-                    this.videoData[this.currentVideoIndex].subtitles.map(s => ({
-                        label: s.name,
-                        value: s,
-                        action: () => this.changeSubtitle(s)
-                    }))
-                );
+                const subOptions = this.videoData[this.currentVideoIndex].subtitles.map(s => ({
+                    label: s.name,
+                    value: s.url,
+                    action: () => this.changeSubtitle(s)
+                }));
+                // "Kapalı" seçeneğini ekle
+                subOptions.unshift({
+                    label: 'Kapalı',
+                    value: null,
+                    action: () => this.changeSubtitle(null)
+                });
+
+                this.showSelectionModal('Altyazı Seç', 'fa-closed-captioning', subOptions, ccBtn, this.selectedSubtitleUrl);
 
             } else if (tracks.length > 0) {
                 // Tek altyazı varsa toggle yap
@@ -977,16 +981,20 @@ export default class VideoPlayer {
                 subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${currentSubName}`;
 
                 // Tıklama olayını güncelle
-                subtitleSelectBtn.onclick = () => {
-                    this.showSelectionModal(
-                        'Altyazı Seç',
-                        'fa-closed-captioning',
-                        selectedVideo.subtitles.map(s => ({
-                            label: s.name,
-                            value: s,
-                            action: () => this.changeSubtitle(s)
-                        }))
-                    );
+                subtitleSelectBtn.onclick = (e) => {
+                    const subOptions = selectedVideo.subtitles.map(s => ({
+                        label: s.name,
+                        value: s.url,
+                        action: () => this.changeSubtitle(s)
+                    }));
+                    // "Kapalı" seçeneğini ekle
+                    subOptions.unshift({
+                        label: 'Kapalı',
+                        value: null,
+                        action: () => this.changeSubtitle(null)
+                    });
+
+                    this.showSelectionModal('Altyazı Seç', 'fa-closed-captioning', subOptions, subtitleSelectBtn, this.selectedSubtitleUrl);
                 };
             } else {
                 // Tek altyazı varsa butonu kaldır
@@ -1074,105 +1082,6 @@ export default class VideoPlayer {
 
         // Video yükleme tamamlandı (asenkron işlemler devam edebilir ama UI hazır)
         this.isLoadingVideo = false;
-    }
-
-    /**
-     * Altyazı seçim modalını ayarla
-     */
-    setupSubtitleModal() {
-        if (!this.subtitleModal) return;
-
-        const closeBtn = document.getElementById('subtitle-modal-close');
-        const backdrop = this.subtitleModal.querySelector('.subtitle-modal-backdrop');
-
-        // Kapat butonu
-        closeBtn?.addEventListener('click', () => this.hideSubtitleModal());
-
-        // Backdrop'a tıklayınca kapat
-        backdrop?.addEventListener('click', () => this.hideSubtitleModal());
-
-        // ESC tuşu ile kapat
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.subtitleModal.style.display !== 'none') {
-                this.hideSubtitleModal();
-            }
-        });
-    }
-
-    /**
-     * Altyazı seçim modalını göster
-     */
-    showSubtitleModal(subtitles) {
-        if (!this.subtitleModal || !this.subtitleList) return;
-
-        // Listeyi temizle
-        this.subtitleList.innerHTML = '';
-
-        // Altyazıları listele
-        subtitles.forEach((sub, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'subtitle-item-btn';
-            btn.innerHTML = `
-                <i class="fas fa-closed-captioning"></i>
-                <span>${sub.name}</span>
-                <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 0.875rem;"></i>
-            `;
-            btn.addEventListener('click', () => {
-                this.changeSubtitle(sub);
-            });
-            this.subtitleList.appendChild(btn);
-        });
-
-        // Modalı göster
-        this.subtitleModal.style.display = 'flex';
-    }
-
-    /**
-     * Altyazıyı değiştir (Player ve UI)
-     */
-    changeSubtitle(subtitle) {
-        this.selectedSubtitleUrl = subtitle.url;
-        this.logger.info(`Altyazı değiştiriliyor: ${subtitle.name}`);
-
-        // 1. Player'daki track'i değiştir
-        const tracks = Array.from(this.videoPlayer.textTracks);
-        let found = false;
-        
-        tracks.forEach(track => {
-            // Track label'ı veya srclang üzerinden eşleştirme
-            if (track.label === subtitle.name) {
-                track.mode = 'showing';
-                found = true;
-            } else {
-                // Diğerlerini gizle
-                track.mode = 'hidden';
-            }
-        });
-        
-        if (!found) {
-             this.logger.warn(`Track bulunamadı: ${subtitle.name}`);
-        }
-
-        // 2. Buton metnini güncelle
-        const subtitleSelectBtn = document.getElementById('subtitle-select-btn');
-        if (subtitleSelectBtn) {
-            subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name}`;
-        }
-
-        // 3. WatchBuddy butonlarını güncelle
-        this.updateWatchPartyButtons();
-
-        // 4. Modalı kapat
-        this.hideSubtitleModal();
-    }
-
-    /**
-     * Altyazı seçim modalını gizle
-     */
-    hideSubtitleModal() {
-        if (this.subtitleModal) {
-            this.subtitleModal.style.display = 'none';
-        }
     }
 
     /**
@@ -1264,13 +1173,13 @@ export default class VideoPlayer {
                                     hls.audioTrack = index;
                                     this.logger.info(`Ses değiştirildi: ${track.name || index}`);
                                     this.hideSelectionModal();
-                                    
-                                    // Player üzerinde bilgi göster (Opsiyonel, toast msj gibi)
                                 } catch(e) {
                                     this.logger.error('Ses değiştirme hatası', e);
                                 }
                             }
-                        }))
+                        })),
+                        newBtn,
+                        hls.audioTrack
                     );
                 };
             }
@@ -1421,31 +1330,45 @@ export default class VideoPlayer {
     setupSelectionModal() {
         if (!this.selectionModal) return;
 
-        const closeBtn = document.getElementById('selection-modal-close');
-        const backdrop = this.selectionModal.querySelector('.subtitle-modal-backdrop');
-
-        // Kapat butonu
-        closeBtn?.addEventListener('click', () => this.hideSelectionModal());
-
-        // Backdrop'a tıklayınca kapat
-        backdrop?.addEventListener('click', () => this.hideSelectionModal());
-
         // ESC tuşu ile kapat
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.selectionModal.style.display !== 'none') {
                 this.hideSelectionModal();
             }
         });
+
+        // Dışına tıklayınca kapat
+        document.addEventListener('mousedown', (e) => {
+            if (this.selectionModal.style.display !== 'none') {
+                const isClickInside = this.selectionModal.contains(e.target);
+                const isClickOnTrigger = e.target.closest('#custom-cc, #custom-audio, #subtitle-select-btn');
+                
+                if (!isClickInside && !isClickOnTrigger) {
+                    this.hideSelectionModal();
+                }
+            }
+        });
     }
 
     /**
-     * Seçim modalını göster (Genel)
-     * @param {string} title - Modal başlığı
-     * @param {string} iconClass - İkon sınıfı (örn: fa-volume-up)
+     * Seçim dropdownını göster (Genel)
+     * @param {string} title - Başlık
+     * @param {string} iconClass - İkon sınıfı
      * @param {Array} items - { label, value, action } objeleri
+     * @param {HTMLElement} trigger - Tetikleyici element (konumlandırma için)
+     * @param {any} currentValue - Mevcut seçili değer
      */
-    showSelectionModal(title, iconClass, items) {
+    showSelectionModal(title, iconClass, items, trigger, currentValue = undefined) {
         if (!this.selectionModal || !this.selectionList) return;
+
+        // Toggle Mantığı: Eğer zaten açıksa ve aynı trigger tıklandıysa kapat
+        if (this.selectionModal.style.display !== 'none' && this.lastSelectionTrigger === trigger) {
+            this.hideSelectionModal();
+            return;
+        }
+
+        // Aktif trigger'ı kaydet
+        this.lastSelectionTrigger = trigger;
 
         // Başlık ve İkonu Güncelle
         const titleEl = document.getElementById('modal-title');
@@ -1457,38 +1380,88 @@ export default class VideoPlayer {
         // Önceki listeyi temizle
         this.selectionList.innerHTML = '';
 
-        // UI donmasını önlemek için DocumentFragment kullan
-        const fragment = document.createDocumentFragment();
-
         items.forEach((item) => {
             const btn = document.createElement('button');
             btn.className = 'subtitle-item-btn';
+            
+            // Aktif öğeyi işaretle
+            if (currentValue !== undefined && item.value === currentValue) {
+                btn.classList.add('active');
+            }
+
             btn.innerHTML = `
-                <i class="fas ${iconClass}"></i>
+                <i class="fas ${currentValue !== undefined && item.value === currentValue ? 'fa-check-circle' : iconClass}"></i>
                 <span>${item.label}</span>
-                <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 0.875rem;"></i>
             `;
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 if (item.action) item.action();
                 else this.hideSelectionModal();
             });
-            fragment.appendChild(btn);
+            this.selectionList.appendChild(btn);
         });
 
-        this.selectionList.appendChild(fragment);
+        // Konumlandırma
+        if (trigger) {
+            const isInsidePlayer = trigger.closest('#video-player-wrapper');
+            const wrapper = document.getElementById('video-player-wrapper');
+            
+            // Elemanı ilgili kapsayıcıya taşı (Tam ekran ve konumlandırma için)
+            if (isInsidePlayer) {
+                if (this.selectionModal.parentElement !== wrapper) {
+                    wrapper.appendChild(this.selectionModal);
+                }
+            } else {
+                const container = document.querySelector('.detail-container');
+                if (this.selectionModal.parentElement !== container) {
+                    container.appendChild(this.selectionModal);
+                }
+            }
 
-        // Modalı göster (DOM güncellemelerinden sonra render için rAF kullan)
-        requestAnimationFrame(() => {
             this.selectionModal.style.display = 'flex';
-        });
+            const rect = trigger.getBoundingClientRect();
+            const dropdownRect = this.selectionModal.getBoundingClientRect();
+            
+            if (isInsidePlayer) {
+                // Player içindeki kontrollerde trigger elementine göre pozisyon al
+                // trigger.offsetLeft wrapper'a göre değilse (iç içe divler varsa) getBoundingClientRect kullanmak daha güvenli
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const triggerLeft = rect.left - wrapperRect.left;
+                const triggerBottom = wrapperRect.bottom - rect.top;
+
+                this.selectionModal.style.position = 'absolute';
+                this.selectionModal.style.bottom = `${triggerBottom + 10}px`;
+                this.selectionModal.style.left = `${triggerLeft + (rect.width / 2) - (dropdownRect.width / 2)}px`;
+                this.selectionModal.style.top = 'auto';
+            } else {
+                // Player dışındaki buton
+                const scrollY = window.scrollY || window.pageYOffset;
+                this.selectionModal.style.position = 'absolute';
+                this.selectionModal.style.top = `${rect.bottom + scrollY + 5}px`;
+                this.selectionModal.style.left = `${rect.left + (rect.width / 2) - (dropdownRect.width / 2)}px`;
+                this.selectionModal.style.bottom = 'auto';
+            }
+
+
+            // Ekran dışına taşma kontrolü
+            const finalRect = this.selectionModal.getBoundingClientRect();
+            if (finalRect.left < 10) {
+                this.selectionModal.style.left = '10px';
+            } else if (finalRect.right > window.innerWidth - 10) {
+                this.selectionModal.style.left = `${window.innerWidth - finalRect.width - 10}px`;
+            }
+        } else {
+            this.selectionModal.style.display = 'flex';
+        }
     }
 
     /**
-     * Seçim modalını gizle
+     * Seçim dropdownını gizle
      */
     hideSelectionModal() {
         if (this.selectionModal) {
             this.selectionModal.style.display = 'none';
+            this.lastSelectionTrigger = null;
         }
     }
 
@@ -1496,28 +1469,35 @@ export default class VideoPlayer {
      * Altyazıyı değiştir (Player ve UI)
      */
     changeSubtitle(subtitle) {
-        this.selectedSubtitleUrl = subtitle.url;
-        this.logger.info(`Altyazı değiştiriliyor: ${subtitle.name}`);
-
         const tracks = Array.from(this.videoPlayer.textTracks);
-        let found = false;
-        
-        tracks.forEach(track => {
-            if (track.label === subtitle.name) {
-                track.mode = 'showing';
-                found = true;
-            } else {
-                track.mode = 'hidden';
-            }
-        });
-        
-        if (!found) {
-             this.logger.warn(`Track bulunamadı: ${subtitle.name}`);
-        }
-
         const subtitleSelectBtn = document.getElementById('subtitle-select-btn');
-        if (subtitleSelectBtn) {
-            subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name}`;
+
+        if (!subtitle) {
+            // Altyazı kapat
+            this.selectedSubtitleUrl = null;
+            this.logger.info(`Altyazı kapatıldı`);
+            tracks.forEach(track => track.mode = 'hidden');
+            if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> Kapalı`;
+            
+            const ccBtn = document.getElementById('custom-cc');
+            if (ccBtn) ccBtn.classList.remove('active');
+        } else {
+            // Altyazı aç/değiştir
+            this.selectedSubtitleUrl = subtitle.url;
+            this.logger.info(`Altyazı değiştiriliyor: ${subtitle.name}`);
+            
+            tracks.forEach(track => {
+                if (track.label === subtitle.name) {
+                    track.mode = 'showing';
+                } else {
+                    track.mode = 'hidden';
+                }
+            });
+
+            if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name}`;
+            
+            const ccBtn = document.getElementById('custom-cc');
+            if (ccBtn) ccBtn.classList.add('active');
         }
 
         this.updateWatchPartyButtons();
