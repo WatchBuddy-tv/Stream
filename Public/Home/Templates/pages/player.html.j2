@@ -1,0 +1,165 @@
+{% extends "_html_taban.html.j2" %}
+
+
+{% block breadcrumbs %}
+<nav class="breadcrumbs">
+    <div class="breadcrumbs-item">
+        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> Ana Sayfa</a>
+    </div>
+    <div class="breadcrumbs-item">
+        <a href="/eklenti/{{ eklenti_adi }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+    </div>
+    <div class="breadcrumbs-item">
+        <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ title }}</span>
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block icerik %}
+
+<div class="detail-container">
+    <div class="player-header">
+        <h1 class="player-title"><i class="fas fa-play-circle"></i> {{ title }}</h1>
+    </div>
+
+    <div class="source-selection">
+        <h3><i class="fas fa-server"></i> Kaynaklar</h3>
+        <div id="video-links-ui" class="source-list"></div>
+    </div>
+
+    <div id="video-player-container">
+        <div id="video-player-wrapper">
+            <div id="loading-overlay" class="player-loading" style="display: none;">
+                <div class="player-message">
+                    <div class="wp-spinner"></div>
+                </div>
+            </div>
+            <video id="video-player" playsinline webkit-playsinline crossorigin="anonymous">
+                Tarayıcınız video etiketini desteklemiyor.
+            </video>
+            
+            <!-- Firefox Custom Subtitle Overlay -->
+            <div id="custom-subtitle-overlay" class="custom-subtitle-overlay"></div>
+
+            <!-- Netflix Style Custom Controls -->
+            <div class="video-controls-overlay">
+                <!-- Action Animation -->
+                <div class="action-animation" id="action-animation">
+                    <i class="fas fa-play"></i>
+                </div>
+
+
+
+                <!-- Bottom Controls -->
+                <div class="bottom-controls">
+                    <!-- Progress Slider -->
+                    <div class="progress-container" id="custom-progress-container">
+                        <div class="progress-bar-fill" id="custom-progress-fill">
+                            <div class="progress-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-row">
+                        <div class="control-group">
+                            <button class="ctrl-btn" id="bottom-play-pause">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="ctrl-btn" id="custom-backward">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button class="ctrl-btn" id="custom-forward">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            
+                            <!-- Volume -->
+                            <div class="volume-group">
+                                <button class="ctrl-btn" id="custom-mute">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <input type="range" id="custom-volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                            </div>
+
+                            <!-- Time -->
+                            <div class="time-display">
+                                <span id="current-time">0:00</span> / <span id="duration-time">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <button class="ctrl-btn" id="custom-audio" style="display: none;" title="Ses">
+                                <i class="fas fa-headphones-alt"></i>
+                            </button>
+                            <button class="ctrl-btn" id="custom-cc" style="display: none;" title="Altyazı">
+                                <i class="fas fa-closed-captioning"></i>
+                            </button>
+                            <button class="ctrl-btn" id="custom-fullscreen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="player-controls-section">
+        <div class="control-buttons">
+            {% if icerik_url %}
+            <a href="/icerik/{{ eklenti_adi }}?url={{ icerik_url }}" class="button button-secondary">
+                <i class="fas fa-arrow-left"></i> İçerik
+            </a>
+            {% endif %}
+            <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
+                <i class="fas fa-th"></i> Eklenti
+            </a>
+            <button id="toggle-diagnostics" class="button button-secondary">
+                <i class="fas fa-bug"></i> Tanılama
+            </button>
+        </div>
+    </div>
+
+    <div id="diagnostics-panel">
+        <div class="diagnostics-header">
+            <h3>Tanılama Bilgileri</h3>
+            <div class="diagnostics-toolbar">
+                <button id="clear-logs" class="button button-diagnostic">Temizle</button>
+                <button id="copy-logs" class="button button-diagnostic">Kopyala</button>
+                <button id="download-logs" class="button button-diagnostic">İndir</button>
+            </div>
+        </div>
+        <pre id="diagnostics-log"></pre>
+    </div>
+
+    <div id="video-links-data" style="display: none;">
+        {% for link in links %}
+            <div class="video-link-item" data-name="{{ link.name }}" data-url="{{ link.url }}" data-referer="{{ link.referer|default('', true) }}" data-user-agent="{{ link.user_agent|default('', true) }}">
+                {% for subtitle in link.subtitles %}
+                    <div class="subtitle-item" data-name="{{ subtitle.name }}" data-url="{{ subtitle.url }}"></div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Seçim Modalı (Altyazı / Ses) -->
+    <div id="selection-modal" class="subtitle-modal" style="display: none;">
+        <div class="subtitle-modal-backdrop"></div>
+        <div class="subtitle-modal-content">
+            <div class="subtitle-modal-header">
+                <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span>Seçim Yapın</span></h3>
+                <button class="subtitle-modal-close" id="selection-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="subtitle-modal-body" id="selection-list">
+                <!-- Seçenekler buraya dinamik olarak eklenecek -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="module" src="{{ url_for('static_home', path='JS/player.min.js') }}" defer crossorigin="anonymous"></script>
+{% endblock %}

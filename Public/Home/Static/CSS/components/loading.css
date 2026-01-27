@@ -1,0 +1,101 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* ==================== LOADING & ANÍMASYONLAR ==================== */
+
+/* Spinner - Çift Halka (Dual Ring) - Varsayılan */
+.wp-spinner {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  display: inline-block;
+}
+
+.wp-spinner::before,
+.wp-spinner::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  animation: wp-spin 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.wp-spinner::before {
+  inset: 0;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary-color);
+  z-index: 1;
+}
+
+.wp-spinner::after {
+  inset: 12px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--secondary-color);
+  animation-duration: 2.5s;
+  animation-direction: reverse;
+}
+
+/* Player Loading Overlay */
+.player-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(17, 17, 24, 0.95));
+  z-index: 2000; /* Tüm kontrollerin üstünde olmalı */
+  flex-direction: column;
+}
+
+.player-message {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Loading Card (Search Results) */
+.loading-card {
+  background-color: var(--card-bg-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  text-align: center;
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  min-height: 150px;
+  transition: all 0.3s ease;
+}
+
+/* Small Spinner (Search Status etc) */
+.wp-spinner-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.wp-spinner-sm::before,
+.wp-spinner-sm::after {
+  border-width: 2px;
+}
+
+.wp-spinner-sm::after {
+  inset: 4px;
+}

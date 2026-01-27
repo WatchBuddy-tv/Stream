@@ -1,0 +1,26 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* ==================== MODÜLER CSS YAPISI ==================== */
+
+/* Base Styles - Temel Stiller */
+@import url('./base/variables.min.css');
+@import url('./base/reset.min.css');
+@import url('./base/layout.min.css');
+
+/* Components - Bileşenler */
+@import url('./components/header.min.css');
+@import url('./components/footer.min.css');
+@import url('./components/breadcrumbs.min.css');
+@import url('./components/card.min.css');
+@import url('./components/button.min.css');
+@import url('./components/search.min.css');
+@import url('./components/loading.min.css');
+@import url('./components/badge.min.css');
+@import url('./components/modal.min.css');
+
+/* Pages - Sayfa Stilleri */
+@import url('./pages/detail.min.css');
+@import url('./pages/player.min.css');
+
+/* Responsive - Duyarlı Tasarım */
+@import url('./base/responsive.min.css');

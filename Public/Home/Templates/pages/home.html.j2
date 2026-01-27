@@ -1,0 +1,102 @@
+{% extends "_html_taban.html.j2" %}
+{% block breadcrumbs %}{% endblock %}
+
+{% block icerik %}
+
+<!-- Global Arama -->
+<div class="search-container">
+    <div class="search-form">
+        <input 
+            type="text" 
+            id="global-search-input" 
+            class="search-input" 
+            placeholder="Tüm eklentilerde ara..." 
+            autocomplete="off"
+        >
+        <button type="button" id="global-search-button" class="search-button">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Arama Sonuçları -->
+<section id="search-results" class="search-results" style="display: none;">
+    <div class="detail-container">
+        <div class="detail-header">
+            <h2 class="detail-title">
+                <i class="fas fa-search"></i> Arama Sonuçları: <span id="search-query-display"></span>
+            </h2>
+            <button id="clear-search" class="button button-secondary">
+                <i class="fas fa-times"></i> Aramayı Temizle
+            </button>
+        </div>
+        
+        <!-- Plugin Filtreleri -->
+        <div id="plugin-filters" class="plugin-filters" style="display: none;">
+            <div class="filters-header">
+                <h3 class="filters-title">
+                    <i class="fas fa-filter"></i> Sağlayıcılar
+                </h3>
+                <button id="clear-filters" class="button button-small button-secondary" aria-label="Tüm filtreleri temizle">
+                    <i class="fas fa-times"></i> Filtreleri Temizle
+                </button>
+            </div>
+            <div id="filters-container" class="filters-container"></div>
+        </div>
+
+        <div id="search-status" class="search-status"></div>
+        <div id="results-grid" class="grid"></div>
+    </div>
+</section>
+
+<!-- Eklenti Listesi -->
+<section id="plugins-list">
+    <h2 class="section-title">
+        <i class="fas fa-plug"></i> Tüm Eklentiler
+    </h2>
+    
+    <div class="grid">
+        {% for plugin in plugins %}
+            <div class="card">
+                <div class="card-content">
+
+                    <div class="card-header">
+                        {% if plugin.favicon %}
+                            <img src="{{ plugin.favicon }}" alt="{{ plugin.name }}" class="plugin-favicon">
+                        {% else %}
+                            <i class="fas fa-film plugin-icon"></i>
+                        {% endif %}
+
+                        <h3 class="card-title">
+                            {{ plugin.name }}
+                            <hr>
+                            <small>Dil: {{ plugin.language }}</small>
+                        </h3>
+                    </div>
+
+                    <p class="card-text">{{ plugin.description }}</p>
+                    <p class="card-text"></p>
+
+                    <div class="card-actions">
+                        <a href="{{ plugin.main_url }}" target="_blank" class="button button-secondary">
+                            <i class="fas fa-external-link-alt"></i> Site
+                        </a>
+                        <a href="/eklenti/{{ plugin.name }}" class="button">
+                            <i class="fas fa-eye"></i> Detay
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        window.availablePlugins = {{ plugins | tojson | safe }};
+    </script>
+    <script type="module" src="{{ url_for('static_home', path='JS/global-search.min.js') }}" defer crossorigin="anonymous"></script>
+{% endblock %}

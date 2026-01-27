@@ -1,0 +1,842 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* ==================== VİDEO OYNATICI SAYFASI ==================== */
+
+/* Player Container */
+#video-player-container {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background-color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 100%;
+}
+
+#video-player-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* Modern aspect ratio */
+  background-color: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fallback for browsers that don't support aspect-ratio */
+@supports not (aspect-ratio: 16/9) {
+  #video-player-wrapper {
+    padding-top: 56.25%;
+  }
+  #video-player-wrapper #video-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+#video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  outline: none;
+}
+
+/* Native Kontrolleri Tamamen Gizle */
+#video-player::-webkit-media-controls,
+#video-player::-webkit-media-controls-enclosure,
+#video-player::-webkit-media-controls-panel,
+#video-player::-webkit-media-controls-play-button,
+#video-player::-webkit-media-controls-timeline,
+#video-player::-webkit-media-controls-current-time-display,
+#video-player::-webkit-media-controls-time-remaining-display,
+#video-player::-webkit-media-controls-mute-button,
+#video-player::-webkit-media-controls-volume-slider,
+#video-player::-webkit-media-controls-loading-indicator {
+  display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Firefox için native kontrolleri ve altyazıları gizle */
+#video-player::-moz-media-controls {
+  display: none !important;
+}
+
+/* Firefox native altyazılarını gizle (bizim custom overlay kullanılacak) */
+video::cue {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Player Controls Section */
+.player-controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Player Header */
+.player-header {
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-sm);
+}
+
+.player-title {
+  font-size: var(--font-size-xl);
+  color: var(--primary-color);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Source Selection */
+.source-selection h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-md);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.source-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+/* Default state (Inactive) */
+.source-list .button {
+  min-width: auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  background-color: var(--card-bg-color);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+.source-list .button:hover {
+  background-color: var(--card-bg-hover);
+  color: var(--text-color);
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+}
+
+/* Active state */
+.source-list .button.active {
+  background-color: var(--primary-color);
+  color: var(--background-color); /* Dark text on orange background for contrast */
+  border-color: var(--primary-color);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.4); /* Matches button.css hover shadow */
+}
+
+/* Control Buttons */
+.control-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.control-buttons .button {
+  flex: 1;
+}
+
+/* Diagnostics Panel */
+#diagnostics-panel {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background-color: var(--background-alt);
+  border-radius: var(--border-radius);
+  display: none;
+  border: 1px solid var(--border-light);
+}
+
+.diagnostics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.diagnostics-header h3 {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--text-muted);
+}
+
+.diagnostics-toolbar {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.button-diagnostic {
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  min-height: 24px !important;
+  min-width: auto !important;
+  line-height: 1 !important;
+}
+
+#diagnostics-log {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+  background-color: var(--background-color);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Log Entry Styles */
+.log-entry { border-bottom: 1px solid var(--border-light); padding: 4px 0; overflow-y: hidden; }
+.log-entry-header { display: flex; gap: 8px; margin-bottom: 2px; }
+.log-entry-time { color: var(--text-muted); font-size: 11px; }
+.log-entry-info { color: var(--info-color, #3498db); font-weight: bold; }
+.log-entry-warn { color: var(--warning-color, #f1c40f); font-weight: bold; }
+.log-entry-error { color: var(--error-color, #e74c3c); font-weight: bold; }
+.log-entry-message { color: var(--text-color); }
+.log-entry-data { margin-left: 20px; font-size: 11px; color: var(--text-muted); }
+
+/* Mobile: Control buttons in single row */
+@media (max-width: 767px) {
+  .control-buttons {
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Safety for very small screens */
+  }
+  
+  .control-buttons .button {
+    flex: 1;
+    white-space: nowrap;
+    min-width: auto; /* Allow shrinking if needed */
+    padding-left: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
+  }
+}
+
+/* Desktop: Source selection inline */
+@media (min-width: 768px) {
+  .source-selection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+  }
+
+  .source-selection h3 {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+}
+
+/* Video element helper class */
+.video-player-el {
+  cursor: pointer;
+}
+
+/* Buffering State */
+#loading-overlay.is-buffering {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(2px);
+  z-index: 5; /* Kontrollerin altında */
+}
+
+/* Fullscreen container - NUCLEAR FIX for sliding down */
+#video-player-wrapper:fullscreen,
+#video-player-wrapper:-webkit-full-screen,
+#video-player-wrapper:-moz-full-screen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  aspect-ratio: auto !important;
+  background: #000 !important;
+  z-index: 2147483647 !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+}
+
+/* Fullscreen video - Force center */
+#video-player-wrapper:fullscreen #video-player,
+#video-player-wrapper:-webkit-full-screen #video-player,
+#video-player-wrapper:-moz-full-screen #video-player {
+  grid-area: 1 / 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  margin: auto !important;
+  position: relative !important;
+  z-index: 1 !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+/* Fullscreen controls overlay */
+#video-player-wrapper:fullscreen .video-controls-overlay,
+#video-player-wrapper:-webkit-full-screen .video-controls-overlay,
+#video-player-wrapper:-moz-full-screen .video-controls-overlay {
+  grid-area: 1 / 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  z-index: 10 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  background: transparent !important;
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
+  /* Başlangıçta gizli tut, show-controls gelince aç */
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease !important;
+}
+
+/* Ensure visibility in Fullscreen */
+#video-player-wrapper:fullscreen.show-controls .video-controls-overlay,
+#video-player-wrapper:-webkit-full-screen.show-controls .video-controls-overlay,
+#video-player-wrapper:-moz-full-screen.show-controls .video-controls-overlay {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Fullscreen custom subtitle overlay */
+#video-player-wrapper:fullscreen .custom-subtitle-overlay,
+#video-player-wrapper:-webkit-full-screen .custom-subtitle-overlay,
+#video-player-wrapper:-moz-full-screen .custom-subtitle-overlay {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 60px !important;
+  z-index: 5 !important;
+}
+
+#video-player-wrapper:fullscreen.show-controls .custom-subtitle-overlay,
+#video-player-wrapper:-webkit-full-screen.show-controls .custom-subtitle-overlay,
+#video-player-wrapper:-moz-full-screen.show-controls .custom-subtitle-overlay {
+  bottom: 120px !important;
+}
+
+/* ========================================
+   Subtitles (CC) Styling
+   ======================================== */
+::cue {
+  background: rgba(0, 0, 0, 0.2) !important;
+  color: #ffff00 !important;
+  text-shadow: 
+      -1.5px -1.5px 0 #000, 
+       1.5px -1.5px 0 #000, 
+      -1.5px  1.5px 0 #000, 
+       1.5px  1.5px 0 #000,
+       0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+/* Alt yazı pozisyonu - Normal */
+video::-webkit-media-text-track-container {
+  transform: translateY(-10px) !important;
+  transition: transform 0.3s ease !important;
+}
+
+/* Alt yazı pozisyonu - Kontroller açıkken */
+#video-player-wrapper.show-controls video::-webkit-media-text-track-container {
+  transform: translateY(-70px) !important;
+}
+
+/* Mobil için daha az kaydır */
+@media (max-width: 768px) {
+  #video-player-wrapper.show-controls video::-webkit-media-text-track-container {
+    transform: translateY(-45px) !important;
+  }
+}
+
+/* Firefox Custom Subtitle Overlay */
+.custom-subtitle-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 25; /* Gradient overlay'in (20) üzerinde kalsın diye artırıldı */
+  transition: bottom 0.3s ease;
+  padding: 0 10%;
+}
+
+.custom-subtitle-overlay:empty {
+  display: none;
+}
+
+.custom-subtitle-overlay span {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffff00;
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding: 0.2em 0.8em;
+  border-radius: 8px;
+  text-shadow: 
+    -1.5px -1.5px 0 #000, 
+     1.5px -1.5px 0 #000, 
+    -1.5px  1.5px 0 #000, 
+     1.5px  1.5px 0 #000,
+     0 2px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1.4;
+  max-width: 90%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  backdrop-filter: blur(1px);
+}
+
+/* Kontroller açıkken yukarı kaydır */
+#video-player-wrapper.show-controls .custom-subtitle-overlay {
+  bottom: clamp(60px, 15%, 100px);
+}
+
+@media (max-width: 768px) {
+  .custom-subtitle-overlay {
+    bottom: 30px;
+    padding: 0 5%;
+  }
+  
+  .custom-subtitle-overlay span {
+    font-size: 1rem;
+    padding: 0.3em 0.6em;
+  }
+  
+  #video-player-wrapper.show-controls .custom-subtitle-overlay {
+    bottom: clamp(50px, 12%, 80px);
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-subtitle-overlay span {
+    font-size: 0.85rem;
+  }
+}
+
+/* Base Controls Overlay */
+.video-controls-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.4) 100%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+  pointer-events: none;
+  user-select: none;
+}
+
+#video-player-wrapper.show-controls .video-controls-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Hover effect removed to support auto-hide */
+
+
+
+/* Bottom Bar */
+.bottom-controls {
+  padding: 0 1.5rem 1rem 1.5rem;
+  width: 100%;
+}
+
+/* Progress Slider */
+.progress-container {
+    height: 20px; /* Geniş tıklama alanı */
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    touch-action: none;
+}
+
+/* Track (Görünür Çubuk Arka Planı) */
+.progress-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    transition: height 0.2s ease;
+}
+
+.progress-container:hover::before {
+    height: 6px;
+}
+
+.progress-bar-fill {
+    height: 4px;
+    background: var(--primary-color);
+    width: 0%;
+    position: relative;
+    border-radius: 2px;
+    z-index: 2;
+    pointer-events: none;
+    transition: height 0.2s ease;
+}
+
+.progress-container:hover .progress-bar-fill {
+    height: 6px;
+}
+
+.progress-handle {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+.progress-container:hover .progress-handle {
+  transform: translateY(-50%) scale(1);
+}
+
+/* Control Row */
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.ctrl-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.ctrl-btn:hover,
+.ctrl-btn.active {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+/* Volume control (Netflix Style) */
+.volume-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: auto;
+  transition: all 0.3s ease;
+}
+
+.volume-slider {
+  width: 0;
+  opacity: 0;
+  visibility: hidden;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  height: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.volume-group:hover .volume-slider,
+.volume-group:focus-within .volume-slider,
+.volume-group.show-slider .volume-slider {
+  width: 80px;
+  opacity: 1;
+  visibility: visible;
+  margin-left: 0.75rem;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Time Display */
+.time-display {
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  margin-left: 0.5rem;
+}
+
+/* Animations */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+.action-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  z-index: 30;
+  display: none;
+}
+
+.action-animation.active {
+  display: block;
+  animation: fadeInOut 0.6s ease-out forwards;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .center-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
+  
+  .bottom-controls {
+    padding: 0 1rem 0.75rem 1rem;
+  }
+
+  .control-group {
+    gap: 0.75rem;
+  }
+
+  .ctrl-btn {
+    font-size: 1.1rem;
+    padding: 4px;
+  }
+
+  .action-animation {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .volume-group {
+    display: none !important;
+  }
+
+  .center-controls {
+    gap: 1rem;
+  }
+
+  .center-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .time-display {
+    font-size: 0.75rem;
+  }
+
+
+}
+
+@media (max-width: 480px) {
+  .control-group {
+    gap: 0.5rem;
+  }
+
+  .ctrl-btn {
+    font-size: 1rem;
+  }
+
+  #custom-backward, #custom-forward {
+    display: none;
+  }
+
+  .time-display {
+    font-size: 0.7rem;
+  }
+}
+
+/* ========================================
+   Altyazı Seçim Modalı
+   ======================================== */
+
+.subtitle-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.subtitle-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.subtitle-modal-content {
+  position: relative;
+  background: var(--card-bg-color);
+  border-radius: var(--border-radius);
+  min-width: 320px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: modalSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.subtitle-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+  background: linear-gradient(to right, var(--primary-color-10), transparent);
+}
+
+.subtitle-modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.subtitle-modal-header h3 i {
+  color: var(--primary-color);
+}
+
+.subtitle-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subtitle-modal-close:hover {
+  color: var(--error-color);
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.subtitle-modal-body {
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.subtitle-item-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--background-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  text-align: left;
+  color: var(--text-color);
+  font-size: var(--font-size-base);
+  content-visibility: auto;
+  contain-intrinsic-size: 0 50px; /* Tahmini yükseklik */
+}
+
+.subtitle-item-btn:hover {
+  background: var(--primary-color-10);
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.subtitle-item-btn i {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+
+.subtitle-item-btn span {
+  flex: 1;
+  font-weight: 500;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 480px) {
+  .subtitle-modal-content {
+    min-width: auto;
+    width: calc(100% - 2rem);
+    margin: 1rem;
+  }
+}

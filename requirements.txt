@@ -1,0 +1,16 @@
+Kekik
+httpx[http2]
+fastapi
+uvicorn
+uvloop; platform_system != "Windows"
+httptools
+gunicorn
+user_agents
+PyYAML
+Jinja2
+python-multipart
+python-dotenv
+pymongo
+csscompressor
+rjsmin
+KekikStream>=2.5.0
