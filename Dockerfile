@@ -10,8 +10,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # * Çalışma Alanı
-WORKDIR /usr/src/KekikStreamAPI
-COPY ./ /usr/src/KekikStreamAPI
+WORKDIR /usr/src/Stream
+COPY ./ /usr/src/Stream
 
 # * Locales kurulumu ve TR locale üretimi
 RUN apt-get update -y && \

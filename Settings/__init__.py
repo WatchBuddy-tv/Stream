@@ -17,3 +17,15 @@ with open("AYAR.yml", "r", encoding="utf-8") as yaml_dosyasi:
 PROJE = AYAR["PROJE"]
 HOST  = AYAR["APP"]["HOST"]
 PORT  = AYAR["APP"]["PORT"]
+
+# Proxy ayarları
+http_proxy  = os.getenv("HTTP_PROXY", None)
+https_proxy = os.getenv("HTTPS_PROXY", None)
+
+if http_proxy and https_proxy:
+    PROXIES = {
+        "http"  : http_proxy,
+        "https" : https_proxy,
+    }
+else:
+    PROXIES = None
