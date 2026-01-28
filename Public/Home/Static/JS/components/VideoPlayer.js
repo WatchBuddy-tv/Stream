@@ -966,6 +966,7 @@ export default class VideoPlayer {
                     subtitleSelectBtn.id = 'subtitle-select-btn';
                     subtitleSelectBtn.className = 'button button-secondary';
                     subtitleSelectBtn.style.marginLeft = 'auto'; // Sağa yasla
+                    subtitleSelectBtn.style.marginTop = 'var(--spacing-sm)';
                     
                     // Kaynak listesinin yanına ekle
                     const sourceSelection = document.querySelector('.source-selection');
@@ -1329,6 +1330,13 @@ export default class VideoPlayer {
      */
     setupSelectionModal() {
         if (!this.selectionModal) return;
+
+        // Pencere boyutu değişince kapat (Responsive güvenliği)
+        window.addEventListener('resize', () => {
+            if (this.selectionModal.style.display !== 'none') {
+                this.hideSelectionModal();
+            }
+        });
 
         // ESC tuşu ile kapat
         document.addEventListener('keydown', (e) => {
