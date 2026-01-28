@@ -1,7 +1,7 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from Core    import Request
 from fastapi import APIRouter
+from Core    import Request
 
 proxy_router         = APIRouter(prefix="/proxy")
 proxy_global_message = {
@@ -12,6 +12,4 @@ proxy_global_message = {
 async def get_proxy_router(request: Request):
     return proxy_global_message
 
-
-# ! ----------------------------------------» Routers
-from . import subtitle
+from . import video, subtitle

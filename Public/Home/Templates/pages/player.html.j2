@@ -137,7 +137,9 @@
         <pre id="diagnostics-log"></pre>
     </div>
 
-    <div id="video-links-data" style="display: none;">
+    <div id="video-links-data" style="display: none;" 
+         data-proxy-url="{{ proxy_url|default('', true) }}" 
+         data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}">
         {% for link in links %}
             <div class="video-link-item" data-name="{{ link.name }}" data-url="{{ link.url }}" data-referer="{{ link.referer|default('', true) }}" data-user-agent="{{ link.user_agent|default('', true) }}">
                 {% for subtitle in link.subtitles %}

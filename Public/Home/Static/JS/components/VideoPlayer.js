@@ -1,13 +1,27 @@
 // Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-import VideoLogger from './VideoLogger.min.js';
-import { detectGoServices, buildProxyUrl as buildServiceProxyUrl } from '../service-detector.min.js';
+import { buildProxyUrl as buildServiceProxyUrl } from '../service-detector.min.js';
 import { detectFormat, parseRemoteUrl, createHlsConfig, suggestInitialMode, ProxyMode } from '../video-utils.min.js';
+import BuddyLogger from '../utils/BuddyLogger.min.js';
 
 export default class VideoPlayer {
     constructor() {
-        // Logger oluştur (debug modu açık)
-        this.logger = new VideoLogger(true);
+        // BuddyLogger'ı başlat ve ata
+        this.logger = new BuddyLogger(true);
+
+        // --- Console Welcome Message ---
+        BuddyLogger.info(
+            '📺',
+            'PROVIDER-READY',
+            'Detected Configuration:',
+            {
+                'Provider Name': document.body.dataset.providerName || 'Unknown',
+                'Base URL':      window.location.origin,
+                'Proxy URL':     document.body.dataset.proxyUrl || 'N/A',
+                'Fallback URL':  document.body.dataset.proxyFallbackUrl || 'N/A'
+            }
+        );
+        // ----------------------------------------
 
         // Global değişkenler (sınıf özellikleri olarak)
         this.currentHls = null;
@@ -34,15 +48,13 @@ export default class VideoPlayer {
         this.init();
     }
 
-    // Proxy URL oluşturucu (Go/Python fallback destekli)
+    // Proxy URL oluşturucu (yalnızca provider proxy)
     buildProxyUrl(url, userAgent = '', referer = '', endpoint = 'video') {
-        return buildServiceProxyUrl(url, userAgent, referer, endpoint);
+        const proxyBase = this.proxyUrl || this.proxyFallbackUrl;
+        return buildServiceProxyUrl(url, userAgent, referer, endpoint, proxyBase);
     }
 
     async init() {
-        // Go servislerini tespit et (fallback için)
-        await detectGoServices();
-        
         this.setupDiagnostics();
         this.collectVideoLinks();
         this.renderVideoLinks();
@@ -380,7 +392,7 @@ export default class VideoPlayer {
                         }
                     }
                 } catch (e) {
-                    this.logger.error("Tam ekran hatası", e.message);
+                    this.logger.error('🖥️', 'PLAYER', 'Fullscreen Error', { 'Details': e.message });
                 }
             }
         });
@@ -635,7 +647,7 @@ export default class VideoPlayer {
             // Logları temizle
             document.getElementById('clear-logs').addEventListener('click', () => {
                 this.logger.clear();
-                this.logger.info('Loglar temizlendi');
+                this.logger.info('🧹', 'SYSTEM', 'Logs Cleared');
             });
 
             // Logları kopyala
@@ -646,10 +658,10 @@ export default class VideoPlayer {
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(logText)
                         .then(() => {
-                            this.logger.info('Loglar panoya kopyalandı');
+                            this.logger.info('📋', 'SYSTEM', 'Logs Copied to Clipboard');
                         })
                         .catch(err => {
-                            this.logger.error('Kopyalama hatası', err.message);
+                            this.logger.error('❌', 'SYSTEM', 'Clipboard Error', { 'Details': err.message });
                         });
                 } else {
                     // Fallback: execCommand kullan (HTTP için)
@@ -662,9 +674,9 @@ export default class VideoPlayer {
                         textArea.select();
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
-                        this.logger.info('Loglar panoya kopyalandı');
+                        this.logger.info('📋', 'SYSTEM', 'Logs Copied to Clipboard');
                     } catch (err) {
-                        this.logger.error('Kopyalama hatası', err.message);
+                        this.logger.error('❌', 'SYSTEM', 'Clipboard Error', { 'Details': err.message });
                     }
                 }
             });
@@ -683,13 +695,17 @@ export default class VideoPlayer {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                 }, 100);
-                this.logger.info('Loglar indirildi');
+                this.logger.info('💾', 'SYSTEM', 'Logs Downloaded');
             });
         }
     }
 
     collectVideoLinks() {
-        this.logger.info('Video linkleri toplanıyor');
+        this.logger.info('🔍', 'FETCHER', 'Link Extraction Started');
+        const container = document.getElementById('video-links-data');
+        this.proxyUrl = container?.dataset.proxyUrl;
+        this.proxyFallbackUrl = container?.dataset.proxyFallbackUrl;
+
         const videoLinks = Array.from(document.querySelectorAll('.video-link-item'));
         this.videoData = videoLinks.map(link => {
             // Altyazıları topla
@@ -709,7 +725,7 @@ export default class VideoPlayer {
             };
         });
 
-        this.logger.info(`${this.videoData.length} video kaynağı bulundu`);
+        this.logger.info('✅', 'FETCHER', 'Links Found', { 'Count': this.videoData.length });
     }
 
     renderVideoLinks() {
@@ -731,7 +747,7 @@ export default class VideoPlayer {
             try {
                 this.currentHls.destroy();
             } catch (e) {
-                this.logger.error('HLS destroy hatası', e.message);
+                this.logger.error('❌', 'HLS', 'Destroy Error', { 'Details': e.message });
             }
             this.currentHls = null;
         }
@@ -754,11 +770,11 @@ export default class VideoPlayer {
     }
 
     onVideoLoaded() {
-        this.logger.info('Video metadata yüklendi');
+        this.logger.info('🎬', 'PLAYER', 'Metadata Loaded');
     }
 
     onVideoCanPlay() {
-        this.logger.info('Video oynatılabilir');
+        this.logger.info('▶️', 'PLAYER', 'Can Play Now');
         this.loadingOverlay.style.display = 'none';
 
         // Timeout'u temizle
@@ -770,7 +786,7 @@ export default class VideoPlayer {
         // Video oynatmayı dene
         if (this.videoPlayer.paused) {
             this.videoPlayer.play().catch(e => {
-                this.logger.warn('Video otomatik başlatılamadı', e.message);
+                this.logger.warn('⚠️', 'PLAYER', 'Autoplay Blocked', { 'Details': e.message });
             });
         }
     }
@@ -789,7 +805,7 @@ export default class VideoPlayer {
         let errorDetails = 'Bilinmeyen hata';
 
         if (error) {
-            this.logger.error(`Video hatası: ${error.code}`, error);
+            this.logger.error('❌', 'PLAYER', `Physical Error: ${error.code}`, { 'Code': error.code });
 
             switch (error.code) {
                 case MediaError.MEDIA_ERR_ABORTED:
@@ -825,14 +841,14 @@ export default class VideoPlayer {
 
         // Video yükleniyor
         if (this.isLoadingVideo) {
-            this.logger.info('Zaten bir video yükleniyor, lütfen bekleyin');
+            this.logger.info('⏳', 'PLAYER', 'Loading Already in Progress');
             return;
         }
 
         this.isLoadingVideo = true;
         this.currentVideoIndex = index;
         this.selectedSubtitleUrl = null; // Yeni video için altyazı seçimini sıfırla
-        this.logger.info(`Video yükleniyor: ${index}`, this.videoData[index]);
+        this.logger.info('📽️', 'PLAYER', `Loading Video: ${index}`, { 'Name': this.videoData[index].name });
 
         // Önceki kaynakları temizle
         this.cleanup();
@@ -846,7 +862,7 @@ export default class VideoPlayer {
         this.loadingTimeout = setTimeout(() => {
             if (this.loadingOverlay.style.display === 'flex') {
                 this.loadingOverlay.style.display = 'none';
-                this.logger.error('Video yükleme zaman aşımı');
+                this.logger.error('❌', 'PLAYER', 'Loading Timeout (45s)');
 
                 const errorEl = document.createElement('div');
                 errorEl.className = 'error-message';
@@ -869,7 +885,7 @@ export default class VideoPlayer {
         const onError = () => this.onVideoError();
         const onWaiting = () => {
             if (this.loadingOverlay) this.loadingOverlay.style.display = 'flex';
-            this.logger.info('Video tamponlanıyor...');
+            this.logger.info('⌛', 'PLAYER', 'Buffering...');
         };
         const onPlaying = () => {
             if (this.loadingOverlay) this.loadingOverlay.style.display = 'none';
@@ -904,18 +920,18 @@ export default class VideoPlayer {
         // Proxy URL'i oluştur (Go/Python fallback destekli)
         let proxyUrl = this.buildProxyUrl(originalUrl, userAgent, referer, 'video');
 
-        this.logger.info('Proxy URL oluşturuldu', proxyUrl);
+        this.logger.info('🔌', 'PROXY', 'Generated URL', { 'Url': proxyUrl });
 
 
         // Video formatını proxy'den Content-Type ile belirle
-        this.logger.info('Video formatı tespit ediliyor (Content-Type sorgulanıyor)...');
+        this.logger.info('🔎', 'FETCHER', 'Detecting Format (HEAD Request)');
         
         fetch(proxyUrl, { method: 'HEAD' })
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
                 
                 const contentType = response.headers.get('content-type') || '';
-                this.logger.info(`Content-Type: ${contentType}`);
+                this.logger.info('📄', 'FETCHER', 'Content-Type Received', { 'Type': contentType });
                 
                 // HLS formats
                 const isHLS = contentType.includes('mpegurl') || contentType.includes('x-mpegurl');
@@ -937,7 +953,7 @@ export default class VideoPlayer {
                 }
             })
             .catch(error => {
-                this.logger.warn('Format tespiti başarısız veya 403 alındı, URL pattern ile tahmin ediliyor', error.message);
+                this.logger.warn('⚠️', 'FETCHER', 'HEAD Request Failed', { 'Details': error.message });
                 
                 // Fallback: URL pattern'den format tespiti
                 const urlFormat = detectFormat(originalUrl);
@@ -951,7 +967,7 @@ export default class VideoPlayer {
         // Altyazıları ekle
         const ccBtn = document.getElementById('custom-cc');
         if (selectedVideo.subtitles && selectedVideo.subtitles.length > 0) {
-            this.logger.info(`${selectedVideo.subtitles.length} altyazı bulundu`);
+            this.logger.info('💬', 'SUBTITLE', 'Subtitles Loaded', { 'Count': selectedVideo.subtitles.length });
             if (ccBtn) {
                 ccBtn.style.display = 'flex';
                 ccBtn.classList.add('active');
@@ -1031,7 +1047,7 @@ export default class VideoPlayer {
 
                     // Error handling
                     track.onerror = () => {
-                        this.logger.error(`Altyazı yüklenemedi: ${subtitle.name}`);
+                        this.logger.error('❌', 'SUBTITLE', 'Load Failed', { 'Name': subtitle.name });
                         // Eğer başka başarılı track yoksa butonu gizleyelim
                         const activeTracks = Array.from(this.videoPlayer.textTracks).filter(t => t.mode !== 'disabled');
                         if (activeTracks.length === 0 && ccBtn) {
@@ -1047,14 +1063,14 @@ export default class VideoPlayer {
                         setTimeout(() => {
                             if (this.videoPlayer.textTracks && this.videoPlayer.textTracks[index]) {
                                 this.videoPlayer.textTracks[index].mode = 'showing';
-                                this.logger.info(`Altyazı otomatik açıldı: ${subtitle.name}`);
+                                this.logger.info('✅', 'SUBTITLE', 'Auto-activated', { 'Name': subtitle.name });
                             }
                         }, 200);
                     }
 
-                    this.logger.info(`Altyazı eklendi: ${subtitle.name}`);
+                    this.logger.info('➕', 'SUBTITLE', 'Added', { 'Name': subtitle.name });
                 } catch (error) {
-                    this.logger.error(`Altyazı eklenirken hata: ${subtitle.name}`, error.message);
+                    this.logger.error('❌', 'SUBTITLE', 'Addition Error', { 'Name': subtitle.name, 'Details': error.message });
                 }
             });
         } else if (ccBtn) {
@@ -1122,6 +1138,13 @@ export default class VideoPlayer {
         if (subtitleUrl) {
             wpParams.set('subtitle', subtitleUrl);
         }
+
+        if (this.proxyUrl) {
+            wpParams.set('proxy_url', this.proxyUrl);
+        }
+        if (this.proxyFallbackUrl) {
+            wpParams.set('proxy_fallback_url', this.proxyFallbackUrl);
+        }
         
         // Web Butonu guncelle
         if (watchPartyButton) {
@@ -1141,7 +1164,7 @@ export default class VideoPlayer {
             }
         }
 
-        this.logger.info(`WatchBuddy butonları güncellendi (Altyazı: ${subtitleUrl ? 'var' : 'yok'})`);
+        this.logger.info('🤝', 'UI', 'WatchBuddy Buttons Updated', { 'Subtitle': subtitleUrl ? 'Available' : 'None' });
     }
 
     /**
@@ -1151,7 +1174,7 @@ export default class VideoPlayer {
         const audioBtn = document.getElementById('custom-audio');
         
         if (hls.audioTracks && hls.audioTracks.length > 1) {
-            this.logger.info(`${hls.audioTracks.length} ses izi bulundu`);
+            this.logger.info('🔊', 'AUDIO', 'Audio Tracks Found', { 'Count': hls.audioTracks.length });
             
             if (audioBtn) {
                 audioBtn.style.display = 'block'; // Butonu göster
@@ -1172,10 +1195,10 @@ export default class VideoPlayer {
                             action: () => {
                                 try {
                                     hls.audioTrack = index;
-                                    this.logger.info(`Ses değiştirildi: ${track.name || index}`);
+                                    this.logger.info('🔊', 'AUDIO', 'Track Changed', { 'Target': track.name || index });
                                     this.hideSelectionModal();
                                 } catch(e) {
-                                    this.logger.error('Ses değiştirme hatası', e);
+                                    this.logger.error('❌', 'AUDIO', 'Change Error', { 'Details': e.message });
                                 }
                             }
                         })),
@@ -1191,7 +1214,7 @@ export default class VideoPlayer {
     }
 
     loadHLSVideo(originalUrl, referer, userAgent, useProxy = false) {
-        this.logger.info(`HLS yükleniyor: ${useProxy ? 'proxy (forced)' : 'smart-proxy'}`);
+        this.logger.info('🚀', 'HLS', 'Starting HLS.js', { 'Mode': useProxy ? 'Forced Proxy' : 'Smart' });
         this.retryCount = 0;
         
         // Uzak sunucunun origin'ini al (absolute path'leri çözümlemek için)
@@ -1205,7 +1228,7 @@ export default class VideoPlayer {
                 // HLS.js yapılandırması
                 const initialMode = useProxy ? ProxyMode.FULL : (window.PROXY_ENABLED === false ? ProxyMode.NONE : suggestInitialMode(originalUrl));
                 this.currentProxyMode = initialMode; // video-utils xhrSetup bunu okuyacak
-                this.logger.info(`Belirlenen başlangıç proxy modu: ${initialMode}`);
+                this.logger.info('⚙️', 'HLS', 'Initial Proxy Mode', { 'Mode': initialMode });
 
                 const hlsConfig = createHlsConfig(userAgent, referer, this, initialMode);
                 const hls = new Hls(hlsConfig);
@@ -1214,16 +1237,16 @@ export default class VideoPlayer {
                 // HLS hata olaylarını dinle
                 hls.on(Hls.Events.ERROR, (event, data) => {
                     if (data.fatal) {
-                        this.logger.error('HLS fatal hata', data.details);
+                        this.logger.error('❌', 'HLS', 'Fatal Error', { 'Details': data.details });
                         
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
                                 this.retryCount++;
                                 if (this.retryCount <= 2) {
-                                    this.logger.info(`Ağ hatası, yeniden deneniyor (${this.retryCount}/2)...`);
+                                    this.logger.info('🔄', 'HLS', `Retrying Network Error (${this.retryCount}/2)`);
                                     hls.startLoad();
                                 } else if (!useProxy && window.PROXY_ENABLED !== false) {
-                                    this.logger.warn('Ağ hatası devam ediyor, PROXY moduna geçiliyor...');
+                                    this.logger.warn('🛡️', 'HLS', 'Network Issues, escalating to Proxy Mode...');
                                     this.cleanup();
                                     this.loadHLSVideo(originalUrl, referer, userAgent, true);
                                 } else {
@@ -1231,7 +1254,7 @@ export default class VideoPlayer {
                                 }
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
-                                this.logger.info('Medya hatası, kurtarılmaya çalışılıyor...');
+                                this.logger.info('🔧', 'HLS', 'Media Error, attempting recovery...');
                                 hls.recoverMediaError();
                                 break;
                             default:
@@ -1243,7 +1266,7 @@ export default class VideoPlayer {
                 });
 
                 hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                    this.logger.info('HLS manifest başarıyla analiz edildi');
+                    this.logger.info('✅', 'HLS', 'Manifest Parsed Successfully');
                     this.retryCount = 0;
                     
                     // Ses izlerini kontrol et
@@ -1257,59 +1280,59 @@ export default class VideoPlayer {
 
                 // Manifest kaynağını belirle
                 const loadUrl = useProxy ? buildServiceProxyUrl(originalUrl, userAgent, referer, 'video') : originalUrl;
-                this.logger.info(`HLS Kaynağı: ${useProxy ? 'Proxy' : 'Direct'}`, loadUrl);
+                this.logger.info('🔑', 'HLS', 'Final Resource URL', { 'Origin': useProxy ? 'Proxy' : 'Direct', 'Url': loadUrl });
                 
                 hls.loadSource(loadUrl);
                 hls.attachMedia(this.videoPlayer);
             } catch (error) {
-                this.logger.error('HLS yükleme hatası', error.message);
+                this.logger.error('❌', 'HLS', 'Startup Error', { 'Details': error.message });
                 this.onVideoError();
             }
         } else if (this.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
             // Native HLS desteği (Safari/iOS)
-            this.logger.info('Native HLS kullanılıyor');
+            this.logger.info('🍎', 'HLS', 'Native Engine Used');
             const loadUrl = buildServiceProxyUrl(originalUrl, userAgent, referer, 'video');
             this.videoPlayer.src = loadUrl;
             this.videoPlayer.load();
         } else {
-            this.logger.error('HLS desteklenmiyor');
+            this.logger.error('❌', 'HLS', 'Engine Not Supported');
             this.onVideoError();
         }
     }
 
     loadNormalVideo(proxyUrl, originalUrl) {
-        this.logger.info('Normal video formatı yükleniyor');
+        this.logger.info('🎬', 'PLAYER', 'Loading MP4/Generic Format');
 
         try {
             // MKV dosyaları için ek seçenekler
             if (originalUrl.includes('.mkv')) {
                 this.videoPlayer.setAttribute('type', 'video/x-matroska');
-                this.logger.info('MKV formatı tespit edildi');
+                this.logger.info('📦', 'PLAYER', 'MKV Format Forced');
             }
 
             this.videoPlayer.src = proxyUrl;
             this.videoPlayer.load(); // Bazı tarayıcılarda (Safari/Mobile) şart
         } catch (error) {
-            this.logger.error('Video yükleme hatası', error.message);
+            this.logger.error('❌', 'PLAYER', 'Load Error', { 'Details': error.message });
             this.onVideoError();
         }
     }
 
     loadHlsLibrary() {
-        this.logger.info('HLS.js yükleniyor');
+        this.logger.info('📦', 'SYSTEM', 'Loading HLS.js Library...');
         const hlsScript = document.createElement('script');
         hlsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js';
         hlsScript.onload = () => {
-            this.logger.info('HLS.js yüklendi');
+            this.logger.info('✅', 'SYSTEM', 'HLS.js Library Loaded');
             // Sayfa yüklendiğinde ilk videoyu yükle (HLS.js yüklendikten sonra)
             if (this.videoData.length > 0) {
                 this.loadVideo(0);
             } else {
-                this.logger.warn('Hiç video kaynağı bulunamadı');
+                this.logger.warn('⚠️', 'SYSTEM', 'No Video Sources Found');
             }
         };
         hlsScript.onerror = () => {
-            this.logger.error('HLS.js yüklenemedi');
+            this.logger.error('❌', 'SYSTEM', 'HLS.js Library Failed to Load');
             // Hata mesajını göster
             const errorEl = document.createElement('div');
             errorEl.className = 'error-message';
@@ -1321,7 +1344,7 @@ export default class VideoPlayer {
 
     setupGlobalErrorHandling() {
         this.videoPlayer.addEventListener('error', (e) => {
-            this.logger.error('Video Player genel hatası', e);
+            this.logger.error('❌', 'PLAYER', 'Global Video Error', { 'Details': e.message });
         });
     }
 
@@ -1483,7 +1506,7 @@ export default class VideoPlayer {
         if (!subtitle) {
             // Altyazı kapat
             this.selectedSubtitleUrl = null;
-            this.logger.info(`Altyazı kapatıldı`);
+            this.logger.info('🔇', 'SUBTITLE', 'Closed');
             tracks.forEach(track => track.mode = 'hidden');
             if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> Kapalı`;
             
@@ -1492,7 +1515,7 @@ export default class VideoPlayer {
         } else {
             // Altyazı aç/değiştir
             this.selectedSubtitleUrl = subtitle.url;
-            this.logger.info(`Altyazı değiştiriliyor: ${subtitle.name}`);
+            this.logger.info('💬', 'SUBTITLE', 'Switched', { 'Name': subtitle.name });
             
             tracks.forEach(track => {
                 if (track.label === subtitle.name) {

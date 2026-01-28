@@ -4,6 +4,7 @@ from Core import Request, HTMLResponse
 from .    import home_router, home_template
 
 from Public.API.v1.Libs import plugin_manager
+from Settings           import PROVIDER_NAME, PROXY_URL, PROXY_FALLBACK_URL
 
 @home_router.get("/izle/{eklenti_adi}", response_class=HTMLResponse)
 async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
@@ -32,12 +33,15 @@ async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
             })
 
         context = {
-            "request"     : request,
-            "title"       : baslik,
-            "description" : f"{baslik} izleme sayfası",
-            "eklenti_adi" : f"{eklenti_adi}",
-            "icerik_url"  : request.headers.get("referer").split("?url=")[1] if request.headers.get("referer") else None,
-            "links"       : links
+            "request"            : request,
+            "title"              : baslik,
+            "description"        : f"{baslik} izleme sayfası",
+            "eklenti_adi"        : f"{eklenti_adi}",
+            "icerik_url"         : request.headers.get("referer").split("?url=")[1] if request.headers.get("referer") else None,
+            "links"              : links,
+            "provider_name"      : PROVIDER_NAME,
+            "proxy_url"          : PROXY_URL or str(request.base_url).rstrip("/"),
+            "proxy_fallback_url" : PROXY_FALLBACK_URL
         }
 
         return home_template.TemplateResponse("pages/player.html.j2", context)

@@ -1,12 +1,13 @@
 // Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-import { getProxyBaseUrl, buildProxyUrl } from './service-detector.min.js';
+import { isProxyAvailable, buildProxyUrl, invalidateProxy } from './service-detector.min.js';
+import BuddyLogger from './utils/BuddyLogger.min.js';
 
 // Proxy Mode Enum (matching Flutter)
 export const ProxyMode = {
-    NONE: 'none',           // Direct CDN access
+    NONE: 'none',              // Direct CDN access
     MANIFEST_ONLY: 'manifest', // Only manifest through proxy
-    FULL: 'full'            // All requests through proxy
+    FULL: 'full'               // All requests through proxy
 };
 
 export const detectFormat = (url, format = null) => {
@@ -66,11 +67,27 @@ export const suggestInitialMode = (url) => {
     const matched = protectionParams.filter(p => lower.includes(p));
 
     if (matched.length > 0) {
-        console.log(`[Proxy] Match! Protected URL parameters found: ${matched.join(', ')}. Mode: MANIFEST_ONLY.`);
+        BuddyLogger.info(
+            '🛡️',
+            'PROXY SYSTEM', 
+            'Protected Content Detected', 
+            {
+                'Params': matched.join(', '),
+                'Mode': 'MANIFEST_ONLY'
+            }
+        );
         return ProxyMode.MANIFEST_ONLY;
     }
     
-    console.log(`[Proxy] No protection parameters detected. Mode: NONE (Direct).`);
+    BuddyLogger.info(
+        '🛡️',
+        'PROXY SYSTEM',
+        'Direct Access Available',
+        {
+            'Status': 'No Protection Only',
+            'Mode': 'NONE (Direct)'
+        }
+    );
     return ProxyMode.NONE;
 };
 
@@ -114,13 +131,37 @@ export const parseRemoteUrl = (url) => {
     return { origin: null, baseUrl: null };
 };
 
+// Resolve most suitable proxy base URL from provided options
+export const resolveProxyBase = (context) => {
+    // Stream'de context muhtemelen global window.PROXY_URL vb. olur veya parametre olarak gelmeli
+    // Şimdilik window.PROXY_URL ve window.PROXY_FALLBACK_URL değişkenlerine bakıyoruz (template'den gelen)
+    
+    // Context içinde proxyUrl varsa onu kullan (eğer sağlanmışsa)
+    if (context && context.proxyUrl && isProxyAvailable(context.proxyUrl)) {
+        return context.proxyUrl;
+    }
+    
+    // Yoksa global değişkenlere bak (Stream player.html.j2 içinde set ediliyor olabilir)
+    if (window.PROXY_URL && isProxyAvailable(window.PROXY_URL)) {
+        return window.PROXY_URL;
+    }
+    if (window.PROXY_FALLBACK_URL && isProxyAvailable(window.PROXY_FALLBACK_URL)) {
+        return window.PROXY_FALLBACK_URL;
+    }
+    
+    return null; // Direct connection
+};
+
 // Build proxy URL with mode support
-export const buildProxyUrlWithMode = (url, userAgent, referer, mode) => {
+export const buildProxyUrlWithMode = (url, userAgent, referer, mode, context = null) => {
     if (mode === ProxyMode.NONE) {
         return url;
     }
     
-    let proxyUrl = buildProxyUrl(url, userAgent, referer, 'video');
+    const proxyBase = resolveProxyBase(context || {});
+    if (!proxyBase) return url;
+
+    let proxyUrl = buildProxyUrl(url, userAgent, referer, 'video', proxyBase);
     
     // Add force_proxy for FULL mode
     if (mode === ProxyMode.FULL) {
@@ -132,7 +173,6 @@ export const buildProxyUrlWithMode = (url, userAgent, referer, mode) => {
 
 export const createHlsXhrSetup = (userAgent, referer, context, initialMode = ProxyMode.MANIFEST_ONLY) => {
     return (xhr, requestUrl) => {
-        const proxyOrigin = getProxyBaseUrl();
         const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u') || requestUrl.includes('master.txt');
         const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
         const isSegment = !isManifest && !isKey;
@@ -150,11 +190,14 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
             return;
         }
 
+        const proxyBase = resolveProxyBase(context);
+        if (!proxyBase) return; // Cannot proxy if no base URL available
+
         // 3. FULL mode - proxy everything including segments
         if (currentMode === ProxyMode.FULL && isSegment) {
-            const proxyUrl = buildProxyUrlWithMode(requestUrl, userAgent, referer, ProxyMode.FULL);
-            console.log(`[HLS Interceptor] Segment (FULL): ${requestUrl} -> Proxyed`);
-            xhr.open('GET', proxyUrl, true);
+            const finalUrl = buildProxyUrlWithMode(requestUrl, userAgent, referer, ProxyMode.FULL, context);
+            BuddyLogger.debug('🔌', 'HLS INTERCEPTOR', 'Segment Proxy (FULL)', { 'Original': requestUrl, 'Proxy': finalUrl });
+            xhr.open('GET', finalUrl, true);
             return;
         }
 
@@ -163,13 +206,13 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
             return; 
         }
         
-        // 5. Fix wrongly resolved paths
-        if (requestUrl.startsWith(proxyOrigin) && !requestUrl.includes('/proxy/')) {
-            const path = requestUrl.substring(proxyOrigin.length);
+        // 5. Fix wrongly resolved paths (relative to proxy instead of source origin)
+        if (proxyBase && requestUrl.startsWith(proxyBase) && !requestUrl.includes('/proxy/')) {
+            const path = requestUrl.substring(proxyBase.length);
             if (context.lastLoadedOrigin) {
                 const correctUrl = context.lastLoadedOrigin.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
-                console.log(`[HLS Interceptor] Fixing path: ${requestUrl} -> ${correctUrl}`);
-                xhr.open('GET', buildProxyUrl(correctUrl, userAgent, referer, 'video'), true);
+                BuddyLogger.debug('🔧', 'HLS INTERCEPTOR', 'Path Fix Applied', { 'Original': requestUrl, 'Corrected': correctUrl });
+                xhr.open('GET', buildProxyUrl(correctUrl, userAgent, referer, 'video', proxyBase), true);
                 return;
             }
         }
@@ -177,9 +220,9 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
         // 6. Manifests and Keys always through proxy
         try {
             if (isManifest || isKey) {
-                const proxyUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video');
-                console.log(`[HLS Interceptor] ${isManifest ? 'Manifest' : 'Key'}: ${requestUrl} -> Proxyed`);
-                xhr.open('GET', proxyUrl, true);
+                const finalUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video', proxyBase);
+                BuddyLogger.debug('🔑', 'HLS INTERCEPTOR', isManifest ? 'Manifest Intercepted' : 'Key Intercepted', { 'Url': requestUrl });
+                xhr.open('GET', finalUrl, true);
                 
                 if (requestUrl.startsWith('http')) {
                     context.lastLoadedBaseUrl = requestUrl.substring(0, requestUrl.lastIndexOf('/') + 1);
@@ -187,7 +230,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
                 }
             }
         } catch (e) {
-            console.error('HLS Proxy Error:', e);
+            BuddyLogger.error('❌', 'HLS INTERCEPTOR', 'Proxy Error', { 'Details': e.message });
         }
     };
 };
@@ -216,109 +259,133 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
             const originalOnError = callbacks.onError;
             const self = this;
             
-            callbacks.onError = (response, loaderContext, loader, stats) => {
-                const isDirectUrl = !loaderContext.url.includes('/proxy/video');
-                const isNetworkError = response.code === 0 || response.code === 403;
-                const isProxyUrl = loaderContext.url.includes('/proxy/video');
-                const isFullProxy = loaderContext.url.includes('force_proxy=1');
+            callbacks.onError = async (response, loaderContext, loader, stats) => {
+                const { proxyUrl, proxyFallbackUrl } = context;
+                
+                BuddyLogger.warn('🛡️', 'PROXY SYSTEM', 'Request Failed', { 
+                    'Url': loaderContext.url,
+                    'Code': response.code,
+                    'Mode': context.currentProxyMode
+                });
 
-                // Determine next mode based on current state (None -> Manifest -> Full)
-                let nextMode = null;
-                if (isNetworkError) {
-                    if (context.currentProxyMode === ProxyMode.NONE) {
-                        nextMode = ProxyMode.MANIFEST_ONLY;
-                    } else if (context.currentProxyMode === ProxyMode.MANIFEST_ONLY) {
-                        nextMode = ProxyMode.FULL;
+                const isFailureToProxy = (status) => status === 0 || status === 403 || status === 401 || status >= 500;
+
+                const attemptRetry = (lastUrl, lastMode, currentStatus) => {
+                    if (self._retryCount >= 6) return; // Safety
+
+                    if (currentStatus === 404) {
+                        BuddyLogger.error('🚫', 'PROXY SYSTEM', 'Resource Not Found (404)');
+                        if (originalOnError) originalOnError({ code: 404, text: 'Not Found' }, loaderContext, loader, stats);
+                        return;
                     }
-                }
 
-                if (nextMode && self._retryCount < 2) {
+                    const wasProxy = lastUrl.includes('/proxy/video');
+                    const wasPrimary = wasProxy && proxyUrl && lastUrl.includes(proxyUrl);
+                    const wasFallback = wasProxy && proxyFallbackUrl && lastUrl.includes(proxyFallbackUrl);
+                    
+                    let nextMode = null;
+                    let nextProxy = null;
+
+                    // 1 - Direct Fail -> Karar Ver: Primary mi Fallback mi?
+                    if (!wasProxy) {
+                        if (lastMode === ProxyMode.MANIFEST_ONLY) {
+                            // Zaten bir proxy devresindeyiz (Manifest inmiş ama segment inememiş). FULL moda yükselt.
+                            if (proxyUrl && isProxyAvailable(proxyUrl)) {
+                                nextMode = ProxyMode.FULL;
+                                nextProxy = proxyUrl;
+                                BuddyLogger.info('⚡', 'PROXY SYSTEM', 'Segment failed in MANIFEST mode. Escalating to Primary FULL.');
+                            } else {
+                                nextMode = ProxyMode.FULL;
+                                nextProxy = proxyFallbackUrl;
+                                BuddyLogger.info('⚡', 'PROXY SYSTEM', 'Segment failed in MANIFEST mode. Escalating to Fallback FULL.');
+                            }
+                        } else {
+                            // Tamamen en baştayız (Direct patladı)
+                            if (proxyUrl && isProxyAvailable(proxyUrl)) {
+                                BuddyLogger.info('⚡', 'PROXY SYSTEM', 'Primary ONLINE. Only Primary cycle will be executed.');
+                                nextMode = ProxyMode.MANIFEST_ONLY;
+                                nextProxy = proxyUrl;
+                            } else if (proxyFallbackUrl && isProxyAvailable(proxyFallbackUrl)) {
+                                BuddyLogger.info('⚡', 'PROXY SYSTEM', 'Primary OFFLINE. Executing Fallback cycle.');
+                                nextMode = ProxyMode.MANIFEST_ONLY;
+                                nextProxy = proxyFallbackUrl;
+                            } else {
+                                BuddyLogger.error('🚫', 'PROXY SYSTEM', 'No proxies available. Stopping.');
+                            }
+                        }
+                    } 
+                    // 2 - Primary Cycle (Daha önce Primary denendiyse artık Fallback'e geçiş YOK)
+                    else if (wasPrimary) {
+                        if (lastMode === ProxyMode.MANIFEST_ONLY) {
+                            nextMode = ProxyMode.FULL;
+                            nextProxy = proxyUrl;
+                        } else {
+                            BuddyLogger.error('🛑', 'PROXY SYSTEM', 'Primary Cycle Finished (Full failed). Stopping.');
+                        }
+                    }
+                    // 3 - Fallback Cycle
+                    else if (wasFallback) {
+                        if (lastMode === ProxyMode.MANIFEST_ONLY) {
+                            nextMode = ProxyMode.FULL;
+                            nextProxy = proxyFallbackUrl;
+                        } else {
+                            BuddyLogger.error('🛑', 'PROXY SYSTEM', 'Fallback Cycle Finished (Full failed). Stopping.');
+                        }
+                    }
+
+                    // Bir sonraki adım yoksa pes et
+                    if (!nextMode) {
+                        if (originalOnError) originalOnError(response, loaderContext, loader, stats);
+                        return;
+                    }
+
                     self._retryCount++;
-                    console.warn(`[HLS Fallback] Error (code ${response.code}), escalating to ${nextMode.toUpperCase()}...`);
-                    
-                    // Update context mode for future requests
-                    context.currentProxyMode = nextMode;
+                    BuddyLogger.info('🔄', 'PROXY SYSTEM', 'Executing Retry', { 
+                        'Mode': nextMode,
+                        'Proxy': nextProxy,
+                        'Attempt': self._retryCount
+                    });
 
-                    // Notify room via socket (if available)
-                    if (context.onModeEscalated) {
-                        context.onModeEscalated(nextMode);
-                    }
+                    context.currentProxyMode = nextMode;
+                    if (context.onModeEscalated) context.onModeEscalated(nextMode);
+
+                    const originalUrl = wasProxy 
+                        ? decodeURIComponent(lastUrl.match(/url=([^&]+)/)?.[1] || lastUrl) 
+                        : lastUrl;
                     
-                    // Extract original URL
-                    const originalUrl = isProxyUrl 
-                        ? decodeURIComponent(loaderContext.url.match(/url=([^&]+)/)?.[1] || loaderContext.url) 
-                        : loaderContext.url;
+                    const buildUrl = (mode, pUrl) => {
+                        let final = buildProxyUrl(originalUrl, userAgent, referer, 'video', pUrl);
+                        if (mode === ProxyMode.FULL) final += '&force_proxy=1';
+                        return final;
+                    };
+                    const newUrl = buildUrl(nextMode, nextProxy);
                     
-                    // Build new URL with escalated mode
-                    const newUrl = buildProxyUrlWithMode(originalUrl, userAgent, referer, nextMode);
-                    
-                    // Create a fresh XHR request manually (avoid loader reuse)
                     const xhr = new XMLHttpRequest();
                     xhr.open('GET', newUrl, true);
                     xhr.responseType = loaderContext.responseType || '';
                     
                     xhr.onload = () => {
                         if (xhr.status >= 200 && xhr.status < 300) {
-                            const data = xhr.response;
-                            callbacks.onSuccess(
-                                { data, url: newUrl },
-                                { ...stats, loaded: xhr.response.length || 0 },
-                                loaderContext,
-                                null
-                            );
+                            BuddyLogger.info('✅', 'PROXY SYSTEM', 'Recovery Success!', { 'Mode': nextMode });
+                            callbacks.onSuccess({ data: xhr.response, url: newUrl }, { ...stats, loaded: xhr.response.length || 0 }, loaderContext, null);
                         } else {
-                            if (originalOnError) originalOnError(
-                                { code: xhr.status, text: xhr.statusText },
-                                loaderContext, loader, stats
-                            );
+                            if (isFailureToProxy(xhr.status)) {
+                                attemptRetry(newUrl, nextMode, xhr.status);
+                            } else {
+                                if (originalOnError) originalOnError({ code: xhr.status, text: xhr.statusText }, loaderContext, loader, stats);
+                            }
                         }
                     };
                     
-                    xhr.onerror = () => {
-                        // Try next escalation or give up
-                        if (self._retryCount < 2 && nextMode === ProxyMode.MANIFEST_ONLY) {
-                            context.currentProxyMode = ProxyMode.FULL;
-                            const fullUrl = buildProxyUrlWithMode(originalUrl, userAgent, referer, ProxyMode.FULL);
-                            console.warn(`[HLS Fallback] Retry failed, escalating to FULL...`);
-                            
-                            const xhr2 = new XMLHttpRequest();
-                            xhr2.open('GET', fullUrl, true);
-                            xhr2.responseType = loaderContext.responseType || '';
-                            xhr2.onload = () => {
-                                if (xhr2.status >= 200 && xhr2.status < 300) {
-                                    callbacks.onSuccess(
-                                        { data: xhr2.response, url: fullUrl },
-                                        { ...stats, loaded: xhr2.response.length || 0 },
-                                        loaderContext, null
-                                    );
-                                } else {
-                                    if (originalOnError) originalOnError(
-                                        { code: xhr2.status, text: xhr2.statusText },
-                                        loaderContext, loader, stats
-                                    );
-                                }
-                            };
-                            xhr2.onerror = () => {
-                                if (originalOnError) originalOnError(
-                                    { code: 0, text: 'Network error' },
-                                    loaderContext, loader, stats
-                                );
-                            };
-                            xhr2.send();
-                        } else {
-                            if (originalOnError) originalOnError(
-                                { code: 0, text: 'Network error' },
-                                loaderContext, loader, stats
-                            );
-                        }
-                    };
-                    
+                    xhr.onerror = () => attemptRetry(newUrl, nextMode, 0);
                     xhr.send();
-                    return;
+                };
+
+                if (isFailureToProxy(response.code)) {
+                    attemptRetry(loaderContext.url, context.currentProxyMode, response.code);
+                } else {
+                    if (originalOnError) originalOnError(response, loaderContext, loader, stats);
                 }
-                
-                // All modes exhausted or non-recoverable error
-                if (originalOnError) originalOnError(response, loaderContext, loader, stats);
             };
 
             this._hasLoaded = true;

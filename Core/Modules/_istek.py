@@ -75,7 +75,7 @@ async def istekten_once_sonra(request: Request, call_next):
         response        = JSONResponse(status_code=500, content={"ups": "Sunucu Hatası.."})
         konsol.log(f"[red]❌ Beklenmeyen hata:[/] {request.url.path} - {exc}")
 
-    for skip_path in ("/favicon.ico", "/static", "/webfonts", "/manifest.json", "com.chrome.devtools.json"):
+    for skip_path in ("/favicon.ico", "/static", "/webfonts", "/manifest.json", "com.chrome.devtools.json", "/proxy", "/health"):
         if skip_path in request.url.path:
             return response
 

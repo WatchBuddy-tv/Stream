@@ -1,38 +1,42 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from Core import Request, Response
-from .    import proxy_router
-from urllib.parse import quote
+from fastapi        import Request, Response
+from .              import proxy_router
+from ..Libs.helpers import prepare_request_headers, process_subtitle_content, CORS_HEADERS
+from urllib.parse   import unquote
 import httpx
 
 @proxy_router.get("/subtitle")
 async def subtitle_proxy(request: Request, url: str, referer: str = None, user_agent: str = None):
-    """
-    Local origin proxy for subtitles to avoid CORS issues.
-    Forwards request to the actual pyProxy service.
-    """
-    py_proxy_base = "https://pyProxy.watchbuddy.tv"
-
-    params = []
-    params.append(f"url={quote(url, safe='')}")
-    if referer:
-        params.append(f"referer={quote(referer, safe='')}")
-    if user_agent:
-        params.append(f"user_agent={quote(user_agent, safe='')}")
-
-    target_url = f"{py_proxy_base}/proxy/subtitle?{'&'.join(params)}"
-
-    async with httpx.AsyncClient(verify=False) as client:
-        try:
-            resp = await client.get(target_url, timeout=30.0)
-            return Response(
-                content     = resp.content,
-                status_code = resp.status_code,
-                headers     = {
-                    "Content-Type"                : resp.headers.get("Content-Type", "text/vtt"),
-                    "Access-Control-Allow-Origin" : "*",
-                    "Cache-Control"               : "public, max-age=3600"
-                }
+    """Altyazı proxy endpoint'i"""
+    try:
+        decoded_url     = unquote(url)
+        request_headers = prepare_request_headers(request, decoded_url, referer, user_agent)
+        
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30.0, verify=False) as client:
+            response = await client.get(decoded_url, headers=request_headers)
+            
+            if response.status_code >= 400:
+                return Response(
+                    content     = f"Altyazı hatası: {response.status_code}", 
+                    status_code = response.status_code
+                )
+            
+            processed_content = process_subtitle_content(
+                response.content, 
+                response.headers.get("content-type", ""), 
+                decoded_url
             )
-        except Exception as e:
-            return Response(content=str(e), status_code=502)
+            
+            return Response(
+                content     = processed_content,
+                status_code = 200,
+                headers     = {"Content-Type": "text/vtt; charset=utf-8", **CORS_HEADERS},
+                media_type  = "text/vtt"
+            )
+            
+    except Exception as e:
+        return Response(
+            content     = f"Proxy hatası: {str(e)}", 
+            status_code = 500
+        )

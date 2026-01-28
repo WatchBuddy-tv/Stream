@@ -1,4 +1,5 @@
 // Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+import BuddyLogger from './BuddyLogger.min.js';
 
 export async function fetchJSON(url, options = {}) {
     try {
@@ -10,7 +11,7 @@ export async function fetchJSON(url, options = {}) {
         
         return await response.json();
     } catch (error) {
-        console.error(`Fetch error for ${url}:`, error);
+        BuddyLogger.error('🌐', 'FETCHER', 'JSON Fetch Error', { 'Url': url, 'Details': error.message });
         throw error;
     }
 }
@@ -60,7 +61,7 @@ export class AbortableFetch {
             return response;
         } catch (error) {
             if (error.name === 'AbortError') {
-                console.log('Fetch aborted');
+                BuddyLogger.debug('🛑', 'FETCHER', 'Fetch Aborted');
             }
             // Ensure we always remove the controller
             this.controllers.delete(controller);
