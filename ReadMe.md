@@ -1,4 +1,4 @@
-# 🎬 WatchBuddy Stream (KekikStreamAPI Fork)
+# <img src="https://avatars.githubusercontent.com/u/254314376?s=200&v=4" height="32" align="center"> WatchBuddy Stream (KekikStreamAPI Fork)
 
 WatchBuddy needs a reliable, clean streaming layer. This repo provides that layer.  
 It is **not** a development sandbox — it is the **production‑ready integration fork** used by WatchBuddy.
