@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr">
+<html lang="{{ lang }}">
 
 <head>
     <!-- ? Meta -->
@@ -23,7 +23,7 @@
     {%- endif %}
 
     <!-- ? Basic SEO Meta Tags -->
-    <meta name="description" content="{{ description }}">
+    <meta name="description" content="{{ description }}" id="meta-description">
     <meta name="author" content="keyiflerolsun">
     <meta name="publisher" content="keyiflerolsun">
 
@@ -35,7 +35,7 @@
     <meta property="og:url" content="{{ base_url }}/">
     <meta property="og:image" content="{{ base_url }}/logo.png">
     <meta property="og:image:alt" content="{{ site_name }} Logo">
-    <meta property="og:locale" content="tr_TR">
+    <meta property="og:locale" content="{{ og_locale }}" id="meta-og-locale">
 
     <!-- ? Twitter Card -->
     <meta name="twitter:title" content="{{ title }}">
@@ -82,7 +82,15 @@
     <script src="https://analytics.ahrefs.com/analytics.js" data-key="ijw/GMAzzeDPOUngFuli8w" async></script>
 </head>
 
-<body>
+<body 
+    data-provider-name="{{ provider_name | default('KekikStream', true) }}"
+    data-proxy-url="{{ proxy_url | default('', true) }}"
+    data-proxy-fallback-url="{{ proxy_fallback_url | default('', true) }}"
+    data-title-key="{{ title_key | default('', true) }}"
+    data-title-vars='{{ title_vars | default({}, true) | tojson }}'
+    data-desc-key="{{ desc_key | default('', true) }}"
+    data-desc-vars='{{ desc_vars | default({}, true) | tojson }}'
+>
 
     {% include 'components/header.html.j2'%}
 
@@ -96,6 +104,32 @@
     </main>
 
     {% include 'components/footer.html.j2'%}
+
+    <!-- ? I18n -->
+    <script>
+        window.LANG = "{{ lang }}";
+        window.TRANSLATIONS = {{ translations | tojson }};
+        window.TRANSLATIONS_ALL = {{ translations_all | tojson }};
+        window.t = window.t || function(key, vars) {
+            const dict = window.TRANSLATIONS || {};
+            let template = dict[key] || key;
+            if (vars && typeof vars === 'object') {
+                Object.keys(vars).forEach((k) => {
+                    const value = String(vars[k]);
+                    template = template.split(`{${k}}`).join(value);
+                });
+            }
+            return template;
+        };
+        // Persist language selection (no reload here)
+        try {
+            const url = new URL(window.location.href);
+            const urlLang = url.searchParams.get('lang');
+            if (urlLang) {
+                localStorage.setItem('lang', urlLang);
+            }
+        } catch (e) {}
+    </script>
 
     <!-- ? Statik JS -->
     <script type="module" src="{{ url_for('static_home', path='JS/main.min.js') }}" defer crossorigin="anonymous"></script>

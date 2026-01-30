@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
     <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> Ana Sayfa</a>
+        <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current">{{ plugin.name }}</span>
@@ -28,7 +28,7 @@
                     <h1 class="detail-title">{{ plugin.name }}</h1>
                 </div>
                 <div class="detail-subtitle">
-                    <span class="badge">Dil: {{ plugin.language }}</span>
+                    <span class="badge"><span data-i18n="language_label">{{ tr('language_label') }}</span>: {{ plugin.language }}</span>
                     <a href="{{ plugin.main_url }}" target="_blank" class="badge badge-secondary" title="{{ plugin.main_url }}">
                         {{ plugin.main_url }} <i class="fas fa-external-link-alt"></i>
                     </a>
@@ -42,7 +42,8 @@
 
     <div class="search-container">
         <form method="GET" action="/ara/{{ plugin.name }}" class="search-form">
-            <input type="text" name="sorgu" class="search-input" placeholder="Bu eklenti içinde ara..." required>
+            <input type="hidden" name="lang" value="{{ lang }}">
+            <input type="text" name="sorgu" class="search-input" placeholder="{{ tr('search_plugin_placeholder') }}" data-i18n="search_plugin_placeholder" data-i18n-attr="placeholder" required>
             <button type="submit" class="search-button">
                 <i class="fas fa-search"></i>
             </button>
@@ -50,10 +51,10 @@
     </div>
 
     <div>
-        <h2>Kategoriler</h2>
+        <h2 data-i18n="categories_title">{{ tr('categories_title') }}</h2>
         <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
             {% for url, category in plugin.main_page.items() %}
-                <a href="/kategori/{{ plugin.name }}?kategori_url={{ url }}&kategori_adi={{ category }}" class="card">
+                <a href="/kategori/{{ plugin.name }}?kategori_url={{ url }}&kategori_adi={{ category }}{{ lang_query_amp }}" class="card">
                     <div class="card-content">
                         <h3 class="card-title unquote">{{ category }}</h3>
                     </div>

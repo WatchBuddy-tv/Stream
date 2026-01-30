@@ -710,133 +710,228 @@ video::-webkit-media-text-track-container {
    Altyazı Seçim Modalı
    ======================================== */
 
-.subtitle-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
+/* ========================================
+   Seçim Dropdown Styling
+   ======================================== */
+
+#subtitle-select-btn {
+  background-color: var(--card-bg-color);
+  border: 1px solid var(--border-light);
+  color: var(--text-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  animation: modalFadeIn 0.2s ease-out;
-}
-
-.subtitle-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-}
-
-.subtitle-modal-content {
-  position: relative;
-  background: var(--card-bg-color);
+  gap: var(--spacing-sm);
   border-radius: var(--border-radius);
-  min-width: 320px;
-  max-width: 90vw;
-  max-height: 80vh;
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-timing);
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+#subtitle-select-btn:hover {
+  background-color: var(--card-bg-hover);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color-hover);
+}
+
+#subtitle-select-btn i {
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+/* Genel Dropdown (Modern Deep Glass Teması) */
+.selection-dropdown {
+  position: absolute;
+  z-index: 10000;
+  background: rgba(25, 24, 23, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  min-width: 200px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
   overflow: hidden;
-  animation: modalSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: dropdownFadeIn 0.2s var(--transition-timing);
 }
 
-.subtitle-modal-header {
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.selection-dropdown-header {
+  padding: 0 12px;
+  min-height: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--border-light);
-  background: linear-gradient(to right, var(--primary-color-10), transparent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.subtitle-modal-header h3 {
+.selection-dropdown-header h3 {
   margin: 0;
-  font-size: var(--font-size-lg);
-  color: var(--text-color);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
 }
 
-.subtitle-modal-header h3 i {
-  color: var(--primary-color);
-}
-
-.subtitle-modal-close {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.subtitle-modal-close:hover {
-  color: var(--error-color);
-  background: rgba(231, 76, 60, 0.1);
-}
-
-.subtitle-modal-body {
-  padding: var(--spacing-md);
+.selection-dropdown-body {
+  padding: var(--spacing-xs);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: 2px;
+  max-height: 300px;
 }
 
+/* Dropdown Öğeleri */
 .subtitle-item-btn {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--background-alt);
-  border: 1px solid var(--border-light);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  padding: var(--spacing-md);
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: var(--font-size-sm);
   text-align: left;
-  color: var(--text-color);
-  font-size: var(--font-size-base);
-  content-visibility: auto;
-  contain-intrinsic-size: 0 50px; /* Tahmini yükseklik */
+  cursor: pointer;
+  transition: all 0.2s var(--transition-timing);
 }
 
 .subtitle-item-btn:hover {
-  background: var(--primary-color-10);
-  border-color: var(--primary-color);
-  transform: translateX(4px);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
-.subtitle-item-btn i {
+/* Aktif Durum (Seçili) */
+.subtitle-item-btn.active {
+  background-color: rgba(239, 127, 26, 0.15);
   color: var(--primary-color);
-  font-size: 1.25rem;
+  font-weight: 700;
 }
 
-.subtitle-item-btn span {
-  flex: 1;
-  font-weight: 500;
+.subtitle-item-btn i:first-child {
+  width: 18px;
+  text-align: center;
+  font-size: 1rem;
+  color: inherit;
+  opacity: 0.6;
+  transition: all 0.2s ease;
 }
 
-@keyframes modalFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.subtitle-item-btn.active i:first-child {
+  color: var(--primary-color);
+  opacity: 1;
 }
 
-@keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+
+/* Scrollbar Style */
+.selection-dropdown-body::-webkit-scrollbar {
+  width: 4px;
 }
 
-@media (max-width: 480px) {
-  .subtitle-modal-content {
-    min-width: auto;
-    width: calc(100% - 2rem);
-    margin: 1rem;
+.selection-dropdown-body::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.selection-dropdown-body::-webkit-scrollbar-thumb {
+  background-color: var(--border-light);
+  border-radius: 10px;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .selection-dropdown {
+    width: calc(100% - 32px) !important;
+    max-width: 450px !important;
+    max-height: 45vh !important;
+    border-radius: 16px !important;
+    bottom: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(18, 18, 18, 0.98) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding-bottom: 4px !important;
+  }
+
+  /* Premium Pull Indicator */
+  .selection-dropdown::before {
+    display: none !important; /* Kart görünümünde tutamağa gerek yok */
+  }
+
+  .selection-dropdown-header {
+    padding: 0 16px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .selection-dropdown-header h3 {
+    justify-content: center;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .selection-dropdown-body {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important; /* Çift sütun */
+    gap: 4px !important;
+    padding: 6px !important;
+    max-height: 35vh !important;
+  }
+
+  /* Mobil için dokunmatik dostu itemlar */
+  /* Izgara öğeleri için ultra-kompakt tasarım */
+  .subtitle-item-btn {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 10px !important;
+    border-bottom: none !important;
+    justify-content: flex-start !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .subtitle-item-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .subtitle-item-btn.active {
+    background: rgba(239, 127, 26, 0.15) !important;
+  }
+
+  .subtitle-item-btn i:first-child {
+    font-size: 0.9rem !important;
+    margin-right: 8px !important;
+    min-width: 14px;
   }
 }
+
+@keyframes slideUpCompact {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+

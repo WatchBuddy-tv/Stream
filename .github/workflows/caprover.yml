@@ -1,0 +1,50 @@
+# Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+
+name: CapRover Yükleyici
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  CapRoverYukleyici:
+    name   : Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Depo
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 2
+
+      - name: Değişiklik
+        id  : degisiklik
+        run : |
+          # Stream (haric dışındaki dosyalar)
+          if git diff --name-only HEAD^ | grep -vE '^haric/' | grep -qE '\.(py|txt|j2|html|css|js|json|yaml|yml)$'; then 
+            echo "stream=true" >> $GITHUB_OUTPUT
+          else 
+            echo "stream=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Stream TarBall
+        if  : steps.degisiklik.outputs.stream == 'true'
+        uses: a7ul/tar-action@v1.2.0
+        with:
+          command: c
+          cwd    : "./"
+          files  : ./
+          outPath: deploy.tar
+
+      - name: Deploy
+        if  : steps.degisiklik.outputs.stream == 'true'
+        uses: caprover/deploy-from-github@v1.1.2
+        with:
+          server: ${{ secrets.SERVER }}
+          app   : ${{ secrets.STREAM_APP }}
+          token : ${{ secrets.STREAM_TOKEN }}

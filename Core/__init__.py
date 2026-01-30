@@ -26,8 +26,10 @@ kekik_FastAPI.add_middleware(GZipMiddleware, minimum_size=1000)
 from Core.Modules          import _istek, _hata, _security
 from Public.Home.Routers   import home_router
 from Public.API.v1.Routers import api_v1_router
+from Public.Proxy.Routers  import proxy_router
 
 kekik_FastAPI.include_router(home_router)
 kekik_FastAPI.mount("/static/home", StaticFiles(directory="Public/Home/Static"), name="static_home")
 
 kekik_FastAPI.include_router(api_v1_router)
+kekik_FastAPI.include_router(proxy_router)

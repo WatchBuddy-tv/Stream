@@ -10,7 +10,9 @@
             type="text" 
             id="global-search-input" 
             class="search-input" 
-            placeholder="Tüm eklentilerde ara..." 
+            placeholder="{{ tr('search_all_placeholder') }}" 
+            data-i18n="search_all_placeholder"
+            data-i18n-attr="placeholder"
             autocomplete="off"
         >
         <button type="button" id="global-search-button" class="search-button">
@@ -24,10 +26,10 @@
     <div class="detail-container">
         <div class="detail-header">
             <h2 class="detail-title">
-                <i class="fas fa-search"></i> Arama Sonuçları: <span id="search-query-display"></span>
+                <i class="fas fa-search"></i> <span data-i18n="search_results_title">{{ tr('search_results_title') }}</span>: <span id="search-query-display"></span>
             </h2>
             <button id="clear-search" class="button button-secondary">
-                <i class="fas fa-times"></i> Aramayı Temizle
+                <i class="fas fa-times"></i> <span data-i18n="search_clear">{{ tr('search_clear') }}</span>
             </button>
         </div>
         
@@ -35,10 +37,10 @@
         <div id="plugin-filters" class="plugin-filters" style="display: none;">
             <div class="filters-header">
                 <h3 class="filters-title">
-                    <i class="fas fa-filter"></i> Sağlayıcılar
+                    <i class="fas fa-filter"></i> <span data-i18n="providers_title">{{ tr('providers_title') }}</span>
                 </h3>
-                <button id="clear-filters" class="button button-small button-secondary" aria-label="Tüm filtreleri temizle">
-                    <i class="fas fa-times"></i> Filtreleri Temizle
+                <button id="clear-filters" class="button button-small button-secondary" aria-label="{{ tr('filters_clear') }}" data-i18n="filters_clear" data-i18n-attr="aria-label">
+                    <i class="fas fa-times"></i> <span data-i18n="filters_clear">{{ tr('filters_clear') }}</span>
                 </button>
             </div>
             <div id="filters-container" class="filters-container"></div>
@@ -52,7 +54,7 @@
 <!-- Eklenti Listesi -->
 <section id="plugins-list">
     <h2 class="section-title">
-        <i class="fas fa-plug"></i> Tüm Eklentiler
+        <i class="fas fa-plug"></i> <span data-i18n="all_plugins">{{ tr('all_plugins') }}</span>
     </h2>
     
     <div class="grid">
@@ -70,7 +72,7 @@
                         <h3 class="card-title">
                             {{ plugin.name }}
                             <hr>
-                            <small>Dil: {{ plugin.language }}</small>
+                            <small><span data-i18n="language_label">{{ tr('language_label') }}</span>: {{ plugin.language }}</small>
                         </h3>
                     </div>
 
@@ -79,10 +81,10 @@
 
                     <div class="card-actions">
                         <a href="{{ plugin.main_url }}" target="_blank" class="button button-secondary">
-                            <i class="fas fa-external-link-alt"></i> Site
+                            <i class="fas fa-external-link-alt"></i> <span data-i18n="site_button">{{ tr('site_button') }}</span>
                         </a>
-                        <a href="/eklenti/{{ plugin.name }}" class="button">
-                            <i class="fas fa-eye"></i> Detay
+                        <a href="/eklenti/{{ plugin.name }}{{ lang_query }}" class="button">
+                            <i class="fas fa-eye"></i> <span data-i18n="details_button">{{ tr('details_button') }}</span>
                         </a>
                     </div>
 

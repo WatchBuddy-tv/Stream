@@ -3,6 +3,8 @@
 import { $, $$, escapeHtml, scrollTo, addClass, removeClass } from '../utils/dom.min.js';
 import { AbortableFetch } from '../utils/fetch.min.js';
 
+const t = (key, vars = {}) => (window.t ? window.t(key, vars) : key);
+
 export class GlobalSearch {
     constructor() {
         this.searchInput = $('#global-search-input');
@@ -51,7 +53,7 @@ export class GlobalSearch {
         const query = this.searchInput.value.trim();
         
         if (!query || query.length < 2) {
-            this.showStatus('En az 2 karakter girmelisiniz', 'error');
+            this.showStatus(t('search_min_chars', { count: 2 }), 'error');
             return;
         }
         
@@ -79,7 +81,7 @@ export class GlobalSearch {
         let completedSearches = 0;
         let totalResults = 0;
         
-        this.showStatus(`${this.plugins.length} eklentide aranıyor...`, 'searching');
+        this.showStatus(t('searching_plugins', { count: this.plugins.length }), 'searching');
         
         // Add loading cards
         this.plugins.forEach(plugin => this.addLoadingCard(plugin.name));
@@ -201,7 +203,8 @@ export class GlobalSearch {
     
     createResultCard(pluginName, result) {
         const card = document.createElement('a');
-        card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}`;
+        const langParam = window.LANG ? `&lang=${encodeURIComponent(window.LANG)}` : '';
+        card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${langParam}`;
         card.className = 'card';
         
         let cardContent = `<div class="plugin-badge">${escapeHtml(pluginName)}</div>`;
@@ -223,10 +226,10 @@ export class GlobalSearch {
             if (resultsCount === 0) {
                 this.showNoResults();
             } else {
-                this.showStatus(`${resultsCount} sonuç bulundu`, 'success');
+                this.showStatus(t('search_results_count', { count: resultsCount }), 'success');
             }
         } else {
-            this.showStatus(`${completed}/${total} eklenti tarandı - ${resultsCount} sonuç`, 'searching');
+            this.showStatus(t('search_progress', { done: completed, total, count: resultsCount }), 'searching');
         }
     }
     
@@ -234,11 +237,11 @@ export class GlobalSearch {
         this.resultsGrid.innerHTML = `
             <div class="no-results" style="grid-column: 1 / -1;">
                 <i class="fas fa-search"></i>
-                <h3>Sonuç Bulunamadı</h3>
-                <p>Arama kriterlerinize uygun içerik bulunamadı. Farklı bir terim deneyin.</p>
+                <h3>${t('search_no_results_title')}</h3>
+                <p>${t('search_no_results_message')}</p>
             </div>
         `;
-        this.showStatus('Sonuç bulunamadı', 'error');
+        this.showStatus(t('search_no_results_status'), 'error');
     }
     
     clearSearch() {
@@ -274,7 +277,7 @@ export class GlobalSearch {
             filterButton.className = 'filter-button';
             filterButton.dataset.plugin = pluginName;
             filterButton.setAttribute('aria-pressed', 'false');
-            filterButton.setAttribute('aria-label', `${pluginName} filtresi (${results.length} sonuç)`);
+            filterButton.setAttribute('aria-label', t('filter_aria_label', { plugin: pluginName, count: results.length }));
             
             filterButton.innerHTML = `
                 <span>${escapeHtml(pluginName)}</span>
@@ -341,9 +344,9 @@ export class GlobalSearch {
             .reduce((sum, results) => sum + results.length, 0);
         
         if (this.activeFilters.size > 0) {
-            this.showStatus(`${visibleResults}/${totalResults} sonuç gösteriliyor (${this.activeFilters.size} filtre aktif)`, 'success');
+            this.showStatus(t('filter_results_status', { visible: visibleResults, total: totalResults, filters: this.activeFilters.size }), 'success');
         } else {
-            this.showStatus(`${totalResults} sonuç bulundu`, 'success');
+            this.showStatus(t('search_results_count', { count: totalResults }), 'success');
         }
     }
     

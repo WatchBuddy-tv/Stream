@@ -4,10 +4,10 @@
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
     <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> Ana Sayfa</a>
+        <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current"><i class="fas fa-search"></i> "{{ sorgu }}"</span>
@@ -20,13 +20,14 @@
 
 <div class="detail-container">
     <div class="detail-header">
-        <h1 class="detail-title">Arama Sonuçları: "{{ sorgu }}"</h1>
-        <p>{{ eklenti_adi }} içinde arama yapıldı</p>
+        <h1 class="detail-title" data-i18n="search_results_for" data-i18n-vars='{"query": "{{ sorgu }}"}'>{{ tr('search_results_for', query=sorgu) }}</h1>
+        <p data-i18n="search_in_plugin" data-i18n-vars='{"plugin": "{{ eklenti_adi }}"}'>{{ tr('search_in_plugin', plugin=eklenti_adi) }}</p>
     </div>
 
     <div class="search-container">
         <form method="GET" action="/ara/{{ eklenti_adi }}" class="search-form">
-            <input type="text" name="sorgu" value="{{ sorgu }}" class="search-input" placeholder="Ara..." required>
+            <input type="hidden" name="lang" value="{{ lang }}">
+            <input type="text" name="sorgu" value="{{ sorgu }}" class="search-input" placeholder="{{ tr('search_placeholder') }}" data-i18n="search_placeholder" data-i18n-attr="placeholder" required>
             <button type="submit" class="search-button">
                 <i class="fas fa-search"></i>
             </button>
@@ -35,7 +36,7 @@
 
     <div class="grid">
         {% for item in results %}
-            <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}" class="card">
+            <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ lang_query_amp }}" class="card">
                 {% if item.poster %}
                     <img src="{{ item.poster }}" alt="{{ item.title }}" class="card-image">
                 {% endif %}
@@ -46,7 +47,7 @@
             </a>
         {% else %}
             <div style="grid-column: 1 / -1; text-align: center;">
-                <p>Arama sonucu bulunamadı.</p>
+                <p data-i18n="search_no_results">{{ tr('search_no_results') }}</p>
             </div>
         {% endfor %}
     </div>

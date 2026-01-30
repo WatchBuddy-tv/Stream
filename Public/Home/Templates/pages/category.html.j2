@@ -4,10 +4,10 @@
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
     <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> Ana Sayfa</a>
+        <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current unquote">{{ kategori_adi }}</span>
@@ -23,11 +23,11 @@
         <div class="header-top">
             <div class="header-content">
                 <h1 class="detail-title">{{ baslik }}</h1>
-                <p class="detail-subtitle">Sayfa : {{ sayfa }}</p>
+                <p class="detail-subtitle" data-i18n="page_label_with_number" data-i18n-vars='{"page": "{{ sayfa }}"}'>{{ tr('page_label_with_number', page=sayfa) }}</p>
             </div>
             <div class="header-actions">
-                <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
-                    <i class="fas fa-arrow-left"></i> Eklentiye Dön
+                <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="button button-secondary">
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="back_to_plugin">{{ tr('back_to_plugin') }}</span>
                 </a>
             </div>
         </div>
@@ -36,7 +36,7 @@
     <div class="grid">
         {% if items %}
             {% for item in items %}
-                <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}" class="card">
+                <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ lang_query_amp }}" class="card">
                     {% if item.poster %}
                         <img src="{{ item.poster }}" alt="{{ item.title }}" class="card-image">
                     {% endif %}
@@ -48,10 +48,10 @@
             {% endfor %}
         {% else %}
             <div style="grid-column: 1 / -1; text-align: center;">
-                <p>Bu kategoride içerik bulunamadı.</p>
+                <p data-i18n="category_empty">{{ tr('category_empty') }}</p>
             </div>
-            <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
-                <i class="fas fa-arrow-left"></i> Eklenti Sayfasına Dön
+            <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="button button-secondary">
+                <i class="fas fa-arrow-left"></i> <span data-i18n="back_to_plugin_page">{{ tr('back_to_plugin_page') }}</span>
             </a>
         {% endif %}
     </div>
@@ -59,15 +59,15 @@
     {% if items %}
         <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
             {% if sayfa > 1 %}
-                <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa - 1 }}" class="button button-secondary">
-                    <i class="fas fa-arrow-left"></i> Önceki Sayfa
+                <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa - 1 }}{{ lang_query_amp }}" class="button button-secondary">
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="prev_page">{{ tr('prev_page') }}</span>
                 </a>
             {% else %}
                <div></div>
             {% endif %}
             
-            <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa + 1 }}" class="button">
-                Sonraki Sayfa <i class="fas fa-arrow-right"></i>
+            <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa + 1 }}{{ lang_query_amp }}" class="button">
+                <span data-i18n="next_page">{{ tr('next_page') }}</span> <i class="fas fa-arrow-right"></i>
             </a>
 
         </div>

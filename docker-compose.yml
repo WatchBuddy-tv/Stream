@@ -1,0 +1,20 @@
+# Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+
+networks:
+  local:
+    driver: bridge
+
+services:
+  Stream:
+    container_name : Stream
+    image          : stream:local
+    tty            : true
+    restart        : always
+    build          : .
+
+    volumes:
+      - .:/usr/src/Stream
+    networks:
+      - local
+    ports:
+      - 3310:3310

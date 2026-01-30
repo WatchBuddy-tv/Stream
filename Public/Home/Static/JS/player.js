@@ -1,5 +1,6 @@
 import VideoPlayer from './components/VideoPlayer.min.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    new VideoPlayer();
+    const player = new VideoPlayer();
+    window.__videoPlayer = player;
 });

@@ -10,7 +10,6 @@ PyYAML
 Jinja2
 python-multipart
 python-dotenv
-pymongo
 csscompressor
 rjsmin
-KekikStream>=2.5.0
+KekikStream>=2.5.6

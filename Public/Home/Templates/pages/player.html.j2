@@ -4,10 +4,10 @@
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
     <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> Ana Sayfa</a>
+        <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ title }}</span>
@@ -24,7 +24,7 @@
     </div>
 
     <div class="source-selection">
-        <h3><i class="fas fa-server"></i> Kaynaklar</h3>
+        <h3><i class="fas fa-server"></i> <span data-i18n="sources_title">{{ tr('sources_title') }}</span></h3>
         <div id="video-links-ui" class="source-list"></div>
     </div>
 
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <video id="video-player" playsinline webkit-playsinline crossorigin="anonymous">
-                Tarayıcınız video etiketini desteklemiyor.
+                <span data-i18n="browser_video_unsupported">{{ tr('browser_video_unsupported') }}</span>
             </video>
             
             <!-- Firefox Custom Subtitle Overlay -->
@@ -62,19 +62,19 @@
 
                     <div class="control-row">
                         <div class="control-group">
-                            <button class="ctrl-btn" id="bottom-play-pause">
+                            <button class="ctrl-btn" id="bottom-play-pause" title="{{ tr('tooltip_play_pause') }}" data-i18n="tooltip_play_pause" data-i18n-attr="title">
                                 <i class="fas fa-play"></i>
                             </button>
-                            <button class="ctrl-btn" id="custom-backward">
+                            <button class="ctrl-btn" id="custom-backward" title="{{ tr('tooltip_rewind') }}" data-i18n="tooltip_rewind" data-i18n-attr="title">
                                 <i class="fas fa-undo"></i>
                             </button>
-                            <button class="ctrl-btn" id="custom-forward">
+                            <button class="ctrl-btn" id="custom-forward" title="{{ tr('tooltip_forward') }}" data-i18n="tooltip_forward" data-i18n-attr="title">
                                 <i class="fas fa-redo"></i>
                             </button>
                             
                             <!-- Volume -->
                             <div class="volume-group">
-                                <button class="ctrl-btn" id="custom-mute">
+                                <button class="ctrl-btn" id="custom-mute" title="{{ tr('tooltip_mute') }}" data-i18n="tooltip_mute" data-i18n-attr="title">
                                     <i class="fas fa-volume-up"></i>
                                 </button>
                                 <input type="range" id="custom-volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="1">
@@ -87,13 +87,13 @@
                         </div>
 
                         <div class="control-group">
-                            <button class="ctrl-btn" id="custom-audio" style="display: none;" title="Ses">
+                            <button class="ctrl-btn" id="custom-audio" style="display: none;" title="{{ tr('tooltip_audio') }}" data-i18n="tooltip_audio" data-i18n-attr="title">
                                 <i class="fas fa-headphones-alt"></i>
                             </button>
-                            <button class="ctrl-btn" id="custom-cc" style="display: none;" title="Altyazı">
+                            <button class="ctrl-btn" id="custom-cc" style="display: none;" title="{{ tr('tooltip_subtitle') }}" data-i18n="tooltip_subtitle" data-i18n-attr="title">
                                 <i class="fas fa-closed-captioning"></i>
                             </button>
-                            <button class="ctrl-btn" id="custom-fullscreen">
+                            <button class="ctrl-btn" id="custom-fullscreen" title="{{ tr('tooltip_fullscreen') }}" data-i18n="tooltip_fullscreen" data-i18n-attr="title">
                                 <i class="fas fa-expand"></i>
                             </button>
                         </div>
@@ -106,32 +106,40 @@
     <div class="player-controls-section">
         <div class="control-buttons">
             {% if icerik_url %}
-            <a href="/icerik/{{ eklenti_adi }}?url={{ icerik_url }}" class="button button-secondary">
-                <i class="fas fa-arrow-left"></i> İçerik
+            <a href="/icerik/{{ eklenti_adi }}?url={{ icerik_url }}{{ lang_query_amp }}" class="button button-secondary">
+                <i class="fas fa-arrow-left"></i> <span data-i18n="player_back_content">{{ tr('player_back_content') }}</span>
             </a>
             {% endif %}
-            <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
-                <i class="fas fa-th"></i> Eklenti
+            <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="button button-secondary">
+                <i class="fas fa-th"></i> <span data-i18n="player_back_plugin">{{ tr('player_back_plugin') }}</span>
             </a>
             <button id="toggle-diagnostics" class="button button-secondary">
-                <i class="fas fa-bug"></i> Tanılama
+                <i class="fas fa-bug"></i> <span data-i18n="diagnostics_button">{{ tr('diagnostics_button') }}</span>
             </button>
+            <a href="#" target="_blank" id="watch-party-button" class="button button-secondary">
+                <i class="fas fa-users"></i> <span data-i18n="watchbuddy_web">{{ tr('watchbuddy_web') }}</span>
+            </a>
+            <a href="#" id="watch-party-app-button" class="button button-secondary" style="display: none;">
+                <i class="fas fa-mobile-alt"></i> <span data-i18n="watchbuddy_app">{{ tr('watchbuddy_app') }}</span>
+            </a>
         </div>
     </div>
 
     <div id="diagnostics-panel">
         <div class="diagnostics-header">
-            <h3>Tanılama Bilgileri</h3>
+            <h3 data-i18n="diagnostics_title">{{ tr('diagnostics_title') }}</h3>
             <div class="diagnostics-toolbar">
-                <button id="clear-logs" class="button button-diagnostic">Temizle</button>
-                <button id="copy-logs" class="button button-diagnostic">Kopyala</button>
-                <button id="download-logs" class="button button-diagnostic">İndir</button>
+                <button id="clear-logs" class="button button-diagnostic" data-i18n="diagnostics_clear">{{ tr('diagnostics_clear') }}</button>
+                <button id="copy-logs" class="button button-diagnostic" data-i18n="diagnostics_copy">{{ tr('diagnostics_copy') }}</button>
+                <button id="download-logs" class="button button-diagnostic" data-i18n="diagnostics_download">{{ tr('diagnostics_download') }}</button>
             </div>
         </div>
         <pre id="diagnostics-log"></pre>
     </div>
 
-    <div id="video-links-data" style="display: none;">
+    <div id="video-links-data" style="display: none;" 
+         data-proxy-url="{{ proxy_url|default('', true) }}" 
+         data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}">
         {% for link in links %}
             <div class="video-link-item" data-name="{{ link.name }}" data-url="{{ link.url }}" data-referer="{{ link.referer|default('', true) }}" data-user-agent="{{ link.user_agent|default('', true) }}">
                 {% for subtitle in link.subtitles %}
@@ -141,19 +149,13 @@
         {% endfor %}
     </div>
 
-    <!-- Seçim Modalı (Altyazı / Ses) -->
-    <div id="selection-modal" class="subtitle-modal" style="display: none;">
-        <div class="subtitle-modal-backdrop"></div>
-        <div class="subtitle-modal-content">
-            <div class="subtitle-modal-header">
-                <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span>Seçim Yapın</span></h3>
-                <button class="subtitle-modal-close" id="selection-modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="subtitle-modal-body" id="selection-list">
-                <!-- Seçenekler buraya dinamik olarak eklenecek -->
-            </div>
+    <!-- Seçim Dropdown (Altyazı / Ses) -->
+    <div id="selection-modal" class="selection-dropdown" style="display: none;">
+        <div class="selection-dropdown-header">
+            <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span data-i18n="selection_prompt">{{ tr('selection_prompt') }}</span></h3>
+        </div>
+        <div class="selection-dropdown-body" id="selection-list">
+            <!-- Seçenekler buraya dinamik olarak eklenecek -->
         </div>
     </div>
 </div>

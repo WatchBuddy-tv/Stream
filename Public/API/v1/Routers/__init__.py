@@ -5,7 +5,8 @@ from fastapi import APIRouter
 
 api_v1_router         = APIRouter(prefix="/api/v1")
 api_v1_global_message = {
-    "with" : "https://github.com/keyiflerolsun/KekikStream"
+    "with"   : "https://github.com/keyiflerolsun/KekikStream",
+    "schema" : "/api/v1/schema"
 }
 
 @api_v1_router.get("")
@@ -16,6 +17,7 @@ async def get_api_v1_router(request: Request):
 # ! ----------------------------------------» Routers
 from . import (
     health,
+    schema,
     get_plugin_names,
     get_all_plugins,
     get_plugin,
