@@ -1,5 +1,7 @@
 # <img src="https://avatars.githubusercontent.com/u/254314376?s=200&v=4" height="32" align="center"> WatchBuddy Stream (KekikStreamAPI Fork)
 
+[![Add stream.watchbuddy.tv to WatchBuddy](https://img.shields.io/badge/Add-stream.watchbuddy.tv-blue?style=flat-square)](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=https://stream.watchbuddy.tv)
+
 WatchBuddy needs a reliable, clean streaming layer. This repo provides that layer.  
 It is **not** a development sandbox — it is the **production‑ready integration fork** used by WatchBuddy.
 
@@ -61,7 +63,9 @@ pip install -r requirements.txt
 python basla.py
 ```
 
-Open: **http://127.0.0.1:3310**
+👉 Open: **http://127.0.0.1:3310**
+
+👉 [Add http://localhost:3310 to WatchBuddy](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=http://localhost:3310)
 
 ---
 

@@ -1,5 +1,7 @@
 # 🎬 WatchBuddy Stream (KekikStreamAPI Forku)
 
+[![stream.watchbuddy.tv'yi WatchBuddy'ye Ekle](https://img.shields.io/badge/Ekle-stream.watchbuddy.tv-blue?style=flat-square)](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=https://stream.watchbuddy.tv)
+
 WatchBuddy’nin ihtiyacı olan streaming katmanını bu repo sağlar.  
 Bu bir geliştirme ortamı değildir; WatchBuddy için **üretim odaklı entegrasyon forkudur**.
 
@@ -62,6 +64,8 @@ python basla.py
 ```
 
 👉 Tarayıcıdan erişim: **http://127.0.0.1:3310**
+
+👉 [http://localhost:3310'u WatchBuddy'ye Ekle](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=http://localhost:3310)
 
 ---
 
