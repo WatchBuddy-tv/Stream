@@ -12,4 +12,4 @@ python-multipart
 python-dotenv
 csscompressor
 rjsmin
-KekikStream>=2.5.8
+KekikStream>=2.5.9
