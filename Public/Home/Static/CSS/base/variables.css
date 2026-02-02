@@ -11,6 +11,7 @@
   --secondary-color: #0087a3;
   --secondary-light: #00a0c2;
   --secondary-dark: #006e85;
+  --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
   
   /* Arka plan ve metin renkleri */
   --background-color: #2b2a29;

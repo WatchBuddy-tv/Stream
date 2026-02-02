@@ -119,9 +119,12 @@
 .plugin-filters {
   margin: var(--spacing-lg) 0;
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, var(--card-bg-color) 0%, var(--background-color) 100%);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 .filters-header {
@@ -130,17 +133,19 @@
   align-items: center;
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-sm);
-  border-bottom: 2px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .filters-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: 700;
   color: var(--text-color);
   margin: 0;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .filters-title i {
@@ -149,80 +154,71 @@
 
 .filters-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--spacing-sm);
+  overflow-x: auto;
+  padding: var(--spacing-xs) 0 var(--spacing-md) 0;
+  margin-bottom: calc(-1 * var(--spacing-md));
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scroll-behavior: smooth;
+}
+
+.filters-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .filter-button {
-  padding: var(--spacing-sm) var(--spacing-md);
+  flex: 0 0 auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
   background-color: var(--card-bg-color);
-  color: var(--text-color);
-  border: 2px solid var(--border-light);
-  border-radius: calc(var(--border-radius) * 2);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50px;
   cursor: pointer;
-  transition: all var(--transition-speed) ease-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  position: relative;
-  overflow: hidden;
-}
-
-.filter-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.5s ease;
-}
-
-.filter-button:hover::before {
-  left: 100%;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
 }
 
 .filter-button:hover {
-  background-color: var(--card-bg-hover);
-  border-color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--shadow-color);
-}
-
-.filter-button:focus-visible {
-  outline: 3px solid var(--primary-color);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .filter-button.active {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  background: var(--primary-gradient);
   color: var(--background-color);
-  border-color: var(--primary-color);
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(255, 152, 0, 0.4);
 }
 
 .filter-button .filter-count {
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 2px 8px;
-  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.15);
+  color: inherit;
+  padding: 2px 10px;
+  border-radius: 20px;
   font-size: var(--font-size-xs);
-  font-weight: 600;
-  min-width: 24px;
-  text-align: center;
+  font-weight: 700;
+  transition: all 0.3s ease;
 }
 
 .filter-button.active .filter-count {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
   color: var(--background-color);
 }
 
 .button-small {
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
   font-size: var(--font-size-xs);
+  border-radius: 50px;
+  font-weight: 600;
 }
