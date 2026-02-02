@@ -4,6 +4,7 @@ from fastapi        import Request, Response
 from .              import proxy_router
 from ..Libs.helpers import prepare_request_headers, process_subtitle_content, CORS_HEADERS
 from urllib.parse   import unquote
+from Settings       import PROXIES
 import httpx
 
 @proxy_router.get("/subtitle")
@@ -13,7 +14,15 @@ async def subtitle_proxy(request: Request, url: str, referer: str = None, user_a
         decoded_url     = unquote(url)
         request_headers = prepare_request_headers(request, decoded_url, referer, user_agent)
         
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30.0, verify=False) as client:
+        # Proxy ayarını hazırla
+        proxy_url = PROXIES.get("https") or PROXIES.get("http") if PROXIES else None
+        
+        async with httpx.AsyncClient(
+            follow_redirects = True, 
+            timeout          = 30.0, 
+            verify           = False,
+            proxy            = proxy_url
+        ) as client:
             response = await client.get(decoded_url, headers=request_headers)
             
             if response.status_code >= 400:
