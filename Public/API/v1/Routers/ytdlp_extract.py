@@ -44,6 +44,7 @@ async def ytdlp_extract(request: Request):
                 "title"      : "Video",
                 "stream_url" : url,
                 "duration"   : 0,
+                "is_live"    : False,
                 "format"     : "hls" if ".m3u8" in url.lower() else "mp4",
                 "user_agent" : "",
                 "referer"    : ""
@@ -59,6 +60,7 @@ async def ytdlp_extract(request: Request):
             "title"      : info.get("title", "Video"),
             "stream_url" : info.get("stream_url"),
             "duration"   : info.get("duration", 0),
+            "is_live"    : info.get("is_live", False),
             "thumbnail"  : info.get("thumbnail"),
             "format"     : info.get("format", "mp4"),
             "user_agent" : headers.get("user-agent", ""),
