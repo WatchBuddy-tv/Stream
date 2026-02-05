@@ -49,7 +49,9 @@ async def ytdlp_extract(request: Request):
                 "is_live"    : False,
                 "format"     : "hls" if ".m3u8" in url.lower() else "mp4",
                 "user_agent" : "",
-                "referer"    : ""
+                "referer"    : "",
+                "resolved"   : False,
+                "resolved_by": "fallback"
             }
         }
     
@@ -66,6 +68,8 @@ async def ytdlp_extract(request: Request):
             "thumbnail"  : info.get("thumbnail"),
             "format"     : info.get("format", "mp4"),
             "user_agent" : headers.get("user-agent", ""),
-            "referer"    : headers.get("referer", "")
+            "referer"    : headers.get("referer", ""),
+            "resolved"   : True,
+            "resolved_by": "ytdlp"
         }
     }
