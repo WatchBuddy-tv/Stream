@@ -30,11 +30,13 @@ async def ytdlp_extract(request: Request):
         return JSONResponse(status_code=400, content={"hata": "url parametresi gerekli"})
     
     url = istek.get("url", "").strip()
+    user_agent = istek.get("user_agent", "").strip() or None
+    referer = istek.get("referer", "").strip() or None
     if not url:
         return JSONResponse(status_code=400, content={"hata": "url parametresi gerekli"})
     
     # yt-dlp ile video bilgisi çıkar
-    info = await ytdlp_extract_video_info(url)
+    info = await ytdlp_extract_video_info(url, user_agent=user_agent, referer=referer)
     
     if not info or not info.get("stream_url"):
         # yt-dlp bulamadıysa, orijinal URL'i kullan

@@ -11,7 +11,7 @@ for extractor_cls in extractor_manager.extractors:
         _ytdlp_extractor = instance
         break
 
-async def ytdlp_extract_video_info(url: str):
+async def ytdlp_extract_video_info(url: str, user_agent: str | None = None, referer: str | None = None):
     """
     yt-dlp ile video bilgisi çıkar
 
@@ -35,9 +35,9 @@ async def ytdlp_extract_video_info(url: str):
         return None
 
     # URL uygunsa tam bilgiyi çıkar
-    return await _extract_with_ytdlp(url)
+    return await _extract_with_ytdlp(url, user_agent=user_agent, referer=referer)
 
-async def _extract_with_ytdlp(url: str):
+async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: str | None = None):
     """yt-dlp ile video bilgisi çıkar (internal)"""
     try:
         cmd = [
@@ -49,6 +49,10 @@ async def _extract_with_ytdlp(url: str):
             "--format-sort", "proto:https",  # HTTPS (progressive) öncelikli, HLS yerine
             url
         ]
+        if user_agent:
+            cmd.insert(-1, f"--user-agent={user_agent}")
+        if referer:
+            cmd.insert(-1, f"--referer={referer}")
 
         process = await asyncio.create_subprocess_exec(
             *cmd,
