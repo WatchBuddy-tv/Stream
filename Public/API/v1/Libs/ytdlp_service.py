@@ -84,6 +84,7 @@ async def _extract_with_ytdlp(url: str):
             "title"        : info.get("title", "Video"),
             "stream_url"   : info.get("url"),
             "duration"     : info.get("duration", 0),
+            "is_live"      : bool(info.get("is_live")) if info.get("is_live") is not None else False,
             "thumbnail"    : info.get("thumbnail"),
             "format"       : video_format,
             "uploader"     : info.get("uploader", ""),
