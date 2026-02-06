@@ -37,6 +37,9 @@ async def ytdlp_extract_video_info(url: str, user_agent: str | None = None, refe
             "format": str  # "hls" | "mp4" | "webm"
         }
     """
+    if not url or not (url.startswith("http://") or url.startswith("https://")):
+        return None
+
     # YTDLP extractor'ın optimize edilmiş can_handle_url kontrolü
     if not _ytdlp_extractor.can_handle_url(url):
         return None
@@ -69,6 +72,7 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
             "yt-dlp",
             "--no-warnings",
             "--no-playlist",
+            "--no-impersonate",
             "--socket-timeout", "10",
             "-j",  # JSON output
             "-f", "best/all",
