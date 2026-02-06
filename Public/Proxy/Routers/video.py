@@ -7,9 +7,9 @@ from fastapi.responses    import StreamingResponse
 from .                    import proxy_router
 from ..Libs.helpers       import prepare_request_headers, prepare_response_headers, detect_hls_from_url, stream_wrapper, rewrite_hls_manifest, is_hls_segment, detect_hls_live, is_hls_master, extract_first_variant_url
 from ..Libs.segment_cache import segment_cache
+from Public.API.v1.Libs.ytdlp_service import ytdlp_extract_video_info
 from urllib.parse         import unquote, quote
 import httpx
-import os
 
 def _is_direct_media_url(url: str) -> bool:
     url_lower = url.lower()
@@ -28,21 +28,21 @@ def _should_resolve_url(url: str) -> bool:
     return True
 
 async def _resolve_with_ytdlp(decoded_url: str, referer: str | None, user_agent: str | None):
-    base_url = os.getenv("API_URL", "http://kekik_api:3310").rstrip("/")
-    api_url = f"{base_url}/api/v1/ytdlp-extract?url={quote(decoded_url, safe='')}"
-    if user_agent:
-        api_url += f"&user_agent={quote(user_agent, safe='')}"
-    if referer:
-        api_url += f"&referer={quote(referer, safe='')}"
-    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=10.0)) as client:
-        resp = await client.get(api_url)
-    if resp.status_code != 200:
+    info = await ytdlp_extract_video_info(decoded_url, user_agent=user_agent, referer=referer)
+    if not info or not info.get("stream_url"):
         return None
-    data = resp.json()
-    result = data.get("result")
-    if not isinstance(result, dict):
-        return None
-    return result
+    headers = info.get("http_headers", {}) or {}
+    return {
+        "title"      : info.get("title", "Video"),
+        "stream_url" : info.get("stream_url"),
+        "duration"   : info.get("duration", 0),
+        "is_live"    : info.get("is_live", False),
+        "format"     : info.get("format", "mp4"),
+        "user_agent" : headers.get("user-agent", ""),
+        "referer"    : headers.get("referer", ""),
+        "resolved"   : True,
+        "resolved_by": "ytdlp"
+    }
 
 @proxy_router.get("/video")
 @proxy_router.head("/video")
