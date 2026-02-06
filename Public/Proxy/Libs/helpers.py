@@ -293,6 +293,9 @@ async def stream_wrapper(response: httpx.Response):
 
 def process_subtitle_content(content: bytes, content_type: str, url: str) -> bytes:
     """Altyazı içeriğini işler ve VTT formatına çevirir"""
+    def _normalize_vtt_timestamps(text: str) -> str:
+        return re.sub(r"(\\d{2}:\\d{2}:\\d{2}),(\\d{3})", r"\\1.\\2", text)
+
     # 1. UTF-8 BOM temizliği
     if content.startswith(b"\xef\xbb\xbf"):
         content = content[3:]
@@ -300,9 +303,16 @@ def process_subtitle_content(content: bytes, content_type: str, url: str) -> byt
     # 2. VTT Kontrolü
     is_vtt = "text/vtt" in content_type or content.startswith(b"WEBVTT")
     if is_vtt:
-        if not content.startswith(b"WEBVTT"):
-            return b"WEBVTT\n\n" + content
-        return content
+        try:
+            text = content.decode("utf-8", errors="ignore")
+            text = _normalize_vtt_timestamps(text)
+            if not text.startswith("WEBVTT"):
+                text = "WEBVTT\n\n" + text
+            return text.encode("utf-8")
+        except Exception:
+            if not content.startswith(b"WEBVTT"):
+                return b"WEBVTT\n\n" + content
+            return content
 
     # 3. SRT -> VTT Dönüşümü
     is_srt = (
@@ -315,10 +325,11 @@ def process_subtitle_content(content: bytes, content_type: str, url: str) -> byt
     if is_srt:
         try:
             content = content.replace(b"\r\n", b"\n")
-            content = content.replace(b",", b".") # Zaman formatı düzeltmesi
-            if not content.startswith(b"WEBVTT"):
-                content = b"WEBVTT\n\n" + content
-            return content
+            text = content.decode("utf-8", errors="ignore")
+            text = text.replace(",", ".")
+            if not text.startswith("WEBVTT"):
+                text = "WEBVTT\n\n" + text
+            return text.encode("utf-8")
         except Exception as e:
             konsol.print(f"[yellow]SRT dönüştürme hatası: {str(e)}[/yellow]")
 
