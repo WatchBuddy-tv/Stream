@@ -92,7 +92,6 @@ export const suggestInitialMode = (url) => {
         lower.includes('/hls/') ||
         lower.includes('/manifests/') ||
         lower.includes('master.txt') ||
-        lower.includes('.mp4') ||
         lower.includes('.webm') ||
         lower.includes('.mkv') ||
         lower.includes('.avi') ||
