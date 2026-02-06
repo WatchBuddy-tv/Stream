@@ -7,42 +7,8 @@ from fastapi.responses    import StreamingResponse
 from .                    import proxy_router
 from ..Libs.helpers       import prepare_request_headers, prepare_response_headers, detect_hls_from_url, stream_wrapper, rewrite_hls_manifest, is_hls_segment, detect_hls_live, is_hls_master, extract_first_variant_url
 from ..Libs.segment_cache import segment_cache
-from Public.API.v1.Libs.ytdlp_service import ytdlp_extract_video_info
 from urllib.parse         import unquote, quote
 import httpx
-
-def _is_direct_media_url(url: str) -> bool:
-    url_lower = url.lower()
-    if ".m3u8" in url_lower:
-        return True
-    direct_exts = (".mp4", ".webm", ".mkv", ".avi", ".mov", ".flv", ".wmv", ".ts", ".m4s")
-    return any(ext in url_lower for ext in direct_exts)
-
-def _should_resolve_url(url: str) -> bool:
-    if is_hls_segment(url):
-        return False
-    if detect_hls_from_url(url):
-        return False
-    if _is_direct_media_url(url):
-        return False
-    return True
-
-async def _resolve_with_ytdlp(decoded_url: str, referer: str | None, user_agent: str | None):
-    info = await ytdlp_extract_video_info(decoded_url, user_agent=user_agent, referer=referer)
-    if not info or not info.get("stream_url"):
-        return None
-    headers = info.get("http_headers", {}) or {}
-    return {
-        "title"      : info.get("title", "Video"),
-        "stream_url" : info.get("stream_url"),
-        "duration"   : info.get("duration", 0),
-        "is_live"    : info.get("is_live", False),
-        "format"     : info.get("format", "mp4"),
-        "user_agent" : headers.get("user-agent", ""),
-        "referer"    : headers.get("referer", ""),
-        "resolved"   : True,
-        "resolved_by": "ytdlp"
-    }
 
 @proxy_router.get("/video")
 @proxy_router.head("/video")
@@ -62,40 +28,6 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
         request.state.resolved_user_agent = str(user_agent)
     if referer:
         request.state.resolved_referer = str(referer)
-
-    if _should_resolve_url(decoded_url):
-        try:
-            result = await _resolve_with_ytdlp(decoded_url, referer, user_agent)
-        except Exception:
-            result = None
-        if result and result.get("stream_url"):
-            decoded_url = result["stream_url"]
-            request.state.resolved_url = decoded_url
-            if result.get("user_agent") and not user_agent:
-                request.state.resolved_user_agent = result.get("user_agent")
-            if result.get("referer") and not referer:
-                request.state.resolved_referer = result.get("referer")
-            elif not referer:
-                request.state.resolved_referer = original_url
-            if result.get("title") and not title:
-                request.state.resolved_title = quote(str(result.get("title")), safe="")
-            if result.get("format"):
-                request.state.resolved_format = result.get("format")
-            if result.get("duration") is not None:
-                request.state.resolved_duration = result.get("duration")
-            if result.get("is_live") is not None:
-                request.state.resolved_is_live = bool(result.get("is_live"))
-            if result.get("resolved_by"):
-                request.state.resolved_by = result.get("resolved_by")
-            if result.get("resolved") is not None:
-                request.state.resolved_flag = bool(result.get("resolved"))
-            if not user_agent and result.get("user_agent"):
-                user_agent = result.get("user_agent")
-            if not referer and result.get("referer"):
-                referer = result.get("referer")
-            if not referer:
-                referer = original_url
-            request_headers = prepare_request_headers(request, decoded_url, referer, user_agent)
 
     # HLS segment ise cache'i kontrol et
     if is_hls_segment(decoded_url):

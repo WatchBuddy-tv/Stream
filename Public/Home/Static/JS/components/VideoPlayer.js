@@ -953,7 +953,9 @@ export default class VideoPlayer {
 
         // Cleanup previous listeners if necessary or just use the same element
         // Removing cloneNode because it breaks custom control listeners attached in setupCustomControls
-        
+        if (this.proxyFallbackUrl) {
+            wpParams.set('proxy_fallback_url', this.proxyFallbackUrl);
+        }
         // Re-attach core listeners to the same element (or better, use persistent ones)
         const onLoadedMetadata = () => this.onVideoLoaded();
         const onCanPlay = () => this.onVideoCanPlay();
@@ -1232,9 +1234,7 @@ export default class VideoPlayer {
         if (this.proxyUrl) {
             wpParams.set('proxy_url', this.proxyUrl);
         }
-        if (this.proxyFallbackUrl) {
-            wpParams.set('proxy_fallback_url', this.proxyFallbackUrl);
-        }
+        
         
         // Web Butonu guncelle
         if (watchPartyButton) {

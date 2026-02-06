@@ -137,17 +137,22 @@ export const parseRemoteUrl = (url) => {
 export const resolveProxyBase = (context) => {
     // Stream'de context muhtemelen global window.PROXY_URL vb. olur veya parametre olarak gelmeli
     // Şimdilik window.PROXY_URL ve window.PROXY_FALLBACK_URL değişkenlerine bakıyoruz (template'den gelen)
+
+    if (context && context.proxyBase) return context.proxyBase;
     
     // Context içinde proxyUrl varsa onu kullan (eğer sağlanmışsa)
     if (context && context.proxyUrl && isProxyAvailable(context.proxyUrl)) {
+        if (context) context.proxyBase = context.proxyUrl;
         return context.proxyUrl;
     }
     
     // Yoksa global değişkenlere bak (Stream player.html.j2 içinde set ediliyor olabilir)
     if (window.PROXY_URL && isProxyAvailable(window.PROXY_URL)) {
+        if (context) context.proxyBase = window.PROXY_URL;
         return window.PROXY_URL;
     }
     if (window.PROXY_FALLBACK_URL && isProxyAvailable(window.PROXY_FALLBACK_URL)) {
+        if (context) context.proxyBase = window.PROXY_FALLBACK_URL;
         return window.PROXY_FALLBACK_URL;
     }
     
@@ -381,6 +386,11 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                                 BuddyLogger.error('🛑', 'PROXY SYSTEM', 'Fallback Cycle Finished (Full failed). Stopping.');
                             }
                         }
+                    }
+
+                    const lockedProxyBase = resolveProxyBase(context);
+                    if (lockedProxyBase) {
+                        nextProxy = lockedProxyBase;
                     }
 
                     // Bir sonraki adım yoksa pes et
