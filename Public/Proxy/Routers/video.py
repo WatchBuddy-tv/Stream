@@ -46,12 +46,22 @@ async def _resolve_with_ytdlp(decoded_url: str, referer: str | None, user_agent:
 
 @proxy_router.get("/video")
 @proxy_router.head("/video")
-async def video_proxy(request: Request, url: str, referer: str = None, user_agent: str = None, force_proxy: str = None):
+async def video_proxy(request: Request, url: str, referer: str = None, user_agent: str = None, force_proxy: str = None, title: str = None, subtitle_url: str = None):
     """Video proxy endpoint'i"""
     decoded_url     = unquote(url)
     original_url    = decoded_url
     request_headers = prepare_request_headers(request, decoded_url, referer, user_agent)
     is_force_proxy  = force_proxy == "1"
+
+    # If user provided metadata, keep it as the source of truth
+    if title:
+        request.state.resolved_title = quote(str(title), safe="")
+    if subtitle_url:
+        request.state.resolved_subtitle = quote(str(subtitle_url), safe="")
+    if user_agent:
+        request.state.resolved_user_agent = str(user_agent)
+    if referer:
+        request.state.resolved_referer = str(referer)
 
     if _should_resolve_url(decoded_url):
         try:
@@ -61,13 +71,13 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
         if result and result.get("stream_url"):
             decoded_url = result["stream_url"]
             request.state.resolved_url = decoded_url
-            if result.get("user_agent"):
+            if result.get("user_agent") and not user_agent:
                 request.state.resolved_user_agent = result.get("user_agent")
-            if result.get("referer"):
+            if result.get("referer") and not referer:
                 request.state.resolved_referer = result.get("referer")
             elif not referer:
                 request.state.resolved_referer = original_url
-            if result.get("title"):
+            if result.get("title") and not title:
                 request.state.resolved_title = quote(str(result.get("title")), safe="")
             if result.get("format"):
                 request.state.resolved_format = result.get("format")
@@ -141,6 +151,9 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
         resolved_title = getattr(request.state, "resolved_title", None)
         if resolved_title:
             final_headers["X-Resolved-Title"] = str(resolved_title)
+        resolved_subtitle = getattr(request.state, "resolved_subtitle", None)
+        if resolved_subtitle:
+            final_headers["X-Resolved-Subtitle"] = str(resolved_subtitle)
         resolved_format = getattr(request.state, "resolved_format", None)
         if resolved_format:
             final_headers["X-Resolved-Format"] = str(resolved_format)

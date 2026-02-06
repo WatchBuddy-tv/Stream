@@ -26,7 +26,7 @@ CORS_HEADERS = {
     "Access-Control-Allow-Origin"  : "*",
     "Access-Control-Allow-Methods" : "GET, HEAD, OPTIONS",
     "Access-Control-Allow-Headers" : "Origin, Content-Type, Accept, Range",
-    "Access-Control-Expose-Headers": "X-Resolved-Url, X-Resolved-User-Agent, X-Resolved-Referer, X-Resolved-Title, X-Resolved-Format, X-Resolved-Duration, X-Resolved-Is-Live",
+    "Access-Control-Expose-Headers": "X-Resolved-Url, X-Resolved-User-Agent, X-Resolved-Referer, X-Resolved-Title, X-Resolved-Subtitle, X-Resolved-Format, X-Resolved-Duration, X-Resolved-Is-Live",
 }
 
 def detect_hls_live(content: bytes) -> tuple[bool, bool]:
