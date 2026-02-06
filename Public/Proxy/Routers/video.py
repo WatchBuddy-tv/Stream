@@ -134,6 +134,8 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
         content_type = response.headers.get("content-type", "").lower()
         if "mpegurl" in content_type or "m3u8" in content_type:
             is_hls = True
+        if is_hls:
+            request.state.resolved_format = "hls"
 
         detected_content_type = "application/vnd.apple.mpegurl" if is_hls else None
 
