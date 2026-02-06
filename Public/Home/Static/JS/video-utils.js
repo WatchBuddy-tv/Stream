@@ -28,6 +28,10 @@ export const detectFormat = (url, format = null) => {
         lowerUrl.includes('master.txt') || 
         lowerUrl.includes('/manifests/') ||
         lowerUrl.includes('playlist.m3u8') ||
+        lowerUrl.includes('/m.php') ||
+        lowerUrl.includes('/l.php') ||
+        lowerUrl.includes('/ld.php') ||
+        lowerUrl.includes('embed/sheila') ||
         HLS_SEGMENT_INDICATORS.some((i) => lowerUrl.includes(i)) ||
         lowerUrl.includes('segment-') ||
         format === 'hls') {

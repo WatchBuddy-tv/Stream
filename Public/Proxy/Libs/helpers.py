@@ -102,6 +102,10 @@ def detect_hls_from_url(url: str) -> bool:
         "master.txt",
         "/manifests/",
         "playlist.m3u8",
+        "/m.php",
+        "/l.php",
+        "/ld.php",
+        "embed/sheila"
     )
     return any(x in url_lower for x in indicators)
 
@@ -224,6 +228,7 @@ async def stream_wrapper(response: httpx.Response):
 def process_subtitle_content(content: bytes, content_type: str, url: str) -> bytes:
     """Altyazı içeriğini işler ve VTT formatına çevirir"""
     def _normalize_vtt_timestamps(text: str) -> str:
+        # Only replace comma in timestamps (HH:MM:SS,mmm -> HH:MM:SS.mmm)
         return re.sub(r"(\d{2}:\d{2}:\d{2}),(\d{3})", r"\1.\2", text)
 
     # 1. UTF-8 BOM temizliği
