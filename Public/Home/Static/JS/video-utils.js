@@ -11,9 +11,10 @@ export const ProxyMode = {
 };
 
 const HLS_SEGMENT_INDICATORS = [
-    '.ts', '.m4s', '.mp4', '.aac',
+    '.ts', '.m4s', '.aac',
     'seg-', 'chunk-', 'fragment',
-    '.png', '.jpg', '.jpeg'
+    '.png', '.jpg', '.jpeg',
+    'init.mp4'
 ];
 
 export const detectFormat = (url, format = null) => {
@@ -60,6 +61,11 @@ export const detectFormat = (url, format = null) => {
 // Suggest initial proxy mode based on URL patterns
 export const suggestInitialMode = (url) => {
     const lower = url.toLowerCase();
+
+    if (window.location.protocol === 'https:' && url.startsWith('http://')) {
+        BuddyLogger.warn('🛡️', 'PROXY SYSTEM', 'Mixed Content Detected', { 'Mode': 'MANIFEST_ONLY' });
+        return ProxyMode.MANIFEST_ONLY;
+    }
     
     // Known protection parameters - start with manifest proxy
     const protectionParams = [
@@ -81,15 +87,35 @@ export const suggestInitialMode = (url) => {
         return ProxyMode.MANIFEST_ONLY;
     }
     
-    BuddyLogger.info(
-        '🛡️',
-        'PROXY SYSTEM',
-        'Direct Access Available',
-        {
-            'Status': 'No Protection Only',
-            'Mode': 'NONE (Direct)'
-        }
+    const likelyMedia = (
+        lower.includes('.m3u8') ||
+        lower.includes('/hls/') ||
+        lower.includes('/manifests/') ||
+        lower.includes('master.txt') ||
+        lower.includes('.mp4') ||
+        lower.includes('.webm') ||
+        lower.includes('.mkv') ||
+        lower.includes('.avi') ||
+        lower.includes('.mov') ||
+        lower.includes('.flv') ||
+        lower.includes('.wmv')
     );
+
+    if (!likelyMedia) {
+        try {
+            const u = new URL(url);
+            const parts = u.pathname.split('/').filter(Boolean);
+            const last = parts.length ? parts[parts.length - 1] : '';
+            if (!last || !last.includes('.')) {
+                BuddyLogger.info('🛡️', 'PROXY SYSTEM', 'Non-media URL detected. Starting in MANIFEST_ONLY.', { 'Mode': 'MANIFEST_ONLY' });
+                return ProxyMode.MANIFEST_ONLY;
+            }
+        } catch (e) {
+            // ignore URL parse errors
+        }
+    }
+
+    BuddyLogger.info('🛡️', 'PROXY SYSTEM', 'Direct Access Available', { 'Status': 'No Protection Detected', 'Mode': 'NONE (Direct)' });
     return ProxyMode.NONE;
 };
 

@@ -28,84 +28,6 @@ CORS_HEADERS = {
     "Access-Control-Allow-Headers" : "Origin, Content-Type, Accept, Range",
 }
 
-def detect_hls_live(content: bytes) -> tuple[bool, bool]:
-    """Return (is_live, has_signal). VOD-safe: only strong LIVE signals mark live."""
-    try:
-        text = content.decode("utf-8", errors="ignore").strip()
-    except Exception:
-        return (False, False)
-    if not text.startswith("#EXTM3U"):
-        return (False, False)
-    upper = text.upper()
-    if "#EXT-X-ENDLIST" in upper or "#EXT-X-PLAYLIST-TYPE:VOD" in upper:
-        return (False, True)
-    if "#EXT-X-PLAYLIST-TYPE:EVENT" in upper or "#EXT-X-PLAYLIST-TYPE:LIVE" in upper:
-        return (True, True)
-    if "#EXT-X-PROGRAM-DATE-TIME" in upper:
-        return (True, True)
-    if "#EXT-X-SERVER-CONTROL" in upper or "#EXT-X-PART" in upper or "#EXT-X-SKIP" in upper:
-        return (True, True)
-    if "#EXT-X-MEDIA-SEQUENCE" in upper:
-        return (True, True)
-
-    # Heuristic: short rolling playlist without ENDLIST
-    lines = text.splitlines()
-    segment_count = 0
-    total_duration = 0.0
-    target_duration = 0.0
-    for line in lines:
-        line = line.strip()
-        if line.startswith("#EXT-X-TARGETDURATION:"):
-            try:
-                target_duration = float(line.split(":", 1)[1].strip())
-            except Exception:
-                pass
-        if line.startswith("#EXTINF:"):
-            try:
-                val = line.split(":", 1)[1]
-                if "," in val:
-                    val = val.split(",", 1)[0]
-                total_duration += float(val.strip())
-                segment_count += 1
-            except Exception:
-                pass
-
-    if target_duration > 0 and segment_count > 0:
-        if segment_count <= 6 and total_duration <= (target_duration * 6 + 0.5):
-            return (True, True)
-
-    return (False, False)
-
-def is_hls_master(content: bytes) -> bool:
-    try:
-        text = content.decode("utf-8", errors="ignore").strip()
-    except Exception:
-        return False
-    if not text.startswith("#EXTM3U"):
-        return False
-    return "#EXT-X-STREAM-INF" in text.upper()
-
-def extract_first_variant_url(base_url: str, content: bytes) -> str | None:
-    try:
-        text = content.decode("utf-8", errors="ignore").strip()
-    except Exception:
-        return None
-    if not text.startswith("#EXTM3U"):
-        return None
-    lines = text.splitlines()
-    expect_url = False
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        if line.startswith("#EXT-X-STREAM-INF"):
-            expect_url = True
-            continue
-        if line.startswith("#"):
-            continue
-        if expect_url:
-            return urljoin(base_url, line)
-    return None
 
 def get_content_type(url: str, response_headers: dict) -> str:
     """URL ve response headers'dan content-type belirle"""
@@ -171,8 +93,17 @@ def prepare_response_headers(response_headers: dict, url: str, detected_content_
 
 def detect_hls_from_url(url: str) -> bool:
     """URL yapısından HLS olup olmadığını tahmin eder"""
-    indicators = (".m3u8", "/m.php", "/l.php", "/ld.php", "master.txt", "embed/sheila")
-    return any(x in url for x in indicators)
+    url_lower = url.lower()
+    indicators = (
+        ".m3u8",
+        ".m3u",
+        "/hls/",
+        "/m3u8/",
+        "master.txt",
+        "/manifests/",
+        "playlist.m3u8",
+    )
+    return any(x in url_lower for x in indicators)
 
 def is_hls_segment(url: str) -> bool:
     """URL'nin HLS segment'i olup olmadığını kontrol et"""
