@@ -13,3 +13,4 @@ python-dotenv
 csscompressor
 rjsmin
 KekikStream>=2.6.1
+yt-dlp[default,curl-cffi]

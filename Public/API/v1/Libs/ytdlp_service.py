@@ -72,7 +72,6 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
             "yt-dlp",
             "--no-warnings",
             "--no-playlist",
-            "--no-impersonate",
             "--socket-timeout", "10",
             "-j",  # JSON output
             "-f", "best/all",
