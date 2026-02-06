@@ -2,7 +2,7 @@
 
 from CLI import konsol
 from .   import extractor_manager
-import asyncio, subprocess, json
+import asyncio, subprocess, json, time, os
 
 # Singleton YTDLP extractor instance
 for extractor_cls in extractor_manager.extractors:
@@ -10,6 +10,13 @@ for extractor_cls in extractor_manager.extractors:
     if instance.name == "yt-dlp":
         _ytdlp_extractor = instance
         break
+
+_CACHE: dict[str, dict] = {}
+_CACHE_TS: dict[str, float] = {}
+_NEG_CACHE_TS: dict[str, float] = {}
+_CACHE_LOCK = asyncio.Lock()
+_CACHE_TTL = int(os.getenv("YTDLP_CACHE_TTL", "600") or "600")
+_NEG_TTL = int(os.getenv("YTDLP_NEG_TTL", "60") or "60")
 
 async def ytdlp_extract_video_info(url: str, user_agent: str | None = None, referer: str | None = None):
     """
@@ -34,8 +41,26 @@ async def ytdlp_extract_video_info(url: str, user_agent: str | None = None, refe
     if not _ytdlp_extractor.can_handle_url(url):
         return None
 
+    cache_key = f"{url}|{user_agent or ''}|{referer or ''}"
+    now = time.time()
+    async with _CACHE_LOCK:
+        ts = _CACHE_TS.get(cache_key)
+        if ts and (now - ts) < _CACHE_TTL:
+            return _CACHE.get(cache_key)
+        neg_ts = _NEG_CACHE_TS.get(cache_key)
+        if neg_ts and (now - neg_ts) < _NEG_TTL:
+            return None
+
     # URL uygunsa tam bilgiyi çıkar
-    return await _extract_with_ytdlp(url, user_agent=user_agent, referer=referer)
+    info = await _extract_with_ytdlp(url, user_agent=user_agent, referer=referer)
+    async with _CACHE_LOCK:
+        if info:
+            _CACHE[cache_key] = info
+            _CACHE_TS[cache_key] = now
+            _NEG_CACHE_TS.pop(cache_key, None)
+        else:
+            _NEG_CACHE_TS[cache_key] = now
+    return info
 
 async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: str | None = None):
     """yt-dlp ile video bilgisi çıkar (internal)"""
@@ -44,6 +69,7 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
             "yt-dlp",
             "--no-warnings",
             "--no-playlist",
+            "--socket-timeout", "10",
             "-j",  # JSON output
             "-f", "best/all",
             "--format-sort", "proto:https",  # HTTPS (progressive) öncelikli, HLS yerine
@@ -60,9 +86,10 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
             stderr=subprocess.PIPE
         )
 
+        timeout_s = float(os.getenv("YTDLP_TIMEOUT", "25") or "25")
         stdout, stderr = await asyncio.wait_for(
             process.communicate(),
-            timeout=30.0  # 30 saniye timeout
+            timeout=timeout_s
         )
 
         if process.returncode != 0:
