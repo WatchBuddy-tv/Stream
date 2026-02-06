@@ -294,7 +294,7 @@ async def stream_wrapper(response: httpx.Response):
 def process_subtitle_content(content: bytes, content_type: str, url: str) -> bytes:
     """Altyazı içeriğini işler ve VTT formatına çevirir"""
     def _normalize_vtt_timestamps(text: str) -> str:
-        return re.sub(r"(\\d{2}:\\d{2}:\\d{2}),(\\d{3})", r"\\1.\\2", text)
+        return re.sub(r"(\d{2}:\d{2}:\d{2}),(\d{3})", r"\1.\2", text)
 
     # 1. UTF-8 BOM temizliği
     if content.startswith(b"\xef\xbb\xbf"):
