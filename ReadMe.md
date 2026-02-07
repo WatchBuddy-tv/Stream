@@ -15,10 +15,11 @@ KekikStreamAPI combines the **KekikStream engine** with a Web UI and REST API to
 This fork makes it **WatchBuddy‑ready** without modifying the core engine.
 
 - 🎥 Multi‑source discovery: search and watch from many sources
-- 🌐 Web UI: responsive, user‑friendly experience
-- 🔌 REST API: aligned to WatchBuddy clients
+- 🌐 Web UI: responsive, user‑friendly experience with cookie‑based language persistence (TR/EN)
+- 🔌 REST API: aligned to WatchBuddy clients with remote provider support
+- 🔗 Remote Provider Architecture: can connect to other WatchBuddy providers via schema discovery
 - 🎬 yt‑dlp integration: YouTube + 1000+ sites
-- 🌍 Multilanguage: public UI supports TR/EN
+- 🌍 Multilingual: persistent language selection across page reloads
 
 ---
 
@@ -32,7 +33,9 @@ The goal is a clean integration surface, predictable API responses, and a multil
 ## ✨ What This Fork Adds
 
 - ✅ WatchBuddy‑aligned API responses and metadata
-- ✅ Public UI prepared for TR/EN localization
+- ✅ Public UI with cookie‑based language persistence (TR/EN)
+- ✅ Remote provider architecture with schema discovery endpoint
+- ✅ Direct remote provider request routing
 - ✅ Defaults tuned for WatchBuddy clients
 - ✅ Simple integration with minimal configuration
 
@@ -71,17 +74,18 @@ python basla.py
 
 ## 🔌 API Endpoints (Summary)
 
-| Endpoint                     | Description          |
-|------------------------------|----------------------|
-| `/api/v1/health`             | Health check         |
-| `/api/v1/get_plugin_names`   | All plugins          |
-| `/api/v1/get_plugin`         | Plugin details       |
-| `/api/v1/search`             | Search content       |
-| `/api/v1/get_main_page`      | Category content     |
-| `/api/v1/load_item`          | Content details      |
-| `/api/v1/load_links`         | Video links          |
-| `/api/v1/extract`            | Link extraction      |
-| `/api/v1/ytdlp-extract`      | yt-dlp video details |
+| Endpoint                     | Description                               |
+|------------------------------|-------------------------------------------|
+| `/api/v1/health`             | Health check                              |
+| `/api/v1/schema`             | Provider schema with proxy URLs and name  |
+| `/api/v1/get_plugin_names`   | All plugins                               |
+| `/api/v1/get_plugin`         | Plugin details                            |
+| `/api/v1/search`             | Search content (supports remote provider) |
+| `/api/v1/get_main_page`      | Category content                          |
+| `/api/v1/load_item`          | Content details                           |
+| `/api/v1/load_links`         | Video links                               |
+| `/api/v1/extract`            | Link extraction                           |
+| `/api/v1/ytdlp-extract`      | yt-dlp video details                      |
 
 ---
 

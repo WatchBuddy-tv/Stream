@@ -15,10 +15,11 @@ KekikStreamAPI, **KekikStream engine** ile Web arayüzü ve REST API’yi birle�
 Bu fork, çekirdek motoru değiştirmeden **WatchBuddy uyumunu** sağlar.
 
 - 🎥 Çoklu kaynak desteği: içerik arama ve izleme
-- 🌐 Web arayüzü: responsive, kullanıcı dostu deneyim
-- 🔌 REST API: WatchBuddy istemcileriyle uyumlu
+- 🌐 Web arayüzü: responsive, kullanıcı dostu deneyim, cookie tabanlı dil kalıcılığı (TR/EN)
+- 🔌 REST API: WatchBuddy istemcileriyle uyumlu, uzak provider desteği
+- 🔗 Uzak Provider Mimarisi: schema keşfi ile diğer WatchBuddy provider'larına bağlanabilir
 - 🎬 yt‑dlp entegrasyonu: YouTube + 1000+ site desteği
-- 🌍 Çoklu dil: public arayüz TR/EN
+- 🌍 Çoklu dil: sayfa yenilemelerinde kalıcı dil seçimi
 
 ---
 
@@ -32,7 +33,9 @@ Amaç: temiz entegrasyon, öngörülebilir API çıktıları ve çok dilli publi
 ## ✨ Bu Fork Ne Ekler?
 
 - ✅ WatchBuddy uyumlu API çıktı formatları
-- ✅ Public arayüzde TR/EN hazırlığı
+- ✅ Public arayüzde cookie tabanlı dil kalıcılığı (TR/EN)
+- ✅ Schema keşfi ile uzak provider mimarisi
+- ✅ Direkt uzak provider istek yönlendirmesi
 - ✅ WatchBuddy istemcileri için uygun varsayılanlar
 - ✅ Az konfigürasyonla kolay entegrasyon
 
@@ -71,17 +74,18 @@ python basla.py
 
 ## 🔌 API Endpoints (Özet)
 
-| Endpoint                     | Açıklama            |
-|------------------------------|---------------------|
-| `/api/v1/health`             | API sağlık kontrolü |
-| `/api/v1/get_plugin_names`   | Tüm eklentiler      |
-| `/api/v1/get_plugin`         | Eklenti detayları   |
-| `/api/v1/search`             | İçerik arama        |
-| `/api/v1/get_main_page`      | Kategori içerikleri |
-| `/api/v1/load_item`          | İçerik detayları    |
-| `/api/v1/load_links`         | Video bağlantıları  |
-| `/api/v1/extract`            | Link extraction     |
-| `/api/v1/ytdlp-extract`      | yt-dlp video bilgisi |
+| Endpoint                     | Açıklama                                      |
+|------------------------------|-----------------------------------------------|
+| `/api/v1/health`             | API sağlık kontrolü                           |
+| `/api/v1/schema`             | Provider şeması, proxy URL'leri ve adı        |
+| `/api/v1/get_plugin_names`   | Tüm eklentiler                                |
+| `/api/v1/get_plugin`         | Eklenti detayları                             |
+| `/api/v1/search`             | İçerik arama (uzak provider desteği)          |
+| `/api/v1/get_main_page`      | Kategori içerikleri                           |
+| `/api/v1/load_item`          | İçerik detayları                              |
+| `/api/v1/load_links`         | Video bağlantıları                            |
+| `/api/v1/extract`            | Link extraction                               |
+| `/api/v1/ytdlp-extract`      | yt-dlp video bilgisi                          |
 
 ---
 
