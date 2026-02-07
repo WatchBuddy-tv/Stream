@@ -230,9 +230,8 @@ export class GlobalSearch {
 
     createResultCard(pluginName, result) {
         const card = document.createElement('a');
-        const langParam = window.LANG ? `&lang=${encodeURIComponent(window.LANG)}` : '';
         const providerParam = this.providerUrl ? `&provider=${encodeURIComponent(this.providerUrl)}` : '';
-        card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${langParam}${providerParam}`;
+        card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${providerParam}`;
         card.className = 'card';
 
         let cardContent = `<div class="plugin-badge">${escapeHtml(pluginName)}</div>`;

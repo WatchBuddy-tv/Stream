@@ -7,10 +7,10 @@
         <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ provider_name }} - {{ eklenti_adi }}</a>
     </div>
     <div class="breadcrumbs-item">
-        <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ title }}</span>
+        <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ baslik }}</span>
     </div>
 </nav>
 {% endblock %}
@@ -20,7 +20,7 @@
 
 <div class="detail-container">
     <div class="player-header">
-        <h1 class="player-title"><i class="fas fa-play-circle"></i> {{ title }}</h1>
+        <h1 class="player-title"><i class="fas fa-play-circle"></i> {{ baslik }}</h1>
     </div>
 
     <div class="source-selection">

@@ -53,24 +53,6 @@ const applyTranslations = () => {
     }
 };
 
-const updateLangLinks = (lang) => {
-    const anchors = document.querySelectorAll('a[href]');
-    anchors.forEach((a) => {
-        const href = a.getAttribute('href');
-        if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('#')) return;
-        try {
-            const url = new URL(href, window.location.origin);
-            if (url.origin !== window.location.origin) return;
-            url.searchParams.set('lang', lang);
-            a.setAttribute('href', url.pathname + url.search + url.hash);
-        } catch (e) {}
-    });
-    const langInputs = document.querySelectorAll('input[name="lang"]');
-    langInputs.forEach((input) => {
-        input.value = lang;
-    });
-};
-
 const setLanguage = (lang) => {
     if (!lang || !window.TRANSLATIONS_ALL) return;
     window.LANG = lang;
@@ -85,7 +67,6 @@ const setLanguage = (lang) => {
     } catch (e) {}
 
     applyTranslations();
-    updateLangLinks(lang);
     window.dispatchEvent(new CustomEvent('lang:changed', { detail: { lang } }));
 };
 
@@ -125,7 +106,6 @@ ready(() => {
             setLanguage(storedLang);
         } else {
             applyTranslations();
-            if (window.LANG) updateLangLinks(window.LANG);
         }
     } catch (e) {
         applyTranslations();

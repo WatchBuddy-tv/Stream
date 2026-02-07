@@ -70,6 +70,7 @@ async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
             "desc_key"    : "player_desc",
             "desc_vars"   : {"title": baslik},
             "eklenti_adi" : f"{eklenti_adi}",
+            "baslik"      : baslik,
             "icerik_url"  : icerik_url,
             "links"       : links,
             "provider_name"      : context.get("provider_name"),
