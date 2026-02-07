@@ -45,10 +45,10 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
                 episode.url = quote_plus(episode.url)
 
         context.update({
-            "title"       : f"{eklenti_adi} - {content.title}",
+            "title"       : context["tr"]("title_content", provider_name=context["provider_name"], provider=eklenti_adi, title=content.title),
             "description" : context["tr"]("content_desc", title=content.title),
             "title_key"   : "title_content",
-            "title_vars"  : {"provider": eklenti_adi, "title": content.title},
+            "title_vars"  : {"provider_name": context["provider_name"], "provider": eklenti_adi, "title": content.title},
             "desc_key"    : "content_desc",
             "desc_vars"   : {"title": content.title},
             "eklenti_adi" : eklenti_adi,

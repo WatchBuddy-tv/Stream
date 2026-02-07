@@ -31,10 +31,10 @@ async def ana_sayfa(request: Request):
             })
 
     context.update({
-        "title"       : context["tr"]("home_title"),
+        "title"       : context["tr"]("home_title", provider_name=context["provider_name"]),
         "description" : context["tr"]("home_desc"),
         "title_key"   : "home_title",
-        "title_vars"  : {},
+        "title_vars"  : {"provider_name": context["provider_name"]},
         "desc_key"    : "home_desc",
         "desc_vars"   : {},
         "plugins"     : plugins

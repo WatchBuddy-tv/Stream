@@ -28,10 +28,10 @@ async def ara(request: Request, eklenti_adi: str, sorgu: str):
                 elem.url = quote_plus(elem.url)
 
         context.update({
-            "title"       : f"{eklenti_adi} - {sorgu}",
+            "title"       : context["tr"]("title_search", provider_name=context["provider_name"], provider=eklenti_adi, query=sorgu),
             "description" : context["tr"]("search_desc", provider=eklenti_adi, query=sorgu),
             "title_key"   : "title_search",
-            "title_vars"  : {"provider": eklenti_adi, "query": sorgu},
+            "title_vars"  : {"provider_name": context["provider_name"], "provider": eklenti_adi, "query": sorgu},
             "desc_key"    : "search_desc",
             "desc_vars"   : {"provider": eklenti_adi, "query": sorgu},
             "eklenti_adi" : eklenti_adi,

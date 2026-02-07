@@ -30,10 +30,10 @@ async def kategori(request: Request, eklenti_adi: str, kategori_url: str, katego
                 icerik.url = quote_plus(icerik.url)
 
         context.update({
-            "title"        : f"{eklenti_adi} - {kategori_adi}",
+            "title"        : context["tr"]("title_category", provider_name=context["provider_name"], provider=eklenti_adi, category=kategori_adi),
             "description"  : context["tr"]("category_desc", provider=eklenti_adi, category=kategori_adi),
             "title_key"    : "title_category",
-            "title_vars"   : {"provider": eklenti_adi, "category": kategori_adi},
+            "title_vars"   : {"provider_name": context["provider_name"], "provider": eklenti_adi, "category": kategori_adi},
             "desc_key"     : "category_desc",
             "desc_vars"    : {"provider": eklenti_adi, "category": kategori_adi},
             "eklenti_adi"  : eklenti_adi,

@@ -34,10 +34,10 @@ async def eklenti(request: Request, eklenti_adi: str):
             }
 
         context.update({
-            "title"       : plugin.get("name"),
+            "title"       : context["tr"]("title_plugin", provider_name=context["provider_name"], name=plugin.get("name")),
             "description" : context["tr"]("plugin_page_desc", name=plugin.get("name")),
             "title_key"   : "title_plugin",
-            "title_vars"  : {"name": plugin.get("name")},
+            "title_vars"  : {"provider_name": context["provider_name"], "name": plugin.get("name")},
             "desc_key"    : "plugin_page_desc",
             "desc_vars"   : {"name": plugin.get("name")},
             "plugin"      : plugin

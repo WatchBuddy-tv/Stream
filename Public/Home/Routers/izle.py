@@ -63,10 +63,10 @@ async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
                 icerik_url = params["url"][0]
 
         context.update({
-            "title"       : baslik,
+            "title"       : context["tr"]("title_player", provider_name=context["provider_name"], title=baslik),
             "description" : context["tr"]("player_desc", title=baslik),
             "title_key"   : "title_player",
-            "title_vars"  : {"title": baslik},
+            "title_vars"  : {"provider_name": context["provider_name"], "title": baslik},
             "desc_key"    : "player_desc",
             "desc_vars"   : {"title": baslik},
             "eklenti_adi" : f"{eklenti_adi}",

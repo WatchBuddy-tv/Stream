@@ -81,6 +81,16 @@
                     <span data-i18n="provider_help_text">{{ tr('provider_help_text') }}</span>
                 </p>
 
+                <!-- Example Provider Info -->
+                <div class="help-text" style="border-top: 1px solid var(--border-light); padding-top: var(--spacing-md); margin-top: 0;">
+                    <i class="fab fa-github"></i>
+                    <span data-i18n="example_provider_info">{{ tr('example_provider_info') }}</span>
+                    <a href="https://github.com/WatchBuddy-tv/ExampleProvider" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; margin-left: 5px;">
+                        <span data-i18n="learn_more">{{ tr('learn_more') }}</span>
+                        <i class="fas fa-external-link-alt" style="font-size: 0.75em; margin-left: 3px;"></i>
+                    </a>
+                </div>
+
                 <!-- Example Button -->
                 {% if not is_remote %}
                 <div style="text-align: center;">
@@ -246,7 +256,6 @@
             if (tryExampleBtn) {
                 tryExampleBtn.onclick = () => {
                     input.value = EXAMPLE_PROVIDER_URL;
-                    input.focus();
                 };
             }
 

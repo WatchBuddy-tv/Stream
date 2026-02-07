@@ -64,9 +64,6 @@ export class GlobalSearch {
         if (this.clearFiltersButton) {
             this.clearFiltersButton.addEventListener('click', () => this.clearFilters());
         }
-
-        // Auto-focus
-        this.searchInput.focus();
     }
 
     async performSearch() {
@@ -281,7 +278,6 @@ export class GlobalSearch {
         this.pluginsList.style.display = 'block';
         this.resultsGrid.innerHTML = '';
         this.showStatus('');
-        this.searchInput.focus();
 
         // Reset filter state
         this.searchResultsByPlugin.clear();
