@@ -106,7 +106,7 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
         # Format belirleme
         ext = info.get("ext", "mp4").lower()
         url_lower = info.get("url", "").lower()
-        
+
         if "m3u8" in url_lower or info.get("protocol") == "m3u8_native":
             video_format = "hls"
         elif ext in ["mp4", "webm", "mkv", "avi", "mov", "flv", "wmv"]:

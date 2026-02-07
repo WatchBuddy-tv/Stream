@@ -11,7 +11,7 @@ async def eklenti(request: Request, eklenti_adi: str):
     try:
         plugin_name  = eklenti_adi
         plugin_names = plugin_manager.get_plugin_names()
-        
+
         if eklenti_adi not in plugin_names:
             raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
 

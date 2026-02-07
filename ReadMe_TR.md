@@ -2,7 +2,7 @@
 
 [![stream.watchbuddy.tv'yi WatchBuddy'ye Ekle](https://img.shields.io/badge/Ekle-stream.watchbuddy.tv-blue?style=flat-square)](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=https://stream.watchbuddy.tv)
 
-WatchBuddy’nin ihtiyacı olan streaming katmanını bu repo sağlar.  
+WatchBuddy’nin ihtiyacı olan streaming katmanını bu repo sağlar.
 Bu bir geliştirme ortamı değildir; WatchBuddy için **üretim odaklı entegrasyon forkudur**.
 
 English version: [ReadMe.md](./ReadMe.md)
@@ -11,7 +11,7 @@ English version: [ReadMe.md](./ReadMe.md)
 
 ## 🚦 Ne Sunar?
 
-KekikStreamAPI, **KekikStream engine** ile Web arayüzü ve REST API’yi birleştirerek uçtan uca bir streaming deneyimi sağlar.  
+KekikStreamAPI, **KekikStream engine** ile Web arayüzü ve REST API’yi birleştirerek uçtan uca bir streaming deneyimi sağlar.
 Bu fork, çekirdek motoru değiştirmeden **WatchBuddy uyumunu** sağlar.
 
 - 🎥 Çoklu kaynak desteği: içerik arama ve izleme
@@ -24,7 +24,7 @@ Bu fork, çekirdek motoru değiştirmeden **WatchBuddy uyumunu** sağlar.
 
 ## 🎯 Neden Bu Fork Var?
 
-**KekikStreamAPI**’yi, WatchBuddy içinde **sorunsuz çalışan bir streaming servisi** sunmak için fork ettik.  
+**KekikStreamAPI**’yi, WatchBuddy içinde **sorunsuz çalışan bir streaming servisi** sunmak için fork ettik.
 Amaç: temiz entegrasyon, öngörülebilir API çıktıları ve çok dilli public arayüz.
 
 ---
@@ -87,7 +87,7 @@ python basla.py
 
 ## 🛠️ Yeni Kaynak Eklemek mi İstiyorsunuz?
 
-Bu repo provider geliştirme için değildir.  
+Bu repo provider geliştirme için değildir.
 Kendi provider’ınızı oluşturmak için resmi rehber ve şablonları kullanın: [WatchBuddy ExampleProvider](https://github.com/WatchBuddy-tv/ExampleProvider)
 
 ---

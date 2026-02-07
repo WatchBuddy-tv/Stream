@@ -19,13 +19,13 @@ const HLS_SEGMENT_INDICATORS = [
 
 export const detectFormat = (url, format = null) => {
     const lowerUrl = url.toLowerCase();
-    
+
     // HLS detection (including non-standard extensions)
-    if (lowerUrl.includes('.m3u8') || 
+    if (lowerUrl.includes('.m3u8') ||
         lowerUrl.includes('.m3u') ||
-        lowerUrl.includes('/hls/') || 
-        lowerUrl.includes('/m3u8/') || 
-        lowerUrl.includes('master.txt') || 
+        lowerUrl.includes('/hls/') ||
+        lowerUrl.includes('/m3u8/') ||
+        lowerUrl.includes('master.txt') ||
         lowerUrl.includes('/manifests/') ||
         lowerUrl.includes('playlist.m3u8') ||
         lowerUrl.includes('/m.php') ||
@@ -58,7 +58,7 @@ export const detectFormat = (url, format = null) => {
     if (lowerUrl.includes('.wmv') || format === 'wmv') {
         return 'wmv';
     }
-    
+
     return format || 'native';
 };
 
@@ -70,10 +70,10 @@ export const suggestInitialMode = (url) => {
         BuddyLogger.warn('🛡️', 'PROXY SYSTEM', 'Mixed Content Detected', { 'Mode': 'MANIFEST_ONLY' });
         return ProxyMode.MANIFEST_ONLY;
     }
-    
+
     // Known protection parameters - start with manifest proxy
     const protectionParams = [
-        'md5=', 'expires=', 'expire=', 'token=', 'hmac=', 'hash=', 
+        'md5=', 'expires=', 'expire=', 'token=', 'hmac=', 'hash=',
         'auth=', 'sign=', 'key=', 'st=', 'e=', 't=', 'h=', 's='
     ];
     const matched = protectionParams.filter(p => lower.includes(p));
@@ -81,8 +81,8 @@ export const suggestInitialMode = (url) => {
     if (matched.length > 0) {
         BuddyLogger.info(
             '🛡️',
-            'PROXY SYSTEM', 
-            'Protected Content Detected', 
+            'PROXY SYSTEM',
+            'Protected Content Detected',
             {
                 'Params': matched.join(', '),
                 'Mode': 'MANIFEST_ONLY'
@@ -90,7 +90,7 @@ export const suggestInitialMode = (url) => {
         );
         return ProxyMode.MANIFEST_ONLY;
     }
-    
+
     const likelyMedia = (
         lower.includes('.m3u8') ||
         lower.includes('/hls/') ||
@@ -139,7 +139,7 @@ export const getNextMode = (current) => {
 export const parseRemoteUrl = (url) => {
     try {
         let remoteUrl = url;
-        
+
         // Extract real URL from proxy wrapper
         if (url.includes('/proxy/video?url=')) {
             const match = url.match(/url=([^&]+)/);
@@ -147,7 +147,7 @@ export const parseRemoteUrl = (url) => {
                 remoteUrl = decodeURIComponent(match[1]);
             }
         }
-        
+
         if (remoteUrl.startsWith('http')) {
             const urlObj = new URL(remoteUrl);
             return {
@@ -158,7 +158,7 @@ export const parseRemoteUrl = (url) => {
     } catch (e) {
         // Ignore parsing errors
     }
-    
+
     return { origin: null, baseUrl: null };
 };
 
@@ -168,13 +168,13 @@ export const resolveProxyBase = (context) => {
     // Şimdilik window.PROXY_URL ve window.PROXY_FALLBACK_URL değişkenlerine bakıyoruz (template'den gelen)
 
     if (context && context.proxyBase) return context.proxyBase;
-    
+
     // Context içinde proxyUrl varsa onu kullan (eğer sağlanmışsa)
     if (context && context.proxyUrl && isProxyAvailable(context.proxyUrl)) {
         if (context) context.proxyBase = context.proxyUrl;
         return context.proxyUrl;
     }
-    
+
     // Yoksa global değişkenlere bak (Stream player.html.j2 içinde set ediliyor olabilir)
     if (window.PROXY_URL && isProxyAvailable(window.PROXY_URL)) {
         if (context) context.proxyBase = window.PROXY_URL;
@@ -184,7 +184,7 @@ export const resolveProxyBase = (context) => {
         if (context) context.proxyBase = window.PROXY_FALLBACK_URL;
         return window.PROXY_FALLBACK_URL;
     }
-    
+
     return null; // Direct connection
 };
 
@@ -193,17 +193,17 @@ export const buildProxyUrlWithMode = (url, userAgent, referer, mode, context = n
     if (mode === ProxyMode.NONE) {
         return url;
     }
-    
+
     const proxyBase = resolveProxyBase(context || {});
     if (!proxyBase) return url;
 
     let proxyUrl = buildProxyUrl(url, userAgent, referer, 'video', proxyBase);
-    
+
     // Add force_proxy for FULL mode
     if (mode === ProxyMode.FULL) {
         proxyUrl += (proxyUrl.includes('?') ? '&' : '?') + 'force_proxy=1';
     }
-    
+
     return proxyUrl;
 };
 
@@ -212,7 +212,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
         const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u') || requestUrl.includes('master.txt');
         const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
         const isSegment = !isManifest && !isKey;
-        
+
         // Use dynamic mode from context (updated by fallback)
         const currentMode = context.currentProxyMode || initialMode;
 
@@ -239,9 +239,9 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
 
         // 4. MANIFEST_ONLY mode - segments direct
         if (currentMode === ProxyMode.MANIFEST_ONLY && requestUrl.startsWith('http') && isSegment) {
-            return; 
+            return;
         }
-        
+
         // 5. Fix wrongly resolved paths (relative to proxy instead of source origin)
         if (proxyBase && requestUrl.startsWith(proxyBase) && !requestUrl.includes('/proxy/')) {
             const path = requestUrl.substring(proxyBase.length);
@@ -259,7 +259,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
                 const finalUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video', proxyBase);
                 BuddyLogger.debug('🔑', 'HLS INTERCEPTOR', isManifest ? 'Manifest Intercepted' : 'Key Intercepted', { 'Url': requestUrl });
                 xhr.open('GET', finalUrl, true);
-                
+
                 if (requestUrl.startsWith('http')) {
                     context.lastLoadedBaseUrl = requestUrl.substring(0, requestUrl.lastIndexOf('/') + 1);
                     context.lastLoadedOrigin = new URL(requestUrl).origin;
@@ -274,10 +274,10 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
 export const createHlsConfig = (userAgent, referer, context, mode = null) => {
     // Determine initial mode
     const initialMode = mode ?? (window.PROXY_ENABLED !== false ? ProxyMode.MANIFEST_ONLY : ProxyMode.NONE);
-    
+
     // Track current mode for fallback (stored in context for persistence)
     context.currentProxyMode = context.currentProxyMode ?? initialMode;
-    
+
     // Smart Fallback Fragment Loader
     class SmartFallbackLoader extends Hls.DefaultConfig.loader {
         constructor(config) {
@@ -299,14 +299,14 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
             }
             this._fullSameRetryPrimary = 0;
             this._fullSameRetryFallback = 0;
-            
+
             const originalOnError = callbacks.onError;
             const self = this;
-            
+
             callbacks.onError = async (response, loaderContext, loader, stats) => {
                 const { proxyUrl, proxyFallbackUrl } = context;
-                
-                BuddyLogger.warn('🛡️', 'PROXY SYSTEM', 'Request Failed', { 
+
+                BuddyLogger.warn('🛡️', 'PROXY SYSTEM', 'Request Failed', {
                     'Url': loaderContext.url,
                     'Code': response.code,
                     'Mode': context.currentProxyMode
@@ -326,7 +326,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                     const wasProxy = lastUrl.includes('/proxy/video');
                     const wasPrimary = wasProxy && proxyUrl && lastUrl.includes(proxyUrl);
                     const wasFallback = wasProxy && proxyFallbackUrl && lastUrl.includes(proxyFallbackUrl);
-                    
+
                     let nextMode = null;
                     let nextProxy = null;
                     let retryDelayMs = 0;
@@ -337,7 +337,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                             // Already in FULL mode but failed on original URL (Interception case)
                             // Determine if we were using Primary or Fallback based on availability logic
                             const currentBase = resolveProxyBase(context);
-                            
+
                             if (currentBase === proxyUrl && proxyFallbackUrl && isProxyAvailable(proxyFallbackUrl)) {
                                 // We were on Primary, switch to Fallback
                                 nextMode = ProxyMode.FULL;
@@ -373,7 +373,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                                 BuddyLogger.error('🚫', 'PROXY SYSTEM', 'No proxies available. Stopping.');
                             }
                         }
-                    } 
+                    }
                     // 2 - Primary Cycle (Daha önce Primary denendiyse artık Fallback'e geçiş YOK)
                     else if (wasPrimary) {
                         if (lastMode === ProxyMode.MANIFEST_ONLY) {
@@ -430,7 +430,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
 
                     const executeRetry = () => {
                         self._retryCount++;
-                        BuddyLogger.info('🔄', 'PROXY SYSTEM', 'Executing Retry', { 
+                        BuddyLogger.info('🔄', 'PROXY SYSTEM', 'Executing Retry', {
                             'Mode': nextMode,
                             'Proxy': nextProxy,
                             'Attempt': self._retryCount
@@ -439,21 +439,21 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                         context.currentProxyMode = nextMode;
                         if (context.onModeEscalated) context.onModeEscalated(nextMode);
 
-                        const originalUrl = wasProxy 
-                            ? decodeURIComponent(lastUrl.match(/url=([^&]+)/)?.[1] || lastUrl) 
+                        const originalUrl = wasProxy
+                            ? decodeURIComponent(lastUrl.match(/url=([^&]+)/)?.[1] || lastUrl)
                             : lastUrl;
-                        
+
                         const buildUrl = (mode, pUrl) => {
                             let final = buildProxyUrl(originalUrl, userAgent, referer, 'video', pUrl);
                             if (mode === ProxyMode.FULL) final += '&force_proxy=1';
                             return final;
                         };
                         const newUrl = buildUrl(nextMode, nextProxy);
-                        
+
                         const xhr = new XMLHttpRequest();
                         xhr.open('GET', newUrl, true);
                         xhr.responseType = loaderContext.responseType || '';
-                        
+
                         xhr.onload = () => {
                             if (xhr.status >= 200 && xhr.status < 300) {
                                 BuddyLogger.info('✅', 'PROXY SYSTEM', 'Recovery Success!', { 'Mode': nextMode });
@@ -466,7 +466,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
                                 }
                             }
                         };
-                        
+
                         xhr.onerror = () => attemptRetry(newUrl, nextMode, 0);
                         xhr.send();
                     };
@@ -490,7 +490,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
             super.load(ctx, cfg, callbacks);
         }
     }
-    
+
     const isApple = /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && !window.MSStream;
 
     return {

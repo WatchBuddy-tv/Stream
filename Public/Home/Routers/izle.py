@@ -24,7 +24,7 @@ async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
             subtitles = []
             if link.subtitles:
                 subtitles = [sub.model_dump() for sub in link.subtitles]
-            
+
             links.append({
                 "name"       : link.name,
                 "url"        : link.url,

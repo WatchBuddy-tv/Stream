@@ -34,13 +34,13 @@ def get_content_type(url: str, response_headers: dict) -> str:
     # 1. Response header kontrolü
     if ct := response_headers.get("content-type"):
         return ct
-    
+
     # 2. URL uzantısı kontrolü
     url_lower = url.lower()
     for ext, ct in CONTENT_TYPES.items():
         if ext in url_lower:
             return ct
-            
+
     # 3. Varsayılan
     return "video/mp4"
 
@@ -124,7 +124,7 @@ def is_hls_segment(url: str) -> bool:
 def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, user_agent: str = None, force_proxy: bool = False) -> bytes:
     """
     HLS manifest içindeki göreceli URL'leri işler.
-    
+
     BANT GENİŞLİĞİ OPTİMİZASYONU:
     - Manifest dosyaları (.m3u8) -> Proxy üzerinden (CORS + header injection için)
     - Video segmentleri (.ts, .m4s) -> Doğrudan CDN'den (bant genişliği tasarrufu)
@@ -149,7 +149,7 @@ def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, use
             def replace_uri(match):
                 uri = match.group(1)
                 absolute_url = urljoin(base_url, uri)
-                
+
                 # Eğer bir segment DEĞİLSE (key veya alt manifest ise) proxy üzerinden geçmeli
                 # VEYA force_proxy aktif ise her şey proxy üzerinden geçmeli
                 if force_proxy or not is_hls_segment(absolute_url):
@@ -161,7 +161,7 @@ def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, use
                     if force_proxy:
                         proxy_url += '&force_proxy=1'
                     return f'URI="{proxy_url}"'
-                
+
                 # Segment ise doğrudan CDN
                 return f'URI="{absolute_url}"'
 
@@ -171,7 +171,7 @@ def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, use
         # URL satırları (# ile başlamayan ve boş olmayan)
         elif stripped and not stripped.startswith('#'):
             absolute_url = urljoin(base_url, stripped)
-            
+
             # Segment ise doğrudan CDN (Bant Genişliği Tasarrufu)
             if not force_proxy and is_hls_segment(absolute_url):
                 new_lines.append(absolute_url)
@@ -214,7 +214,7 @@ async def stream_wrapper(response: httpx.Response):
                 #     konsol.print(f"[red]⚠️  UYARI: Kaynak HTML döndürüyor![/red]")
 
             yield chunk
-            
+
     except GeneratorExit:
         pass
     except Exception as e:
@@ -251,9 +251,9 @@ def process_subtitle_content(content: bytes, content_type: str, url: str) -> byt
 
     # 3. SRT -> VTT Dönüşümü
     is_srt = (
-        content_type == "application/x-subrip" or 
-        url.endswith(".srt") or 
-        content.strip().startswith(b"1\r\n") or 
+        content_type == "application/x-subrip" or
+        url.endswith(".srt") or
+        content.strip().startswith(b"1\r\n") or
         content.strip().startswith(b"1\n")
     )
 

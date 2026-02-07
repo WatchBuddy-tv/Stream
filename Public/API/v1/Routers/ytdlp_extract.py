@@ -10,10 +10,10 @@ async def ytdlp_extract(request: Request):
     """
     yt-dlp ile video bilgisi çıkar.
     Go WebSocket servisi bu endpoint'i çağırarak video metadata alır.
-    
+
     Query Parameters:
         url: Video URL'si
-    
+
     Returns:
         {
             "title": str,
@@ -26,16 +26,16 @@ async def ytdlp_extract(request: Request):
     istek = request.state.veri
     if not istek:
         return JSONResponse(status_code=400, content={"hata": "url parametresi gerekli"})
-    
+
     url = istek.get("url", "").strip()
     if not url:
         return JSONResponse(status_code=400, content={"hata": "url parametresi gerekli"})
-    
+
     # yt-dlp ile video bilgisi çıkar
     info = await ytdlp_extract_video_info(
         url
     )
-    
+
     if not info or not info.get("stream_url"):
         # yt-dlp bulamadıysa, orijinal URL'i kullan
         return {
@@ -50,7 +50,7 @@ async def ytdlp_extract(request: Request):
                 "resolved_by": "fallback"
             }
         }
-    
+
     return {
         **api_v1_global_message,
         "result" : {

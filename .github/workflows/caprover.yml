@@ -26,9 +26,9 @@ jobs:
         id  : degisiklik
         run : |
           # Stream (haric dışındaki dosyalar)
-          if git diff --name-only HEAD^ | grep -vE '^haric/' | grep -qE '\.(py|txt|j2|html|css|js|json|yaml|yml)$'; then 
+          if git diff --name-only HEAD^ | grep -vE '^haric/' | grep -qE '\.(py|txt|j2|html|css|js|json|yaml|yml)$'; then
             echo "stream=true" >> $GITHUB_OUTPUT
-          else 
+          else
             echo "stream=false" >> $GITHUB_OUTPUT
           fi
 

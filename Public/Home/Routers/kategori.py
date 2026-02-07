@@ -10,7 +10,7 @@ from urllib.parse       import quote_plus
 async def kategori(request: Request, eklenti_adi: str, kategori_url: str, kategori_adi: str, sayfa: int = 1):
     try:
         plugin_names = plugin_manager.get_plugin_names()
-        
+
         if eklenti_adi not in plugin_names:
             raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
 

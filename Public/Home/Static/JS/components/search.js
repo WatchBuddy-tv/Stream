@@ -18,54 +18,54 @@ export class GlobalSearch {
         this.pluginFilters = $('#plugin-filters');
         this.filtersContainer = $('#filters-container');
         this.clearFiltersButton = $('#clear-filters');
-        
+
         this.currentSearch = null;
         this.fetchHelper = new AbortableFetch();
         this.plugins = window.availablePlugins || [];
-        
+
         // Filter state
         this.searchResultsByPlugin = new Map(); // { pluginName: [results] }
         this.activeFilters = new Set();
     }
-    
+
     init() {
         if (!this.searchInput) return;
-        
+
         // Event listeners
         this.searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.performSearch();
             }
         });
-        
+
         this.searchButton.addEventListener('click', () => this.performSearch());
         this.clearSearchButton.addEventListener('click', () => this.clearSearch());
-        
+
         if (this.clearFiltersButton) {
             this.clearFiltersButton.addEventListener('click', () => this.clearFilters());
         }
-        
+
         // Auto-focus
         this.searchInput.focus();
     }
 
     async performSearch() {
         const query = this.searchInput.value.trim();
-        
+
         if (!query || query.length < 2) {
             this.showStatus(t('search_min_chars', { count: 2 }), 'error');
             return;
         }
-        
+
         // Abort previous search if any
         this.fetchHelper.abort();
-        
+
         this.currentSearch = query;
-        
+
         // Reset filter state
         this.searchResultsByPlugin.clear();
         this.activeFilters.clear();
-        
+
         // UI setup
         this.searchQueryDisplay.textContent = `"${query}"`;
         this.searchResults.style.display = 'block';
@@ -73,25 +73,25 @@ export class GlobalSearch {
         this.resultsGrid.innerHTML = '';
         this.pluginFilters.style.display = 'none';
         this.filtersContainer.innerHTML = '';
-        
+
         // Scroll to results
         scrollTo(this.searchResults);
-        
+
         // Search state
         let completedSearches = 0;
         let totalResults = 0;
-        
+
         this.showStatus(t('searching_plugins', { count: this.plugins.length }), 'searching');
-        
+
         // Add loading cards
         this.plugins.forEach(plugin => this.addLoadingCard(plugin.name));
-        
+
         // Progressive search
         const searchPromises = this.plugins.map(plugin =>
             this.searchInPlugin(plugin.name, query, this.fetchHelper, { abortPrevious: false })
                 .then(results => {
                     completedSearches++;
-                    
+
                     if (results && results.length > 0) {
                         totalResults += results.length;
                         this.searchResultsByPlugin.set(plugin.name, results);
@@ -99,7 +99,7 @@ export class GlobalSearch {
                     } else {
                         this.removeLoadingCard(plugin.name);
                     }
-                    
+
                     this.updateSearchStatus(completedSearches, this.plugins.length, totalResults);
                 })
                 .catch(error => {
@@ -111,25 +111,25 @@ export class GlobalSearch {
                     this.updateSearchStatus(completedSearches, this.plugins.length, totalResults);
                 })
         );
-        
+
         await Promise.all(searchPromises);
-        
+
         // Show filters only if this search is still the current one and we have results
         if (this.currentSearch === query && totalResults > 0) {
             this.renderFilters();
         }
     }
-    
+
     async searchInPlugin(pluginName, query, fetchHelper = null, fetchConfig = {}) {
         try {
             const url = `/api/v1/search?plugin=${encodeURIComponent(pluginName)}&query=${encodeURIComponent(query)}`;
             const usedHelper = fetchHelper || this.fetchHelper;
             const response = await usedHelper.fetch(url, {}, fetchConfig);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
-            
+
             const data = await response.json();
             return data.result || [];
         } catch (error) {
@@ -140,7 +140,7 @@ export class GlobalSearch {
             return [];
         }
     }
-    
+
     addLoadingCard(pluginName) {
         const loadingCard = document.createElement('div');
         loadingCard.className = 'loading-card';
@@ -155,7 +155,7 @@ export class GlobalSearch {
     showStatus(message, type = '') {
         this.searchStatus.textContent = message;
         this.searchStatus.className = 'search-status';
-        
+
         if (type) {
             addClass(this.searchStatus, type);
             // If searching, add a small spinner
@@ -166,7 +166,7 @@ export class GlobalSearch {
             }
         }
     }
-    
+
     removeLoadingCard(pluginName) {
         const loadingCard = $(`#loading-${pluginName}`);
         if (loadingCard) {
@@ -174,24 +174,24 @@ export class GlobalSearch {
             setTimeout(() => loadingCard.remove(), 300);
         }
     }
-    
+
     replaceLoadingWithResults(pluginName, results) {
         const loadingCard = $(`#loading-${pluginName}`);
         if (!loadingCard) return;
-        
+
         results.forEach((result, index) => {
             const resultCard = this.createResultCard(pluginName, result);
-            
+
             // Fade-in animation
             resultCard.style.opacity = '0';
             resultCard.style.transform = 'translateY(20px)';
-            
+
             if (index === 0) {
                 loadingCard.replaceWith(resultCard);
             } else {
                 this.resultsGrid.appendChild(resultCard);
             }
-            
+
             // Animate
             setTimeout(() => {
                 resultCard.style.transition = 'all 0.4s ease-out';
@@ -200,27 +200,27 @@ export class GlobalSearch {
             }, index * 50);
         });
     }
-    
+
     createResultCard(pluginName, result) {
         const card = document.createElement('a');
         const langParam = window.LANG ? `&lang=${encodeURIComponent(window.LANG)}` : '';
         card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${langParam}`;
         card.className = 'card';
-        
+
         let cardContent = `<div class="plugin-badge">${escapeHtml(pluginName)}</div>`;
-        
+
         if (result.poster) {
             cardContent += `<img src="${result.poster}" alt="${escapeHtml(result.title)}" class="card-image">`;
         }
-        
+
         cardContent += `<div class="card-content">`;
         cardContent += `<h3 class="card-title">${escapeHtml(result.title)}</h3>`;
         cardContent += `</div>`;
-        
+
         card.innerHTML = cardContent;
         return card;
     }
-    
+
     updateSearchStatus(completed, total, resultsCount) {
         if (completed === total) {
             if (resultsCount === 0) {
@@ -232,7 +232,7 @@ export class GlobalSearch {
             this.showStatus(t('search_progress', { done: completed, total, count: resultsCount }), 'searching');
         }
     }
-    
+
     showNoResults() {
         this.resultsGrid.innerHTML = `
             <div class="no-results" style="grid-column: 1 / -1;">
@@ -243,7 +243,7 @@ export class GlobalSearch {
         `;
         this.showStatus(t('search_no_results_status'), 'error');
     }
-    
+
     clearSearch() {
         this.searchInput.value = '';
         this.searchResults.style.display = 'none';
@@ -251,25 +251,25 @@ export class GlobalSearch {
         this.resultsGrid.innerHTML = '';
         this.showStatus('');
         this.searchInput.focus();
-        
+
         // Reset filter state
         this.searchResultsByPlugin.clear();
         this.activeFilters.clear();
         this.pluginFilters.style.display = 'none';
         this.filtersContainer.innerHTML = '';
-        
+
         // Abort ongoing searches
         this.fetchHelper.abort();
     }
-    
+
     renderFilters() {
         if (this.searchResultsByPlugin.size === 0) {
             this.pluginFilters.style.display = 'none';
             return;
         }
-        
+
         this.filtersContainer.innerHTML = '';
-        
+
         // Create filter buttons for plugins with results
         this.searchResultsByPlugin.forEach((results, pluginName) => {
             const filterButton = document.createElement('button');
@@ -278,37 +278,37 @@ export class GlobalSearch {
             filterButton.dataset.plugin = pluginName;
             filterButton.setAttribute('aria-pressed', 'false');
             filterButton.setAttribute('aria-label', t('filter_aria_label', { plugin: pluginName, count: results.length }));
-            
+
             filterButton.innerHTML = `
                 <span>${escapeHtml(pluginName)}</span>
                 <span class="filter-count">${results.length}</span>
             `;
-            
+
             filterButton.addEventListener('click', () => this.toggleFilter(pluginName));
-            
+
             this.filtersContainer.appendChild(filterButton);
         });
-        
+
         this.pluginFilters.style.display = 'block';
     }
-    
+
     toggleFilter(pluginName) {
         if (this.activeFilters.has(pluginName)) {
             this.activeFilters.delete(pluginName);
         } else {
             this.activeFilters.add(pluginName);
         }
-        
+
         this.updateFilterButtons();
         this.applyFilters();
     }
-    
+
     clearFilters() {
         this.activeFilters.clear();
         this.updateFilterButtons();
         this.applyFilters();
     }
-    
+
     updateFilterButtons() {
         const buttons = $$('.filter-button', this.filtersContainer);
         buttons.forEach(button => {
@@ -322,12 +322,12 @@ export class GlobalSearch {
             }
         });
     }
-    
+
     applyFilters() {
         this.resultsGrid.innerHTML = '';
-        
+
         let visibleResults = 0;
-        
+
         this.searchResultsByPlugin.forEach((results, pluginName) => {
             // Show results if no filters active or if plugin is in active filters
             if (this.activeFilters.size === 0 || this.activeFilters.has(pluginName)) {
@@ -338,17 +338,17 @@ export class GlobalSearch {
                 });
             }
         });
-        
+
         // Update status
         const totalResults = Array.from(this.searchResultsByPlugin.values())
             .reduce((sum, results) => sum + results.length, 0);
-        
+
         if (this.activeFilters.size > 0) {
             this.showStatus(t('filter_results_status', { visible: visibleResults, total: totalResults, filters: this.activeFilters.size }), 'success');
         } else {
             this.showStatus(t('search_results_count', { count: totalResults }), 'success');
         }
     }
-    
+
 
 }

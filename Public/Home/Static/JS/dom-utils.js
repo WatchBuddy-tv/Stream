@@ -2,12 +2,12 @@
 
 export const flashOverlayElement = (element, duration = 3000) => {
     if (!element) return;
-    
+
     element.classList.add('flash-visible');
-    
+
     // Clear previous timeout
     if (element._hideTimeout) clearTimeout(element._hideTimeout);
-    
+
     // Hide after duration
     element._hideTimeout = setTimeout(() => {
         element.classList.remove('flash-visible');

@@ -13,39 +13,39 @@ async def subtitle_proxy(request: Request, url: str, referer: str = None, user_a
     try:
         decoded_url     = unquote(url)
         request_headers = prepare_request_headers(request, decoded_url, referer, user_agent)
-        
+
         # Proxy ayarını hazırla
         proxy_url = PROXIES.get("https") or PROXIES.get("http") if PROXIES else None
-        
+
         async with httpx.AsyncClient(
-            follow_redirects = True, 
-            timeout          = 30.0, 
+            follow_redirects = True,
+            timeout          = 30.0,
             verify           = False,
             proxy            = proxy_url
         ) as client:
             response = await client.get(decoded_url, headers=request_headers)
-            
+
             if response.status_code >= 400:
                 return Response(
-                    content     = f"Altyazı hatası: {response.status_code}", 
+                    content     = f"Altyazı hatası: {response.status_code}",
                     status_code = response.status_code
                 )
-            
+
             processed_content = process_subtitle_content(
-                response.content, 
-                response.headers.get("content-type", ""), 
+                response.content,
+                response.headers.get("content-type", ""),
                 decoded_url
             )
-            
+
             return Response(
                 content     = processed_content,
                 status_code = 200,
                 headers     = {"Content-Type": "text/vtt; charset=utf-8", **CORS_HEADERS},
                 media_type  = "text/vtt"
             )
-            
+
     except Exception as e:
         return Response(
-            content     = f"Proxy hatası: {str(e)}", 
+            content     = f"Proxy hatası: {str(e)}",
             status_code = 500
         )

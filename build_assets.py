@@ -49,7 +49,7 @@ def minify_assets():
 
         except Exception as e:
             konsol.log(f"[red]✗ CSS minify hatası[/] ({css_file}): {e}")
-    
+
     # JS dosyalarını minify et
     for js_file in Path(".").rglob("*.js"):
         # Zaten minified ise atla

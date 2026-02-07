@@ -16,14 +16,14 @@ export const isProxyAvailable = (baseUrl) => {
     if (!entry) {
         // Optimistic: Return true and trigger background check
         checkProxyHealth(cleanBaseUrl).then(available => {
-            state.knownProxies.set(cleanBaseUrl, { 
-                available, 
-                lastChecked: Date.now() 
+            state.knownProxies.set(cleanBaseUrl, {
+                available,
+                lastChecked: Date.now()
             });
         });
-        return true; 
+        return true;
     }
-    
+
     // Refresh if older than 5 minutes
     if (Date.now() - entry.lastChecked > 300000) {
         checkProxyHealth(cleanBaseUrl).then(available => {
@@ -31,7 +31,7 @@ export const isProxyAvailable = (baseUrl) => {
             entry.lastChecked = Date.now();
         });
     }
-    
+
     return entry.available;
 };
 
@@ -77,5 +77,3 @@ export const buildProxyUrl = (url, userAgent = '', referer = '', endpoint = 'vid
     }
     return url;
 };
-
-

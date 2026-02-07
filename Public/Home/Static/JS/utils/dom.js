@@ -8,7 +8,7 @@ export const $$ = (selector, context = document) => context.querySelectorAll(sel
 
 export function createElement(tag, attrs = {}, children = []) {
     const element = document.createElement(tag);
-    
+
     // Set attributes
     Object.entries(attrs).forEach(([key, value]) => {
         if (key === 'className') {
@@ -23,7 +23,7 @@ export function createElement(tag, attrs = {}, children = []) {
             element.setAttribute(key, value);
         }
     });
-    
+
     // Append children
     if (typeof children === 'string') {
         element.textContent = children;
@@ -36,18 +36,18 @@ export function createElement(tag, attrs = {}, children = []) {
             }
         });
     }
-    
+
     return element;
 }
 
 export function show(element) {
-    const elements = typeof element === 'string' ? $$(element) : 
+    const elements = typeof element === 'string' ? $$(element) :
                      element instanceof NodeList ? element : [element];
     elements.forEach(el => el && (el.style.display = ''));
 }
 
 export function hide(element) {
-    const elements = typeof element === 'string' ? $$(element) : 
+    const elements = typeof element === 'string' ? $$(element) :
                      element instanceof NodeList ? element : [element];
     elements.forEach(el => el && (el.style.display = 'none'));
 }

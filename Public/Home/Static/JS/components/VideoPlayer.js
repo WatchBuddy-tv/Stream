@@ -139,11 +139,11 @@ export default class VideoPlayer {
 
     setupKeyboardControls() {
         const SEEK_STEP = 2; // 2 saniye ileri/geri
-        
+
         // Video element'in focus almasını engelle (native keyboard handling devre dışı)
         if (this.videoPlayer) {
             this.videoPlayer.tabIndex = -1;
-            
+
             // Seek eventlerini yakala ve durdur (native default'ları ezmek için)
             const onSeeking = (e) => {
                 if (e.isTrusted || Date.now() < this.userGestureUntil) {
@@ -212,7 +212,7 @@ export default class VideoPlayer {
                     this.videoPlayer.muted = !this.videoPlayer.muted;
                     break;
             }
-            
+
             // Kendi kontrollerimiz çalıştıysa yayılımı durdur
             e.stopPropagation();
         }, { capture: true });
@@ -299,7 +299,7 @@ export default class VideoPlayer {
 
         this.videoPlayer.addEventListener('volumechange', () => {
             const val = this.videoPlayer.muted ? 0 : this.videoPlayer.volume;
-            
+
             if (volumeSlider) {
                 volumeSlider.value = val;
                 // Dolu/Boş ayrımı için gradient
@@ -349,7 +349,7 @@ export default class VideoPlayer {
             pos = Math.max(0, Math.min(1, pos)); // Clamp between 0 and 1
 
             if (progressFill) progressFill.style.width = `${pos * 100}%`;
-            
+
             // Show preview time if wanted (optional)
             if (Number.isFinite(this.videoPlayer.duration)) {
                  const previewTime = pos * this.videoPlayer.duration;
@@ -391,7 +391,7 @@ export default class VideoPlayer {
             setSeekingState(true);
             // Use the first touch point
             const touch = e.touches[0];
-            const fakeEvent = { pageX: touch.pageX }; 
+            const fakeEvent = { pageX: touch.pageX };
             handleSeekMove(fakeEvent);
 
             const handleTouchMove = (e) => {
@@ -406,7 +406,7 @@ export default class VideoPlayer {
                 document.removeEventListener('touchmove', handleTouchMove);
                 document.removeEventListener('touchend', handleTouchEnd);
                 document.removeEventListener('touchcancel', handleTouchEnd);
-                
+
                 // For touch end, we use the last known position or we need changedTouches
                 // Ideally handleSeekMove updates a variable we can use, but simply calculating based on last move is tricky without state.
                 // Simpler: Just rely on the last visual update? No, we need to set currentTime.
@@ -416,7 +416,7 @@ export default class VideoPlayer {
                      const rect = progressContainer.getBoundingClientRect();
                      let pos = (touch.pageX - rect.left) / progressContainer.offsetWidth;
                      pos = Math.max(0, Math.min(1, pos));
-                     
+
                      if (Number.isFinite(this.videoPlayer.duration)) {
                         this.userGestureUntil = Date.now() + 1200;
                         this.videoPlayer.currentTime = pos * this.videoPlayer.duration;
@@ -476,11 +476,11 @@ export default class VideoPlayer {
                 // Fullscreen'e gir
                 try {
                     // Sadece wrapper'ı tam ekran yap (kontrollerin ve overlay'in görünmesi için şart)
-                    const fsMethod = wrapper.requestFullscreen || 
-                                   wrapper.webkitRequestFullscreen || 
-                                   wrapper.mozRequestFullScreen || 
+                    const fsMethod = wrapper.requestFullscreen ||
+                                   wrapper.webkitRequestFullscreen ||
+                                   wrapper.mozRequestFullScreen ||
                                    wrapper.msRequestFullscreen;
-                    
+
                     if (fsMethod) {
                         await fsMethod.call(wrapper);
                         // Mobilde yatay moda kilitle
@@ -504,7 +504,7 @@ export default class VideoPlayer {
         // Fullscreen ve orientation yönetimi
         const handleFullscreenChange = () => {
             const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || this.videoPlayer.webkitDisplayingFullscreen);
-            
+
             // İkonu güncelle
             if (fullscreenBtn) {
                 const icon = fullscreenBtn.querySelector('i');
@@ -535,10 +535,10 @@ export default class VideoPlayer {
         ccBtn?.addEventListener('click', () => {
             const tracks = this.videoPlayer.textTracks;
             // Eğer o anki videonun birden fazla altyazısı varsa modalı aç
-            if (this.currentVideoIndex !== null && 
-                this.videoData[this.currentVideoIndex].subtitles && 
+            if (this.currentVideoIndex !== null &&
+                this.videoData[this.currentVideoIndex].subtitles &&
                 this.videoData[this.currentVideoIndex].subtitles.length > 1) {
-                
+
                 const subOptions = this.videoData[this.currentVideoIndex].subtitles.map(s => ({
                     label: s.name,
                     value: s.url,
@@ -567,7 +567,7 @@ export default class VideoPlayer {
         const showControls = () => {
             wrapper.classList.add('show-controls');
             wrapper.style.cursor = 'default';
-            
+
             clearTimeout(hideTimeout);
             if (!this.videoPlayer.paused) {
                 const isMobile = window.innerWidth <= 1024;
@@ -592,7 +592,7 @@ export default class VideoPlayer {
                 showControls();
                 return;
             }
-            
+
             // Modern Player UX:
             // Masaüstü: Tıkla -> Oynat/Durdur
             // Mobil: Tıkla -> Kontrolleri Aç/Kapa
@@ -650,9 +650,9 @@ export default class VideoPlayer {
                 this.loadingOverlay.classList.remove('is-buffering');
             }
         });
-        
+
         this.videoPlayer.addEventListener('pause', showControls);
-        
+
         this.videoPlayer.addEventListener('waiting', () => {
             showControls();
             if (this.loadingOverlay && !this.videoPlayer.paused) {
@@ -669,7 +669,7 @@ export default class VideoPlayer {
             let newVol = this.videoPlayer.volume + (delta * step);
             newVol = Math.max(0, Math.min(1, newVol));
             this.videoPlayer.volume = newVol;
-            
+
             // Mute varsa kaldır
             if (newVol > 0 && this.videoPlayer.muted) this.videoPlayer.muted = false;
 
@@ -678,20 +678,20 @@ export default class VideoPlayer {
                 const group = volumeSlider.closest('.volume-group');
                 if (group) {
                     group.classList.add('show-slider');
-                    
+
                     if (this.volumeTimer) clearTimeout(this.volumeTimer);
-                    
+
                     this.volumeTimer = setTimeout(() => {
                         group.classList.remove('show-slider');
                         this.volumeTimer = null;
                     }, 1500);
                 }
             }
-            
+
             // Kontrolleri de göster
             showControls();
         }, { passive: false });
-        
+
         // Fullscreen'e girildiğinde kontrolleri zorla göster
         document.addEventListener('fullscreenchange', () => {
             showControls();
@@ -699,7 +699,7 @@ export default class VideoPlayer {
         document.addEventListener('webkitfullscreenchange', () => {
             showControls();
         });
-        
+
         // Özel altyazı sistemi (Native ::cue desteği yetersiz olduğu için her tarayıcıda kullanıyoruz)
         this.setupCustomSubtitles();
 
@@ -755,7 +755,7 @@ export default class VideoPlayer {
 
         // Video yüklendiğinde track'leri bağla
         this.videoPlayer.addEventListener('loadedmetadata', bindTrackEvents);
-        
+
         // Başlangıçta bağla
         bindTrackEvents();
     }
@@ -781,7 +781,7 @@ export default class VideoPlayer {
             // Logları kopyala
             document.getElementById('copy-logs').addEventListener('click', () => {
                 const logText = this.logger.getFormattedLogs();
-                
+
                 // Clipboard API kullanılabilir mi kontrol et (HTTPS veya localhost gerektirir)
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(logText)
@@ -1018,7 +1018,7 @@ export default class VideoPlayer {
             if (this.loadingOverlay) this.loadingOverlay.style.display = 'none';
         };
 
-        // Clear old ones if they were specifically named, but since we replaced the element before, 
+        // Clear old ones if they were specifically named, but since we replaced the element before,
         // they were gone. Now we keep the same element.
         this.videoPlayer.removeEventListener('loadedmetadata', this._lastOnLoadedMetadata);
         this.videoPlayer.removeEventListener('canplay', this._lastOnCanPlay);
@@ -1052,14 +1052,14 @@ export default class VideoPlayer {
 
         // Video formatını proxy'den Content-Type ile belirle
         this.logger.info('🔎', 'FETCHER', 'Detecting Format (HEAD Request)');
-        
+
         fetch(proxyUrl, { method: 'HEAD' })
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                
+
                 const contentType = response.headers.get('content-type') || '';
                 this.logger.info('📄', 'FETCHER', 'Content-Type Received', { 'Type': contentType });
-                
+
                 // HLS formats
                 const isHLS = contentType.includes('mpegurl') || contentType.includes('x-mpegurl');
                 // MP4 / Generic
@@ -1081,7 +1081,7 @@ export default class VideoPlayer {
             })
             .catch(error => {
                 this.logger.warn('⚠️', 'FETCHER', 'HEAD Request Failed', { 'Details': error.message });
-                
+
                 // Fallback: URL pattern'den format tespiti
                 const urlFormat = detectFormat(originalUrl);
                 if (urlFormat === 'hls') {
@@ -1093,7 +1093,7 @@ export default class VideoPlayer {
 
         // Altyazıları ekle
         const ccBtn = document.getElementById('custom-cc');
-        
+
         // Varsayılan altyazıyı önceden belirle (Buton metni ve track ayarları için)
         let defaultIndex = 0;
         if (selectedVideo.subtitles && selectedVideo.subtitles.length > 0) {
@@ -1120,7 +1120,7 @@ export default class VideoPlayer {
                     subtitleSelectBtn.className = 'button button-secondary';
                     subtitleSelectBtn.style.marginLeft = 'auto'; // Sağa yasla
                     subtitleSelectBtn.style.marginTop = 'var(--spacing-sm)';
-                    
+
                     // Kaynak listesinin yanına ekle
                     const sourceSelection = document.querySelector('.source-selection');
                     if (sourceSelection) {
@@ -1130,7 +1130,7 @@ export default class VideoPlayer {
 
                 // Seçili altyazıyı güncelle (buton etiketinde göster)
                 const defaultSubName = selectedVideo.subtitles[defaultIndex]?.name || selectedVideo.subtitles[0].name;
-                const currentSubName = this.selectedSubtitleUrl 
+                const currentSubName = this.selectedSubtitleUrl
                     ? selectedVideo.subtitles.find(s => s.url === this.selectedSubtitleUrl)?.name || t('selection_selected')
                     : defaultSubName;
                 subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${currentSubName}`;
@@ -1191,14 +1191,14 @@ export default class VideoPlayer {
                     };
 
                     this.videoPlayer.appendChild(track);
-                    
+
                     // Tarayıcı bazen default=true olsa da göstermez, zorla açalım
                     if (index === defaultIndex) {
                         setTimeout(() => {
                             if (this.videoPlayer.textTracks && this.videoPlayer.textTracks[index]) {
                                 this.videoPlayer.textTracks[index].mode = 'showing';
                                 this.logger.info('✅', 'SUBTITLE', 'Auto-activated', { 'Name': subtitle.name });
-                                
+
                                 // Buton metnini ve tooltip'i güncelle
                                 const ssBtn = document.getElementById('subtitle-select-btn');
                                 if (ssBtn) {
@@ -1218,7 +1218,7 @@ export default class VideoPlayer {
             ccBtn.style.display = 'none';
             ccBtn.classList.remove('active');
             this.setSubtitleTooltip(null);
-            
+
             // Altyazı butonu yoksa kaldır
             const subtitleSelectBtn = document.getElementById('subtitle-select-btn');
             if (subtitleSelectBtn) {
@@ -1265,7 +1265,7 @@ export default class VideoPlayer {
         const newRoomId = (crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0')).toUpperCase();
         const wpParams = new URLSearchParams();
         wpParams.set('url', selectedVideo.url);
-        
+
         // Sayfa başlığını al (player-title elementinden)
         const playerTitleEl = document.querySelector('.player-title');
         const pageTitle = playerTitleEl ? playerTitleEl.textContent.trim() : document.title;
@@ -1274,9 +1274,9 @@ export default class VideoPlayer {
         wpParams.set('referer', referer || '');
 
         // Seçilen altyazıyı kullan (yoksa ilk altyazıyı kullan)
-        const subtitleUrl = this.selectedSubtitleUrl || 
+        const subtitleUrl = this.selectedSubtitleUrl ||
             (selectedVideo.subtitles && selectedVideo.subtitles.length > 0 ? selectedVideo.subtitles[0].url : null);
-        
+
         if (subtitleUrl) {
             wpParams.set('subtitle', subtitleUrl);
         }
@@ -1284,8 +1284,8 @@ export default class VideoPlayer {
         if (this.proxyUrl) {
             wpParams.set('proxy_url', this.proxyUrl);
         }
-        
-        
+
+
         // Web Butonu guncelle
         if (watchPartyButton) {
             watchPartyButton.href = `https://watchbuddy.tv/room/${newRoomId}?${wpParams.toString()}`;
@@ -1312,7 +1312,7 @@ export default class VideoPlayer {
      */
     checkHlsAudioTracks(hls) {
         const audioBtn = document.getElementById('custom-audio');
-        
+
         if (hls.audioTracks && hls.audioTracks.length > 1) {
             this.logger.info('🔊', 'AUDIO', 'Audio Tracks Found', { 'Count': hls.audioTracks.length });
             let currentIndex = typeof hls.audioTrack === 'number' ? hls.audioTrack : 0;
@@ -1322,10 +1322,10 @@ export default class VideoPlayer {
             const currentTrack = hls.audioTracks[currentIndex];
             const currentLabel = currentTrack?.name || currentTrack?.lang || t('audio_track_label', { index: currentIndex + 1 });
             this.setAudioTooltip(currentLabel);
-            
+
             if (audioBtn) {
                 audioBtn.style.display = 'block'; // Butonu göster
-                
+
                 // Tıklama olayı (Tekrar tekrar eklememek için kontrol et veya replace et)
                 // En temizi: eski listener'ı kaldırmak zordur, cloneNode ile temizleyelim
                 const newBtn = audioBtn.cloneNode(true);
@@ -1366,7 +1366,7 @@ export default class VideoPlayer {
     loadHLSVideo(originalUrl, referer, userAgent, useProxy = false) {
         this.logger.info('🚀', 'HLS', 'Starting HLS.js', { 'Mode': useProxy ? 'Forced Proxy' : 'Smart' });
         this.retryCount = 0;
-        
+
         // Uzak sunucunun origin'ini al (absolute path'leri çözümlemek için)
         const { origin, baseUrl } = parseRemoteUrl(originalUrl);
         this.lastLoadedOrigin = origin;
@@ -1388,7 +1388,7 @@ export default class VideoPlayer {
                 hls.on(Hls.Events.ERROR, (event, data) => {
                     if (data.fatal) {
                         this.logger.error('❌', 'HLS', 'Fatal Error', { 'Details': data.details });
-                        
+
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
                                 this.retryCount++;
@@ -1418,11 +1418,11 @@ export default class VideoPlayer {
                 hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
                     this.logger.info('✅', 'HLS', 'Manifest Parsed Successfully');
                     this.retryCount = 0;
-                    
+
                     // Ses izlerini kontrol et
                     this.checkHlsAudioTracks(hls);
                 });
-                
+
                 // Ses izleri güncellendiğinde de kontrol et
                 hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, () => {
                      this.checkHlsAudioTracks(hls);
@@ -1431,7 +1431,7 @@ export default class VideoPlayer {
                 // Manifest kaynağını belirle
                 const loadUrl = useProxy ? buildServiceProxyUrl(originalUrl, userAgent, referer, 'video') : originalUrl;
                 this.logger.info('🔑', 'HLS', 'Final Resource URL', { 'Origin': useProxy ? 'Proxy' : 'Direct', 'Url': loadUrl });
-                
+
                 hls.loadSource(loadUrl);
                 hls.attachMedia(this.videoPlayer);
             } catch (error) {
@@ -1523,7 +1523,7 @@ export default class VideoPlayer {
             if (this.selectionModal.style.display !== 'none') {
                 const isClickInside = this.selectionModal.contains(e.target);
                 const isClickOnTrigger = e.target.closest('#custom-cc, #custom-audio, #subtitle-select-btn');
-                
+
                 if (!isClickInside && !isClickOnTrigger) {
                     this.hideSelectionModal();
                 }
@@ -1554,7 +1554,7 @@ export default class VideoPlayer {
         // Başlık ve İkonu Güncelle
         const titleEl = document.getElementById('modal-title');
         const iconEl = document.getElementById('modal-icon');
-        
+
         if (titleEl) titleEl.querySelector('span').textContent = title;
         if (iconEl) iconEl.className = `fas ${iconClass}`;
 
@@ -1564,7 +1564,7 @@ export default class VideoPlayer {
         items.forEach((item) => {
             const btn = document.createElement('button');
             btn.className = 'subtitle-item-btn';
-            
+
             // Aktif öğeyi işaretle
             if (currentValue !== undefined && item.value === currentValue) {
                 btn.classList.add('active');
@@ -1586,7 +1586,7 @@ export default class VideoPlayer {
         if (trigger) {
             const isInsidePlayer = trigger.closest('#video-player-wrapper');
             const wrapper = document.getElementById('video-player-wrapper');
-            
+
             // Elemanı ilgili kapsayıcıya taşı (Tam ekran ve konumlandırma için)
             if (isInsidePlayer) {
                 if (this.selectionModal.parentElement !== wrapper) {
@@ -1602,7 +1602,7 @@ export default class VideoPlayer {
             this.selectionModal.style.display = 'flex';
             const rect = trigger.getBoundingClientRect();
             const dropdownRect = this.selectionModal.getBoundingClientRect();
-            
+
             if (isInsidePlayer) {
                 // Player içindeki kontrollerde trigger elementine göre pozisyon al
                 // trigger.offsetLeft wrapper'a göre değilse (iç içe divler varsa) getBoundingClientRect kullanmak daha güvenli
@@ -1660,14 +1660,14 @@ export default class VideoPlayer {
             tracks.forEach(track => track.mode = 'hidden');
             if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${t('off')}`;
             this.setSubtitleTooltip(t('off'));
-            
+
             const ccBtn = document.getElementById('custom-cc');
             if (ccBtn) ccBtn.classList.remove('active');
         } else {
             // Altyazı aç/değiştir
             this.selectedSubtitleUrl = subtitle.url;
             this.logger.info('💬', 'SUBTITLE', 'Switched', { 'Name': subtitle.name });
-            
+
             tracks.forEach(track => {
                 if (track.label === subtitle.name) {
                     track.mode = 'showing';
@@ -1678,7 +1678,7 @@ export default class VideoPlayer {
 
             if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name}`;
             this.setSubtitleTooltip(subtitle.name);
-            
+
             const ccBtn = document.getElementById('custom-cc');
             if (ccBtn) ccBtn.classList.add('active');
         }

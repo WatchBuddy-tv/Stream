@@ -26,7 +26,7 @@ async def load_links(request:Request):
         subtitles = []
         if link.subtitles:
             subtitles = [sub.model_dump() for sub in link.subtitles]
-        
+
         result.append({
             "name"       : link.name,
             "url"        : link.url,

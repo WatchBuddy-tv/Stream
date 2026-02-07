@@ -103,7 +103,7 @@ const setupLanguageSwitch = () => {
 ready(() => {
     // Show branding in console
     showBranding();
-    
+
     // Initialize URL unquote functionality
     initUnquote();
 

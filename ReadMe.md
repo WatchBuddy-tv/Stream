@@ -2,7 +2,7 @@
 
 [![Add stream.watchbuddy.tv to WatchBuddy](https://img.shields.io/badge/Add-stream.watchbuddy.tv-blue?style=flat-square)](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=https://stream.watchbuddy.tv)
 
-WatchBuddy needs a reliable, clean streaming layer. This repo provides that layer.  
+WatchBuddy needs a reliable, clean streaming layer. This repo provides that layer.
 It is **not** a development sandbox — it is the **production‑ready integration fork** used by WatchBuddy.
 
 Other languages: [ReadMe_TR.md](./ReadMe_TR.md)
@@ -11,7 +11,7 @@ Other languages: [ReadMe_TR.md](./ReadMe_TR.md)
 
 ## 🚦 What It Provides
 
-KekikStreamAPI combines the **KekikStream engine** with a Web UI and REST API to deliver an end‑to‑end streaming experience.  
+KekikStreamAPI combines the **KekikStream engine** with a Web UI and REST API to deliver an end‑to‑end streaming experience.
 This fork makes it **WatchBuddy‑ready** without modifying the core engine.
 
 - 🎥 Multi‑source discovery: search and watch from many sources
@@ -24,7 +24,7 @@ This fork makes it **WatchBuddy‑ready** without modifying the core engine.
 
 ## 🎯 Why This Fork Exists
 
-We forked **KekikStreamAPI** to provide a **drop‑in streaming service** for WatchBuddy with minimal setup.  
+We forked **KekikStreamAPI** to provide a **drop‑in streaming service** for WatchBuddy with minimal setup.
 The goal is a clean integration surface, predictable API responses, and a multilingual public UI.
 
 ---
@@ -87,7 +87,7 @@ python basla.py
 
 ## 🛠️ Want to Add New Sources?
 
-This repository is **not** for provider development.  
+This repository is **not** for provider development.
 If you want to build your own provider, use the official guide and templates: [WatchBuddy ExampleProvider](https://github.com/WatchBuddy-tv/ExampleProvider)
 
 ---

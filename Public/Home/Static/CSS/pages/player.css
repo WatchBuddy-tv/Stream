@@ -220,7 +220,7 @@ video::cue {
     flex-wrap: nowrap;
     overflow-x: auto; /* Safety for very small screens */
   }
-  
+
   .control-buttons .button {
     flex: 1;
     white-space: nowrap;
@@ -348,10 +348,10 @@ video::cue {
 ::cue {
   background: rgba(0, 0, 0, 0.2) !important;
   color: #ffff00 !important;
-  text-shadow: 
-      -1.5px -1.5px 0 #000, 
-       1.5px -1.5px 0 #000, 
-      -1.5px  1.5px 0 #000, 
+  text-shadow:
+      -1.5px -1.5px 0 #000,
+       1.5px -1.5px 0 #000,
+      -1.5px  1.5px 0 #000,
        1.5px  1.5px 0 #000,
        0 2px 4px rgba(0, 0, 0, 0.5) !important;
   font-size: 0.9em;
@@ -401,10 +401,10 @@ video::-webkit-media-text-track-container {
   font-weight: 600;
   padding: 0.2em 0.8em;
   border-radius: 8px;
-  text-shadow: 
-    -1.5px -1.5px 0 #000, 
-     1.5px -1.5px 0 #000, 
-    -1.5px  1.5px 0 #000, 
+  text-shadow:
+    -1.5px -1.5px 0 #000,
+     1.5px -1.5px 0 #000,
+    -1.5px  1.5px 0 #000,
      1.5px  1.5px 0 #000,
      0 2px 4px rgba(0, 0, 0, 0.5);
   line-height: 1.4;
@@ -425,12 +425,12 @@ video::-webkit-media-text-track-container {
     bottom: 30px;
     padding: 0 5%;
   }
-  
+
   .custom-subtitle-overlay span {
     font-size: 1rem;
     padding: 0.3em 0.6em;
   }
-  
+
   #video-player-wrapper.show-controls .custom-subtitle-overlay {
     bottom: clamp(50px, 12%, 80px);
   }
@@ -654,7 +654,7 @@ body.seeking-active {
     height: 60px;
     font-size: 1.75rem;
   }
-  
+
   .bottom-controls {
     padding: 0 1rem 0.75rem 1rem;
   }
@@ -960,4 +960,3 @@ body.seeking-active {
   from { transform: translate(-50%, 20px); opacity: 0; }
   to { transform: translate(-50%, 0); opacity: 1; }
 }
-

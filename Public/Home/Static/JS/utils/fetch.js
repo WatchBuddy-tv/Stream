@@ -4,11 +4,11 @@ import BuddyLogger from './BuddyLogger.min.js';
 export async function fetchJSON(url, options = {}) {
     try {
         const response = await fetch(url, options);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
+
         return await response.json();
     } catch (error) {
         BuddyLogger.error('🌐', 'FETCHER', 'JSON Fetch Error', { 'Url': url, 'Details': error.message });
@@ -19,7 +19,7 @@ export async function fetchJSON(url, options = {}) {
 export async function fetchWithTimeout(url, options = {}, timeout = 5000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
+
     try {
         const response = await fetch(url, {
             ...options,
@@ -41,16 +41,16 @@ export class AbortableFetch {
         // Keep track of all active controllers so we can support concurrent requests
         this.controllers = new Set();
     }
-    
+
     async fetch(url, options = {}, config = {}) {
         const { abortPrevious = true } = config;
         // Abort previous requests if requested
         if (abortPrevious) this.abort();
-        
+
         // Create new controller for this request and track it
         const controller = new AbortController();
         this.controllers.add(controller);
-        
+
         try {
             const response = await fetch(url, {
                 ...options,
@@ -68,7 +68,7 @@ export class AbortableFetch {
             throw error;
         }
     }
-    
+
     abort() {
         if (this.controllers && this.controllers.size > 0) {
             this.controllers.forEach(ctrl => {
@@ -77,7 +77,7 @@ export class AbortableFetch {
             this.controllers.clear();
         }
     }
-    
+
     isActive() {
         return this.controllers && this.controllers.size > 0;
     }

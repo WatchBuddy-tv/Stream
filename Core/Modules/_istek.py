@@ -100,7 +100,7 @@ async def log_salla(log_veri: dict, request: Request):
     cihaz_label  = f"[green]{'cihaz':<{LABEL_WIDTH}}:[/]"
 
     log_lines = []
-    
+
     log_lines.append(f"[bold blue]»[/] [bold turquoise2]{log_url}[/]")
 
     if log_veri["veri"]:

@@ -4,7 +4,7 @@ import { $$ } from '../utils/dom.min.js';
 
 export function initUnquote() {
     const unquotes = $$('.unquote');
-    
+
     unquotes.forEach(elem => {
         let text = elem.textContent;
         text = decodeURIComponent(text).replace(/\+/g, " ");

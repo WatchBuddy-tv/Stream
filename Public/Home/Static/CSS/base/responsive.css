@@ -7,7 +7,7 @@
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
-  
+
   .detail-info {
     gap: var(--spacing-lg);
   }
@@ -18,7 +18,7 @@
   :root {
     --spacing-xxl: 2rem;
   }
-  
+
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--spacing-md);
@@ -32,23 +32,23 @@
     max-width: 250px;
     margin: 0 auto var(--spacing-lg);
   }
-  
+
   .episodes-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
-  
+
   .card-actions {
     flex-direction: column;
   }
-  
+
   .button {
     width: 100%;
   }
-  
+
   .detail-title {
     font-size: var(--font-size-xl);
   }
-  
+
   .breadcrumbs {
     overflow-x: auto;
     white-space: nowrap;
@@ -60,7 +60,7 @@
   #video-links-ui .button {
     flex-basis: calc(50% - 12px);
   }
-  
+
   .control-buttons .button {
     min-width: 120px;
   }
@@ -72,20 +72,20 @@
     --font-size-base: 0.95rem;
     --spacing-lg: 1rem;
   }
-  
+
   .container {
     width: 95%;
     padding: var(--spacing-sm);
   }
-  
+
   .detail-container {
     padding: var(--spacing-md);
   }
-  
+
   .card-content {
     padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
   }
-  
+
   .grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
@@ -96,7 +96,7 @@
     transform: translateY(-3px);
     box-shadow: 0 5px 15px var(--shadow-color-hover);
   }
-  
+
   .detail-meta-item:hover,
   .social-link:hover {
     transform: none;
@@ -116,36 +116,36 @@
   .search-form {
     flex-direction: row;
   }
-  
+
   .detail-title {
     font-size: var(--font-size-lg);
     padding-left: var(--spacing-sm);
   }
-  
+
   .detail-meta {
     gap: 4px;
     flex-wrap: wrap;
   }
-  
+
   .detail-meta-item {
     margin-bottom: 4px;
     font-size: var(--font-size-xs);
     padding: 2px 6px;
   }
-  
+
   .episodes-title {
     font-size: var(--font-size-lg);
   }
-  
+
   .social-link {
     width: 36px;
     height: 36px;
   }
-  
+
   .detail-poster {
     max-width: 180px;
   }
-  
+
   .button {
     padding: 8px 16px;
     font-size: var(--font-size-sm);
@@ -161,33 +161,33 @@
   .detail-poster {
     max-width: 160px;
   }
-  
+
   .social-link {
     width: 32px;
     height: 32px;
   }
-  
+
   .button {
     min-height: 40px;
     padding: 8px 12px;
   }
-  
+
   .card-actions {
     gap: var(--spacing-md);
   }
-  
-  .card:hover, 
-  .button:hover, 
+
+  .card:hover,
+  .button:hover,
   .nav-link:hover,
   .episode-card:hover,
   .detail-meta-item:hover {
     transform: none;
   }
-  
+
   .button i {
     font-size: 1em;
   }
-  
+
   .card-image {
     aspect-ratio: 1.5/2;
   }
@@ -196,7 +196,7 @@
   #video-links-ui .button {
     flex-basis: 100%;
   }
-  
+
   .control-buttons .button {
     flex-basis: 100%;
     min-width: unset;
