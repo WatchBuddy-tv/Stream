@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from pathlib            import Path
 from typing             import Optional
 from ...API.v1.Libs     import plugin_manager
-from Public.Home.Libs.provider_client import RemoteProviderClient
+from ..Libs.provider_client import RemoteProviderClient
 from urllib.parse import quote, unquote
 import json
 
@@ -111,8 +111,6 @@ async def build_context(request: Request, **extra):
     context = {
         "request"            : request,
         "lang"               : lang,
-        "lang_query"         : f"?lang={lang}",
-        "lang_query_amp"     : f"&lang={lang}",
         "provider_query"     : provider_query,
         "provider_query_amp" : provider_query_amp,
         "translations"       : translations,

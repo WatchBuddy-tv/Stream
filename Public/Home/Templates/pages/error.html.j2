@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
     <div class="breadcrumbs-item">
-        <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
+        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current"><i class="fas fa-exclamation-triangle"></i> <span data-i18n="error_title">{{ tr('error_title') }}</span></span>
@@ -18,14 +18,14 @@
 <div class="detail-container">
     <div class="detail-header">
         <h1 class="detail-title" data-i18n="error_heading">{{ tr('error_heading') }}</h1>
-        
+
         <div class="error-box">
             <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--primary-color);"></i>
             <p>{{ hata }}</p>
         </div>
-        
+
         <div>
-            <a href="/{{ lang_query }}" class="button button-secondary">
+            <a href="/" class="button button-secondary">
                 <i class="fas fa-home"></i> <span data-i18n="back_home">{{ tr('back_home') }}</span>
             </a>
         </div>

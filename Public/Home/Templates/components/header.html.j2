@@ -3,7 +3,7 @@
 {#- Header Component -#}
 <header class="header">
     <div class="container">
-        <a href="/{{ lang_query }}" class="logo" data-i18n="site_name">{{ tr('site_name') }}</a>
+        <a href="/" class="logo" data-i18n="site_name">{{ tr('site_name') }}</a>
         <p data-i18n="site_tagline">{{ tr('site_tagline') }}</p>
         <div class="lang-switch" role="group" aria-label="Language">
             <button type="button" class="lang-btn{% if lang == 'tr' %} active{% endif %}" data-lang="tr" aria-pressed="{{ 'true' if lang == 'tr' else 'false' }}">TR</button>

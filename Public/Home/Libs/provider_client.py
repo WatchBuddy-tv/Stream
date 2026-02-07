@@ -1,7 +1,7 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 import httpx
-from typing import Any
+from typing       import Any
 from urllib.parse import unquote
 
 class RemoteProviderClient:
