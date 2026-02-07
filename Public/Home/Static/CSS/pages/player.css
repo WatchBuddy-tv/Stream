@@ -41,17 +41,17 @@
   outline: none;
 }
 
-/* Native Kontrolleri Tamamen Gizle */
-#video-player::-webkit-media-controls,
-#video-player::-webkit-media-controls-enclosure,
-#video-player::-webkit-media-controls-panel,
-#video-player::-webkit-media-controls-play-button,
-#video-player::-webkit-media-controls-timeline,
-#video-player::-webkit-media-controls-current-time-display,
-#video-player::-webkit-media-controls-time-remaining-display,
-#video-player::-webkit-media-controls-mute-button,
-#video-player::-webkit-media-controls-volume-slider,
-#video-player::-webkit-media-controls-loading-indicator {
+/* Native Kontrolleri Tamamen Gizle (Custom Controls Hazırsa) */
+html.custom-controls-ready #video-player::-webkit-media-controls,
+html.custom-controls-ready #video-player::-webkit-media-controls-enclosure,
+html.custom-controls-ready #video-player::-webkit-media-controls-panel,
+html.custom-controls-ready #video-player::-webkit-media-controls-play-button,
+html.custom-controls-ready #video-player::-webkit-media-controls-timeline,
+html.custom-controls-ready #video-player::-webkit-media-controls-current-time-display,
+html.custom-controls-ready #video-player::-webkit-media-controls-time-remaining-display,
+html.custom-controls-ready #video-player::-webkit-media-controls-mute-button,
+html.custom-controls-ready #video-player::-webkit-media-controls-volume-slider,
+html.custom-controls-ready #video-player::-webkit-media-controls-loading-indicator {
   display: none !important;
   -webkit-appearance: none !important;
   appearance: none !important;
@@ -59,8 +59,8 @@
   pointer-events: none !important;
 }
 
-/* Firefox için native kontrolleri ve altyazıları gizle */
-#video-player::-moz-media-controls {
+/* Firefox için native kontrolleri gizle (Custom Controls Hazırsa) */
+html.custom-controls-ready #video-player::-moz-media-controls {
   display: none !important;
 }
 
@@ -332,14 +332,14 @@ video::cue {
   position: absolute !important;
   left: 0 !important;
   right: 0 !important;
-  bottom: 60px !important;
+  bottom: calc(60px + env(safe-area-inset-bottom)) !important;
   z-index: 5 !important;
 }
 
 #video-player-wrapper:fullscreen.show-controls .custom-subtitle-overlay,
 #video-player-wrapper:-webkit-full-screen.show-controls .custom-subtitle-overlay,
 #video-player-wrapper:-moz-full-screen.show-controls .custom-subtitle-overlay {
-  bottom: 120px !important;
+  bottom: calc(120px + env(safe-area-inset-bottom)) !important;
 }
 
 /* ========================================
@@ -485,6 +485,10 @@ video::-webkit-media-text-track-container {
     touch-action: none;
 }
 
+body.seeking-active {
+  overscroll-behavior-y: contain;
+}
+
 /* Track (Görünür Çubuk Arka Planı) */
 .progress-container::before {
     content: '';
@@ -554,9 +558,12 @@ video::-webkit-media-text-track-container {
   font-size: 1.25rem;
   cursor: pointer;
   padding: 5px;
+  min-width: 44px;
+  min-height: 44px;
   transition: all 0.2s;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .ctrl-btn:hover,
@@ -685,6 +692,20 @@ video::-webkit-media-text-track-container {
     font-size: 0.75rem;
   }
 
+  .control-row {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .control-group {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .control-group:last-child {
+    margin-left: auto;
+  }
+
 
 }
 
@@ -693,11 +714,16 @@ video::-webkit-media-text-track-container {
     gap: 0.5rem;
   }
 
+  .control-row {
+    row-gap: 0.35rem;
+  }
+
   .ctrl-btn {
     font-size: 1rem;
   }
 
-  #custom-backward, #custom-forward {
+  #video-player-wrapper:not(.show-seek-buttons) #custom-backward,
+  #video-player-wrapper:not(.show-seek-buttons) #custom-forward {
     display: none;
   }
 

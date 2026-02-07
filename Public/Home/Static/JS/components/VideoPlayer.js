@@ -236,6 +236,13 @@ export default class VideoPlayer {
         const ccBtn = document.getElementById('custom-cc');
         const actionAnimation = document.getElementById('action-animation');
 
+        const htmlEl = document.documentElement;
+        if (bottomPlayBtn && progressContainer && fullscreenBtn) {
+            htmlEl.classList.add('custom-controls-ready');
+        } else {
+            htmlEl.classList.remove('custom-controls-ready');
+        }
+
         const formatDuration = (seconds) => {
             const hours = Math.floor(seconds / 3600);
             const mins = Math.floor((seconds % 3600) / 60);
@@ -319,6 +326,22 @@ export default class VideoPlayer {
         // Progress / Seeking
         // Progress / Seeking (Drag Support & Optimistic UI)
         let isDragging = false;
+        let seekButtonsTimeout;
+        let longPressTimer;
+
+        const setSeekingState = (active) => {
+            document.body.classList.toggle('seeking-active', active);
+        };
+
+        const showSeekButtonsTemporarily = () => {
+            if (window.innerWidth > 480 || !wrapper) return;
+            wrapper.classList.add('show-seek-buttons');
+
+            clearTimeout(seekButtonsTimeout);
+            seekButtonsTimeout = setTimeout(() => {
+                wrapper.classList.remove('show-seek-buttons');
+            }, 2500);
+        };
 
         const handleSeekMove = (e) => {
             const rect = progressContainer.getBoundingClientRect();
@@ -337,6 +360,7 @@ export default class VideoPlayer {
         const handleSeekEnd = (e) => {
             if (!isDragging) return;
             isDragging = false;
+            setSeekingState(false);
 
             document.removeEventListener('mousemove', handleSeekMove);
             document.removeEventListener('mouseup', handleSeekEnd);
@@ -353,6 +377,7 @@ export default class VideoPlayer {
 
         progressContainer?.addEventListener('mousedown', (e) => {
             isDragging = true;
+            setSeekingState(true);
             handleSeekMove(e); // Update UI immediately
 
             document.addEventListener('mousemove', handleSeekMove);
@@ -362,20 +387,25 @@ export default class VideoPlayer {
         // Touch support
         progressContainer?.addEventListener('touchstart', (e) => {
             isDragging = true;
+            if (e.cancelable) e.preventDefault();
+            setSeekingState(true);
             // Use the first touch point
             const touch = e.touches[0];
             const fakeEvent = { pageX: touch.pageX }; 
             handleSeekMove(fakeEvent);
 
             const handleTouchMove = (e) => {
+                if (e.cancelable) e.preventDefault();
                 const touch = e.touches[0];
                 handleSeekMove({ pageX: touch.pageX });
             };
 
             const handleTouchEnd = (e) => {
                 isDragging = false;
+                setSeekingState(false);
                 document.removeEventListener('touchmove', handleTouchMove);
                 document.removeEventListener('touchend', handleTouchEnd);
+                document.removeEventListener('touchcancel', handleTouchEnd);
                 
                 // For touch end, we use the last known position or we need changedTouches
                 // Ideally handleSeekMove updates a variable we can use, but simply calculating based on last move is tricky without state.
@@ -396,6 +426,7 @@ export default class VideoPlayer {
 
             document.addEventListener('touchmove', handleTouchMove, { passive: false });
             document.addEventListener('touchend', handleTouchEnd);
+            document.addEventListener('touchcancel', handleTouchEnd);
         });
 
         const updateTimeUI = () => {
@@ -539,9 +570,11 @@ export default class VideoPlayer {
             
             clearTimeout(hideTimeout);
             if (!this.videoPlayer.paused) {
+                const isMobile = window.innerWidth <= 1024;
+                const hideDelay = isMobile ? 4500 : 3000;
                 hideTimeout = setTimeout(() => {
                     hideControls();
-                }, 3000);
+                }, hideDelay);
             }
         };
 
@@ -588,6 +621,26 @@ export default class VideoPlayer {
         wrapper.addEventListener('click', (e) => {
             toggleControls(e);
         });
+
+        // Long press: show seek buttons on very small screens
+        wrapper.addEventListener('touchstart', (e) => {
+            const isControlHit = e.target.closest('.bottom-controls, .control-row, .ctrl-btn, .progress-container, .volume-group');
+            if (isControlHit || window.innerWidth > 480) return;
+
+            clearTimeout(longPressTimer);
+            longPressTimer = setTimeout(() => {
+                showControls();
+                showSeekButtonsTemporarily();
+            }, 450);
+        }, { passive: true });
+
+        wrapper.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        }, { passive: true });
+
+        wrapper.addEventListener('touchcancel', () => {
+            clearTimeout(longPressTimer);
+        }, { passive: true });
 
         // Video durumu değişiklikleri
         this.videoPlayer.addEventListener('play', () => {
