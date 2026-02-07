@@ -32,7 +32,14 @@ PROXY_FALLBACK_URL   = _clean_url(os.getenv("PROXY_FALLBACK_URL", ""))
 http_proxy  = os.getenv("HTTP_PROXY", None)
 https_proxy = os.getenv("HTTPS_PROXY", None)
 
-if http_proxy and https_proxy:
+# Check if proxy values are actually valid URLs (not "none" or empty)
+def _is_valid_proxy(value: str | None) -> bool:
+    if not value:
+        return False
+    cleaned = value.strip().lower()
+    return cleaned not in ("none", "") and (cleaned.startswith("http://") or cleaned.startswith("https://"))
+
+if _is_valid_proxy(http_proxy) and _is_valid_proxy(https_proxy):
     PROXIES = {
         "http"  : http_proxy,
         "https" : https_proxy,
