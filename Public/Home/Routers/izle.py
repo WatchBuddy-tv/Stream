@@ -1,37 +1,58 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core import Request, HTMLResponse
-from .    import home_router, home_template, build_context
-
-from Public.API.v1.Libs import plugin_manager
-from Settings           import PROVIDER_NAME, PROXY_URL, PROXY_FALLBACK_URL
-from urllib.parse       import urlparse, parse_qs
+from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from urllib.parse import urlparse, parse_qs
+from Settings     import PROXY_URL, PROXY_FALLBACK_URL
 
 @home_router.get("/izle/{eklenti_adi}", response_class=HTMLResponse)
 async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
+    context = await build_context(request)
+    provider_url = context.get("provider_url")
+
     try:
-        plugin_names = plugin_manager.get_plugin_names()
+        load_links_data = []
 
-        if eklenti_adi not in plugin_names:
-            raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
+        if provider_url:
+            async with RemoteProviderClient(provider_url) as client:
+                load_links_data = await client.load_links(eklenti_adi, url)
+                proxy_urls = await client.get_proxy_urls()
+        else:
+            # Local provider için Settings'den proxy bilgilerini al
+            proxy_urls = {
+                "proxy_url"          : PROXY_URL or str(request.base_url).rstrip("/"),
+                "proxy_fallback_url" : PROXY_FALLBACK_URL
+            }
 
-        plugin = plugin_manager.select_plugin(eklenti_adi)
+            if eklenti_adi not in plugin_manager.get_plugin_names():
+                raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
 
-        load_links = await plugin.load_links(url)
+            plugin = plugin_manager.select_plugin(eklenti_adi)
+            load_links_data = await plugin.load_links(url)
 
         links = []
-        for link in load_links:
-            subtitles = []
-            if link.subtitles:
-                subtitles = [sub.model_dump() for sub in link.subtitles]
+        for link in load_links_data:
+            # link might be an object or dict
+            if isinstance(link, dict):
+                links.append({
+                    "name"       : link.get("name"),
+                    "url"        : link.get("url"),
+                    "referer"    : link.get("referer") or "",
+                    "user_agent" : link.get("user_agent") or "",
+                    "subtitles"  : link.get("subtitles") or []
+                })
+            else:
+                subtitles = []
+                if link.subtitles:
+                    subtitles = [sub.model_dump() for sub in link.subtitles]
 
-            links.append({
-                "name"       : link.name,
-                "url"        : link.url,
-                "referer"    : link.referer or "",
-                "user_agent" : link.user_agent or "",
-                "subtitles"  : subtitles
-            })
+                links.append({
+                    "name"       : link.name,
+                    "url"        : link.url,
+                    "referer"    : link.referer or "",
+                    "user_agent" : link.user_agent or "",
+                    "subtitles"  : subtitles
+                })
 
         referer = request.headers.get("referer")
         icerik_url = None
@@ -41,26 +62,24 @@ async def izle(request: Request, eklenti_adi: str, url: str, baslik: str):
             if "url" in params and params["url"]:
                 icerik_url = params["url"][0]
 
-        context = build_context(
-            request     = request,
-            title       = baslik,
-            description = "",
-            title_key   = "title_player",
-            title_vars  = {"title": baslik},
-            desc_key    = "player_desc",
-            desc_vars   = {"title": baslik},
-            eklenti_adi = f"{eklenti_adi}",
-            icerik_url  = icerik_url,
-            links       = links,
-            provider_name      = PROVIDER_NAME,
-            proxy_url          = PROXY_URL or str(request.base_url).rstrip("/"),
-            proxy_fallback_url = PROXY_FALLBACK_URL
-        )
-        context["description"] = context["tr"]("player_desc", title=baslik)
+        context.update({
+            "title"       : baslik,
+            "description" : context["tr"]("player_desc", title=baslik),
+            "title_key"   : "title_player",
+            "title_vars"  : {"title": baslik},
+            "desc_key"    : "player_desc",
+            "desc_vars"   : {"title": baslik},
+            "eklenti_adi" : f"{eklenti_adi}",
+            "icerik_url"  : icerik_url,
+            "links"       : links,
+            "provider_name"      : context.get("provider_name"),
+            "proxy_url"          : proxy_urls["proxy_url"],
+            "proxy_fallback_url" : proxy_urls["proxy_fallback_url"]
+        })
 
         return home_template.TemplateResponse("pages/player.html.j2", context)
     except Exception as hata:
-        context = build_context(
+        context = await build_context(
             request     = request,
             title       = "",
             description = "",

@@ -7,7 +7,7 @@
         <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}{{ provider_query_amp }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current"><i class="fas fa-search"></i> "{{ sorgu }}"</span>
@@ -36,7 +36,7 @@
 
     <div class="grid">
         {% for item in results %}
-            <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ lang_query_amp }}" class="card">
+            <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ lang_query_amp }}{{ provider_query_amp }}" class="card">
                 {% if item.poster %}
                     <img src="{{ item.poster }}" alt="{{ item.title }}" class="card-image">
                 {% endif %}

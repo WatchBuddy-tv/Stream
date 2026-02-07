@@ -54,7 +54,7 @@
         <h2 data-i18n="categories_title">{{ tr('categories_title') }}</h2>
         <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
             {% for url, category in plugin.main_page.items() %}
-                <a href="/kategori/{{ plugin.name }}?kategori_url={{ url }}&kategori_adi={{ category }}{{ lang_query_amp }}" class="card">
+                <a href="/kategori/{{ plugin.name }}?kategori_url={{ url }}&kategori_adi={{ category }}{{ lang_query_amp }}{{ provider_query_amp }}" class="card">
                     <div class="card-content">
                         <h3 class="card-title unquote">{{ category }}</h3>
                     </div>

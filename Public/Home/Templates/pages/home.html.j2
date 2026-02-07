@@ -3,14 +3,14 @@
 
 {% block icerik %}
 
-<!-- Global Arama -->
+<!-- Global Arama (üstte) -->
 <div class="search-container">
     <div class="search-form">
-        <input 
-            type="text" 
-            id="global-search-input" 
-            class="search-input" 
-            placeholder="{{ tr('search_all_placeholder') }}" 
+        <input
+            type="text"
+            id="global-search-input"
+            class="search-input"
+            placeholder="{{ tr('search_all_placeholder') }}"
             data-i18n="search_all_placeholder"
             data-i18n-attr="placeholder"
             autocomplete="off"
@@ -19,7 +19,99 @@
             <i class="fas fa-search"></i>
         </button>
     </div>
+
+    <!-- Provider Settings Toggle -->
+    <button type="button" id="toggle-provider-settings" class="button button-secondary button-small">
+        <i class="fas fa-cog"></i>
+        <span data-i18n="provider_settings">Sağlayıcı Ayarları</span>
+        <i class="fas fa-chevron-down" id="settings-chevron"></i>
+    </button>
 </div>
+
+<!-- Provider Settings Panel (Collapsible) -->
+<section id="provider-settings-panel" class="provider-settings-panel" style="display: none;">
+    <div class="card">
+        <div class="card-content">
+            <div style="display: grid; gap: 15px;">
+                <!-- Status Badge -->
+                {% if is_remote %}
+                <div class="status-badge success">
+                    <i class="fas fa-link"></i>
+                    <div style="flex: 1;">
+                        <strong>{{ provider_name }}</strong>
+                        <div class="status-url">{{ provider_url }}</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="status-badge info">
+                    <i class="fas fa-home"></i>
+                    <strong><span data-i18n="local_provider">Yerel sağlayıcı kullanılıyor</span></strong>
+                </div>
+                {% endif %}
+
+                <!-- Input Group -->
+                <div class="provider-input-group">
+                    <div class="provider-input-wrapper">
+                        <input
+                            type="url"
+                            id="provider-url-input"
+                            class="search-input"
+                            placeholder="{{ tr('provider_url_placeholder') }}"
+                            data-i18n="provider_url_placeholder"
+                            data-i18n-attr="placeholder"
+                            value="{{ provider_url or '' }}"
+                        >
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <button type="button" id="set-provider-button" class="button">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="apply">Uygula</span>
+                    </button>
+                    {% if is_remote %}
+                    <button type="button" id="reset-provider-button" class="button button-secondary">
+                        <i class="fas fa-undo"></i>
+                        <span data-i18n="reset">Sıfırla</span>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Help Text -->
+                <p class="help-text">
+                    <i class="fas fa-info-circle"></i>
+                    <span data-i18n="provider_help_text">{{ tr('provider_help_text') }}</span>
+                </p>
+
+                <!-- Example Button -->
+                {% if not is_remote %}
+                <div style="text-align: center;">
+                    <button type="button" id="try-example-button" class="button button-secondary button-small">
+                        <i class="fas fa-magic"></i>
+                        <span data-i18n="try_example">{{ tr('try_example') }}</span>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.provider-settings-panel {
+    overflow: hidden;
+    transition: all 0.3s ease-out;
+}
+</style>
 
 <!-- Arama Sonuçları -->
 <section id="search-results" class="search-results" style="display: none;">
@@ -32,12 +124,12 @@
                 <i class="fas fa-times"></i> <span data-i18n="search_clear">{{ tr('search_clear') }}</span>
             </button>
         </div>
-        
+
         <!-- Plugin Filtreleri -->
         <div id="plugin-filters" class="plugin-filters" style="display: none;">
             <div class="filters-header">
                 <h3 class="filters-title">
-                    <i class="fas fa-filter"></i> <span data-i18n="providers_title">{{ tr('providers_title') }}</span>
+                    <i class="fas fa-filter"></i> <span data-i18n="plugins_filter_title">{{ tr('plugins_filter_title') }}</span>
                 </h3>
                 <button id="clear-filters" class="button button-small button-secondary" aria-label="{{ tr('filters_clear') }}" data-i18n="filters_clear" data-i18n-attr="aria-label">
                     <i class="fas fa-times"></i> <span data-i18n="filters_clear">{{ tr('filters_clear') }}</span>
@@ -56,7 +148,7 @@
     <h2 class="section-title">
         <i class="fas fa-plug"></i> <span data-i18n="all_plugins">{{ tr('all_plugins') }}</span>
     </h2>
-    
+
     <div class="grid">
         {% for plugin in plugins %}
             <div class="card">
@@ -83,7 +175,7 @@
                         <a href="{{ plugin.main_url }}" target="_blank" class="button button-secondary">
                             <i class="fas fa-external-link-alt"></i> <span data-i18n="site_button">{{ tr('site_button') }}</span>
                         </a>
-                        <a href="/eklenti/{{ plugin.name }}{{ lang_query }}" class="button">
+                        <a href="/eklenti/{{ plugin.name }}{{ lang_query }}{{ provider_query_amp }}" class="button">
                             <i class="fas fa-eye"></i> <span data-i18n="details_button">{{ tr('details_button') }}</span>
                         </a>
                     </div>
@@ -99,6 +191,69 @@
 {% block js %}
     <script>
         window.availablePlugins = {{ plugins | tojson | safe }};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const setBtn = document.getElementById('set-provider-button');
+            const resetBtn = document.getElementById('reset-provider-button');
+            const tryExampleBtn = document.getElementById('try-example-button');
+            const input = document.getElementById('provider-url-input');
+            const toggleBtn = document.getElementById('toggle-provider-settings');
+            const settingsPanel = document.getElementById('provider-settings-panel');
+            const chevron = document.getElementById('settings-chevron');
+            const isRemote = {{ 'true' if is_remote else 'false' }};
+
+            const EXAMPLE_PROVIDER_URL = 'https://example.watchbuddy.tv';
+
+            // Toggle Settings Panel
+            if (toggleBtn && settingsPanel) {
+                toggleBtn.onclick = () => {
+                    const isVisible = settingsPanel.style.display !== 'none';
+                    settingsPanel.style.display = isVisible ? 'none' : 'block';
+                    chevron.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+                };
+            }
+
+            // 1. Check localStorage on load
+            const savedProvider = localStorage.getItem('watchbuddy_provider');
+            const currentProvider = new URLSearchParams(window.location.search).get('provider');
+
+            // If not remote and no specific provider in URL, but we have a saved one -> Redirect to use it
+            if (!isRemote && savedProvider && !currentProvider) {
+                window.location.href = `/?provider=${encodeURIComponent(savedProvider)}`;
+                return;
+            }
+
+            if (setBtn) {
+                setBtn.onclick = () => {
+                    const url = input.value.trim();
+                    if (url) {
+                        // 2. Save to localStorage when Apply is clicked
+                        localStorage.setItem('watchbuddy_provider', url);
+                        window.location.href = `/?provider=${encodeURIComponent(url)}`;
+                    }
+                };
+            }
+
+            if (resetBtn) {
+                resetBtn.onclick = () => {
+                    // 3. Clear localStorage when Reset is clicked
+                    localStorage.removeItem('watchbuddy_provider');
+                    document.cookie = "provider_url=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = "/";
+                };
+            }
+
+            if (tryExampleBtn) {
+                tryExampleBtn.onclick = () => {
+                    input.value = EXAMPLE_PROVIDER_URL;
+                    input.focus();
+                };
+            }
+
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') setBtn.click();
+            };
+        });
     </script>
     <script type="module" src="{{ url_for('static_home', path='JS/global-search.min.js') }}" defer crossorigin="anonymous"></script>
 {% endblock %}

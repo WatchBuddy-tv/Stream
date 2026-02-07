@@ -26,6 +26,26 @@ export class GlobalSearch {
         // Filter state
         this.searchResultsByPlugin = new Map(); // { pluginName: [results] }
         this.activeFilters = new Set();
+
+        // Provider URL (from cookie or URL)
+        this.providerUrl = this.getProviderUrl();
+    }
+
+    getProviderUrl() {
+        // Check URL parameter first
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlProvider = urlParams.get('provider');
+        if (urlProvider) return urlProvider;
+
+        // Fall back to cookie
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'provider_url') {
+                return decodeURIComponent(value);
+            }
+        }
+        return null;
     }
 
     init() {
@@ -122,7 +142,17 @@ export class GlobalSearch {
 
     async searchInPlugin(pluginName, query, fetchHelper = null, fetchConfig = {}) {
         try {
-            const url = `/api/v1/search?plugin=${encodeURIComponent(pluginName)}&query=${encodeURIComponent(query)}`;
+            let url;
+
+            // Eğer remote provider varsa, doğrudan ona istek at
+            if (this.providerUrl) {
+                const baseUrl = this.providerUrl.endsWith('/') ? this.providerUrl.slice(0, -1) : this.providerUrl;
+                url = `${baseUrl}/api/v1/search?plugin=${encodeURIComponent(pluginName)}&query=${encodeURIComponent(query)}`;
+            } else {
+                // Local provider kullan
+                url = `/api/v1/search?plugin=${encodeURIComponent(pluginName)}&query=${encodeURIComponent(query)}`;
+            }
+
             const usedHelper = fetchHelper || this.fetchHelper;
             const response = await usedHelper.fetch(url, {}, fetchConfig);
 
@@ -204,7 +234,8 @@ export class GlobalSearch {
     createResultCard(pluginName, result) {
         const card = document.createElement('a');
         const langParam = window.LANG ? `&lang=${encodeURIComponent(window.LANG)}` : '';
-        card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${langParam}`;
+        const providerParam = this.providerUrl ? `&provider=${encodeURIComponent(this.providerUrl)}` : '';
+        card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${langParam}${providerParam}`;
         card.className = 'card';
 
         let cardContent = `<div class="plugin-badge">${escapeHtml(pluginName)}</div>`;

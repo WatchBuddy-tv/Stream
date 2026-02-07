@@ -75,7 +75,15 @@ const setLanguage = (lang) => {
     if (!lang || !window.TRANSLATIONS_ALL) return;
     window.LANG = lang;
     window.TRANSLATIONS = window.TRANSLATIONS_ALL[lang] || window.TRANSLATIONS;
+
+    // localStorage'a kaydet
     try { localStorage.setItem('lang', lang); } catch (e) {}
+
+    // Cookie'ye de kaydet (backend için)
+    try {
+        document.cookie = `lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+    } catch (e) {}
+
     applyTranslations();
     updateLangLinks(lang);
     window.dispatchEvent(new CustomEvent('lang:changed', { detail: { lang } }));

@@ -28,6 +28,17 @@
   --shadow-color: rgba(0, 0, 0, 0.2);
   --shadow-color-hover: rgba(0, 0, 0, 0.35);
 
+  /* Surface ve durum renkleri */
+  --surface-dark: #1a1a1a;
+  --success-color: #10B981; /* Mobil app ile uyumlu */
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --info-color: #3498db;
+  --info-bg: rgba(52, 152, 219, 0.1);
+  --warning-color: #ffc107;
+  --warning-bg: rgba(255, 193, 7, 0.1);
+  --error-color: #EF4444; /* Mobil app ile uyumlu */
+  --error-bg: rgba(239, 68, 68, 0.1);
+
   /* Boyutlar ve boşluklar */
   --border-radius-sm: 4px;
   --border-radius: 8px;

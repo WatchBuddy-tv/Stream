@@ -7,7 +7,7 @@
         <a href="/{{ lang_query }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
     </div>
     <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+        <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}{{ provider_query_amp }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
     </div>
     <div class="breadcrumbs-item">
         <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ title }}</span>
@@ -38,7 +38,7 @@
             <video id="video-player" playsinline webkit-playsinline crossorigin="anonymous" controls>
                 <span data-i18n="browser_video_unsupported">{{ tr('browser_video_unsupported') }}</span>
             </video>
-            
+
             <!-- Firefox Custom Subtitle Overlay -->
             <div id="custom-subtitle-overlay" class="custom-subtitle-overlay"></div>
 
@@ -71,7 +71,7 @@
                             <button class="ctrl-btn" id="custom-forward" title="{{ tr('tooltip_forward') }}" data-i18n="tooltip_forward" data-i18n-attr="title">
                                 <i class="fas fa-redo"></i>
                             </button>
-                            
+
                             <!-- Volume -->
                             <div class="volume-group">
                                 <button class="ctrl-btn" id="custom-mute" title="{{ tr('tooltip_mute') }}" data-i18n="tooltip_mute" data-i18n-attr="title">
@@ -106,11 +106,11 @@
     <div class="player-controls-section">
         <div class="control-buttons">
             {% if icerik_url %}
-            <a href="/icerik/{{ eklenti_adi }}?url={{ icerik_url }}{{ lang_query_amp }}" class="button button-secondary">
+            <a href="/icerik/{{ eklenti_adi }}?url={{ icerik_url }}{{ lang_query_amp }}{{ provider_query_amp }}" class="button button-secondary">
                 <i class="fas fa-arrow-left"></i> <span data-i18n="player_back_content">{{ tr('player_back_content') }}</span>
             </a>
             {% endif %}
-            <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}" class="button button-secondary">
+            <a href="/eklenti/{{ eklenti_adi }}{{ lang_query }}{{ provider_query_amp }}" class="button button-secondary">
                 <i class="fas fa-th"></i> <span data-i18n="player_back_plugin">{{ tr('player_back_plugin') }}</span>
             </a>
             <button id="toggle-diagnostics" class="button button-secondary">
@@ -137,8 +137,8 @@
         <pre id="diagnostics-log"></pre>
     </div>
 
-    <div id="video-links-data" style="display: none;" 
-         data-proxy-url="{{ proxy_url|default('', true) }}" 
+    <div id="video-links-data" style="display: none;"
+         data-proxy-url="{{ proxy_url|default('', true) }}"
          data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}">
         {% for link in links %}
             <div class="video-link-item" data-name="{{ link.name }}" data-url="{{ link.url }}" data-referer="{{ link.referer|default('', true) }}" data-user-agent="{{ link.user_agent|default('', true) }}">

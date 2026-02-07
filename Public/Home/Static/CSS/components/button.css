@@ -6,6 +6,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--spacing-sm);
   padding: var(--spacing-md) var(--spacing-lg);
   background-color: var(--primary-color);
   color: var(--background-color);
@@ -55,4 +56,19 @@
   background-color: var(--primary-color);
   color: var(--background-color);
   box-shadow: 0 4px 12px rgba(239, 127, 26, 0.3);
+}
+
+.button-small {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  min-height: 36px;
+  min-width: auto;
+}
+
+.button i {
+  font-size: 0.9em;
+}
+
+.button-small i {
+  font-size: 0.85em;
 }

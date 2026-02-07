@@ -4,8 +4,10 @@
 
 .search-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   margin: var(--spacing-xl) 0;
+  gap: var(--spacing-md);
 }
 
 .search-form {
@@ -53,6 +55,110 @@
 
 .search-button:hover {
   background-color: var(--primary-light);
+}
+
+/* Provider Settings Panel */
+.provider-settings-panel {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-xxl) auto;
+  overflow: hidden;
+  transition: all 0.3s ease-out;
+}
+
+.provider-settings-panel .card {
+  background: var(--surface-dark);
+  border: 1px solid var(--border-color);
+}
+
+.provider-settings-panel .card:hover {
+  transform: none;
+  border-color: var(--border-color);
+}
+
+/* Status Badges */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border-left-width: 3px;
+  border-left-style: solid;
+}
+
+.status-badge.success {
+  background: var(--success-bg);
+  border-left-color: var(--success-color);
+}
+
+.status-badge.success i {
+  color: var(--success-color);
+}
+
+.status-badge.info {
+  background: var(--info-bg);
+  border-left-color: var(--info-color);
+}
+
+.status-badge.info i {
+  color: var(--info-color);
+}
+
+.status-badge strong {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.status-badge .status-url {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+/* Provider Input Group */
+.provider-input-group {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.provider-input-wrapper {
+  flex: 1;
+  position: relative;
+  min-width: 250px;
+}
+
+.provider-input-wrapper .search-input {
+  width: 100%;
+  padding-left: 35px;
+}
+
+.provider-input-wrapper i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Help Text */
+.help-text {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.help-text i {
+  color: var(--info-color);
 }
 
 /* Search Status */
