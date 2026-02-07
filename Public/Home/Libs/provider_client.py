@@ -2,6 +2,7 @@
 
 import httpx
 from typing import Any
+from urllib.parse import unquote
 
 class RemoteProviderClient:
     def __init__(self, base_url: str):
@@ -54,8 +55,8 @@ class RemoteProviderClient:
         res = await self._get("/api/v1/get_main_page", params={
             "plugin"           : plugin_name,
             "page"             : str(page),
-            "encoded_url"      : url,
-            "encoded_category" : category
+            "encoded_url"      : unquote(url),
+            "encoded_category" : unquote(category)
         })
         return res if isinstance(res, list) else []
 
@@ -70,14 +71,14 @@ class RemoteProviderClient:
     async def load_item(self, plugin_name: str, url: str) -> dict[str, Any]:
         res = await self._get("/api/v1/load_item", params={
             "plugin"      : plugin_name,
-            "encoded_url" : url
+            "encoded_url" : unquote(url)
         })
         return res if isinstance(res, dict) else {}
 
     async def load_links(self, plugin_name: str, url: str) -> list[dict[str, Any]]:
         res = await self._get("/api/v1/load_links", params={
             "plugin"      : plugin_name,
-            "encoded_url" : url
+            "encoded_url" : unquote(url)
         })
         return res if isinstance(res, list) else []
 
