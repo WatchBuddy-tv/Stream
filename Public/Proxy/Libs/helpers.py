@@ -261,7 +261,7 @@ def process_subtitle_content(content: bytes, content_type: str, url: str) -> byt
         try:
             content = content.replace(b"\r\n", b"\n")
             text = content.decode("utf-8", errors="ignore")
-            text = text.replace(",", ".")
+            text = re.sub(r'(\d{2}:\d{2}:\d{2}),(\d{3})', r'\1.\2', text)  # Sadece timestamp virgülü
             if not text.startswith("WEBVTT"):
                 text = "WEBVTT\n\n" + text
             return text.encode("utf-8")

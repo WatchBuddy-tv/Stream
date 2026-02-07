@@ -94,6 +94,17 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
 
         # HLS segment ise cache'e al
         if is_hls_segment(decoded_url):
+            # OOM koruması: çok büyük dosyaları (>20MB) cache'e almadan stream et
+            content_length = int(response.headers.get("content-length", "0"))
+            if content_length > 20 * 1024 * 1024:
+                return StreamingResponse(
+                    stream_wrapper(response),
+                    status_code = response.status_code,
+                    headers     = final_headers,
+                    media_type  = final_headers.get("Content-Type"),
+                    background  = BackgroundTask(client.aclose)
+                )
+
             content = await response.aread()
             await response.aclose()
             await client.aclose()

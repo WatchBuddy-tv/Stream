@@ -47,6 +47,16 @@ async def ytdlp_extract_video_info(url: str, user_agent: str | None = None, refe
     cache_key = f"{url}|{user_agent or ''}|{referer or ''}"
     now = time.time()
     async with _CACHE_LOCK:
+        # Periyodik cache temizliği: expired girdileri sil (memory leak önleme)
+        if len(_CACHE) > 200:
+            expired = [k for k, ts in _CACHE_TS.items() if (now - ts) >= _CACHE_TTL]
+            for k in expired:
+                _CACHE.pop(k, None)
+                _CACHE_TS.pop(k, None)
+            neg_expired = [k for k, ts in _NEG_CACHE_TS.items() if (now - ts) >= _NEG_TTL]
+            for k in neg_expired:
+                _NEG_CACHE_TS.pop(k, None)
+
         ts = _CACHE_TS.get(cache_key)
         if ts and (now - ts) < _CACHE_TTL:
             return _CACHE.get(cache_key)
@@ -90,10 +100,15 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
         )
 
         timeout_s = float(os.getenv("YTDLP_TIMEOUT", "25") or "25")
-        stdout, stderr = await asyncio.wait_for(
-            process.communicate(),
-            timeout=timeout_s
-        )
+        try:
+            stdout, stderr = await asyncio.wait_for(
+                process.communicate(),
+                timeout=timeout_s
+            )
+        except asyncio.TimeoutError:
+            process.kill()
+            await process.wait()
+            raise
 
         if process.returncode != 0:
             error_msg = stderr.decode() if stderr else "Unknown error"
