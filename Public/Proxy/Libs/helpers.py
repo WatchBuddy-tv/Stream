@@ -65,6 +65,11 @@ def prepare_request_headers(request: Request, url: str, referer: str | None, use
     if referer and referer != "None":
         headers["referer"] = unquote(referer)
 
+    # Client'tan gelen Range header'ı aktar (MP4 seek/byte-range desteği, goProxy parity)
+    range_header = request.headers.get("range")
+    if range_header:
+        headers["Range"] = range_header
+
     return headers
 
 def prepare_response_headers(response_headers: dict, url: str, detected_content_type: str = None) -> dict:
@@ -117,8 +122,8 @@ def is_hls_segment(url: str) -> bool:
     if ".m3u8" in url_lower:
         return False
 
-    # Segment göstergeleri
-    segment_indicators = (".ts", ".m4s", ".mp4", ".aac", "seg-", "chunk-", "fragment", ".png", ".jpg", ".jpeg")
+    # Segment göstergeleri (standalone .mp4 hariç — tam dosya belleğe okunmasın, goProxy parity)
+    segment_indicators = (".ts", ".m4s", ".aac", "seg-", "chunk-", "fragment", ".png", ".jpg", ".jpeg")
     return any(indicator in url_lower for indicator in segment_indicators)
 
 def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, user_agent: str = None, force_proxy: bool = False) -> bytes:
