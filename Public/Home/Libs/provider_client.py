@@ -6,7 +6,12 @@ from urllib.parse import unquote
 
 class RemoteProviderClient:
     def __init__(self, base_url: str):
-        self.base_url = base_url.rstrip("/")
+        # Protokol kontrolü (eksikse https:// ekle)
+        _url = base_url.strip().rstrip("/")
+        if _url and not _url.startswith(("http://", "https://")):
+            _url = f"https://{_url}"
+
+        self.base_url = _url
         self.client   = httpx.AsyncClient(timeout=30.0, follow_redirects=True)
         self._schema  = None
 
