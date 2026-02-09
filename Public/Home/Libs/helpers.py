@@ -10,7 +10,7 @@ from .provider_client import RemoteProviderClient
 
 _TRANSLATIONS    = {}
 _SUPPORTED_LANGS = ("tr", "en")
-_DEFAULT_LANG    = "tr"
+_DEFAULT_LANG    = "en"
 
 def _load_translations():
     global _TRANSLATIONS
