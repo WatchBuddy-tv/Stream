@@ -12,5 +12,5 @@ python-multipart
 python-dotenv
 csscompressor
 rjsmin
-KekikStream>=2.6.5
+KekikStream>=2.6.6
 yt-dlp[default,curl-cffi]
