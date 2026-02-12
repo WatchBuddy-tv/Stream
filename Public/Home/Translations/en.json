@@ -92,6 +92,7 @@
     "error_desc": "An error occurred",
     "footer_source": "Source Code",
     "footer_community": "KekikAkademi",
+    "footer_telegram_app": "Telegram App",
     "video_error_unknown": "Unknown error",
     "title_plugin": "{provider_name} - {name}",
     "title_category": "{provider_name} - {category}",

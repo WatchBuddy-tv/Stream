@@ -92,6 +92,7 @@
     "error_desc": "Bir hata oluştu",
     "footer_source": "Kaynak Kodu",
     "footer_community": "KekikAkademi",
+    "footer_telegram_app": "Telegram Uygulaması",
     "video_error_unknown": "Bilinmeyen hata",
     "title_plugin": "{provider_name} - {name}",
     "title_category": "{provider_name} - {category}",
