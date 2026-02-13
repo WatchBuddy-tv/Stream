@@ -239,6 +239,9 @@ export default class VideoPlayer {
         const htmlEl = document.documentElement;
         if (bottomPlayBtn && progressContainer && fullscreenBtn) {
             htmlEl.classList.add('custom-controls-ready');
+            // Firefox güvenliği: native controls'u programatik olarak da kaldır
+            // Firefox bazen CSS ::-moz-media-controls gizlemeyi yoksayabilir
+            this.videoPlayer.removeAttribute('controls');
         } else {
             htmlEl.classList.remove('custom-controls-ready');
         }
@@ -272,6 +275,8 @@ export default class VideoPlayer {
             actionAnimation.classList.remove('active');
             void actionAnimation.offsetWidth; // trigger reflow
             actionAnimation.classList.add('active');
+            // Animasyon bitince class'ı kaldır — sabit kalmasın
+            setTimeout(() => actionAnimation.classList.remove('active'), 600);
         };
 
         // Events
@@ -501,7 +506,6 @@ export default class VideoPlayer {
             }
         });
 
-        // Fullscreen ve orientation yönetimi
         const handleFullscreenChange = () => {
             const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || this.videoPlayer.webkitDisplayingFullscreen);
 
@@ -511,9 +515,15 @@ export default class VideoPlayer {
                 if (icon) icon.className = `fas ${isFS ? 'fa-compress' : 'fa-expand'}`;
             }
 
-            // Fullscreen'den çıkınca orientation kilidini kaldır
-            if (!isFS && screen.orientation?.unlock) {
-                screen.orientation.unlock().catch(() => {});
+            document.body.classList.toggle('is-fullscreen', isFS);
+
+            // Fullscreen çıkışında orientation kilidini kaldır ve cleanup
+            if (!isFS) {
+                if (screen.orientation?.unlock) {
+                    screen.orientation.unlock().catch(() => {});
+                }
+                document.body.classList.remove('keyboard-open');
+                window.dispatchEvent(new Event('resize'));
             }
         };
 
@@ -578,11 +588,54 @@ export default class VideoPlayer {
             }
         };
 
-        const hideControls = () => {
-            if (this.videoPlayer.paused) return; // Paused iken asla gizleme
+        const hideControls = (force = false) => {
+            if (!force && this.videoPlayer.paused) return; // Paused iken asla gizleme (mobile tap force ile bypass eder)
             wrapper.classList.remove('show-controls');
             if (document.fullscreenElement) {
                 wrapper.style.cursor = 'none';
+            }
+        };
+
+        // ── Mobile Double-Tap Seek ──
+        let lastTapTime = 0;
+        let lastTapSide = null;
+        let singleTapTimeout = null;
+
+        const handleMobileTap = (e) => {
+            const now = Date.now();
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const side = x < rect.width / 2 ? 'left' : 'right';
+
+            if (now - lastTapTime < 300 && lastTapSide === side) {
+                // Double-tap → Seek
+                clearTimeout(singleTapTimeout);
+                lastTapTime = 0;
+                lastTapSide = null;
+
+                if (!Number.isFinite(this.videoPlayer.duration) || this.videoPlayer.duration <= 0) return;
+                this.userGestureUntil = Date.now() + 1200;
+
+                if (side === 'left') {
+                    this.videoPlayer.currentTime = Math.max(0, this.videoPlayer.currentTime - SEEK_STEP);
+                    triggerAnimation('fa-undo');
+                } else {
+                    this.videoPlayer.currentTime = Math.min(this.videoPlayer.duration, this.videoPlayer.currentTime + SEEK_STEP);
+                    triggerAnimation('fa-redo');
+                }
+            } else {
+                lastTapTime = now;
+                lastTapSide = side;
+                singleTapTimeout = setTimeout(() => {
+                    // Single-tap → Toggle controls
+                    lastTapTime = 0;
+                    lastTapSide = null;
+                    if (wrapper.classList.contains('show-controls')) {
+                        hideControls(true); // Mobile tap: force hide (paused olsa bile)
+                    } else {
+                        showControls();
+                    }
+                }, 300);
             }
         };
 
@@ -595,7 +648,7 @@ export default class VideoPlayer {
 
             // Modern Player UX:
             // Masaüstü: Tıkla -> Oynat/Durdur
-            // Mobil: Tıkla -> Kontrolleri Aç/Kapa
+            // Mobil: Çift dokunma -> Seek, Tek dokunma -> Kontrolleri Aç/Kapa
             const isDesktop = window.innerWidth > 1024;
 
             if (isDesktop) {
@@ -603,11 +656,7 @@ export default class VideoPlayer {
                 triggerAnimation(this.videoPlayer.paused ? 'fa-pause' : 'fa-play');
                 showControls();
             } else {
-                if (wrapper.classList.contains('show-controls')) {
-                    hideControls();
-                } else {
-                    showControls();
-                }
+                handleMobileTap(e);
             }
         };
 
@@ -642,24 +691,51 @@ export default class VideoPlayer {
             clearTimeout(longPressTimer);
         }, { passive: true });
 
-        // Video durumu değişiklikleri
-        this.videoPlayer.addEventListener('play', () => {
-            showControls();
+        // ── Buffering Spinner Helpers ──
+        let bufferSpinnerTimer = null;
+
+        const hideBufferSpinner = () => {
+            if (bufferSpinnerTimer) { clearTimeout(bufferSpinnerTimer); bufferSpinnerTimer = null; }
             if (this.loadingOverlay) {
                 this.loadingOverlay.style.display = 'none';
                 this.loadingOverlay.classList.remove('is-buffering');
             }
+        };
+
+        const showBufferSpinner = () => {
+            if (this.loadingOverlay) {
+                this.loadingOverlay.classList.add('is-buffering');
+                this.loadingOverlay.style.display = 'flex';
+            }
+            // Güvenlik: 8s sonra hâlâ görünüyorsa otomatik gizle
+            if (bufferSpinnerTimer) clearTimeout(bufferSpinnerTimer);
+            bufferSpinnerTimer = setTimeout(hideBufferSpinner, 8000);
+        };
+
+        // Video durumu değişiklikleri
+        this.videoPlayer.addEventListener('play', () => {
+            showControls();
+            hideBufferSpinner();
+        });
+
+        // playing: buffering sonrası da spinner'ı temizle (play tetiklenmez)
+        this.videoPlayer.addEventListener('playing', () => {
+            hideBufferSpinner();
         });
 
         this.videoPlayer.addEventListener('pause', showControls);
 
         this.videoPlayer.addEventListener('waiting', () => {
             showControls();
-            if (this.loadingOverlay && !this.videoPlayer.paused) {
-                this.loadingOverlay.classList.add('is-buffering');
-                this.loadingOverlay.style.display = 'flex';
+            // Sadece gerçek buffering'de spinner göster
+            if (!this.videoPlayer.paused && !this.isLoadingVideo) {
+                showBufferSpinner();
             }
         });
+
+        // canplay/canplaythrough: buffer bitince spinner temizle
+        this.videoPlayer.addEventListener('canplay', hideBufferSpinner);
+        this.videoPlayer.addEventListener('canplaythrough', hideBufferSpinner);
 
         // Mouse Wheel ile Ses Kontrolü
         wrapper.addEventListener('wheel', (e) => {
