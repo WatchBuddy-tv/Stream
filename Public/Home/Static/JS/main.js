@@ -48,7 +48,14 @@ const applyTranslations = () => {
         document.documentElement.setAttribute('lang', window.LANG);
         const og = document.getElementById('meta-og-locale');
         if (og) {
-            og.setAttribute('content', window.LANG === 'tr' ? 'tr_TR' : 'en_US');
+            const ogMap = {
+                tr: 'tr_TR',
+                en: 'en_US',
+                fr: 'fr_FR',
+                ru: 'ru_RU',
+                uk: 'uk_UA'
+            };
+            og.setAttribute('content', ogMap[window.LANG] || 'en_US');
         }
     }
 };

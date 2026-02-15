@@ -9,7 +9,7 @@ from urllib.parse import quote, unquote
 from .provider_client import RemoteProviderClient
 
 _TRANSLATIONS    = {}
-_SUPPORTED_LANGS = ("tr", "en")
+_SUPPORTED_LANGS = ("tr", "en", "fr", "ru", "uk")
 _DEFAULT_LANG    = "en"
 
 def _load_translations():
@@ -123,7 +123,13 @@ async def build_context(request: Request, **extra):
         "translations_all"   : translations_all,
         "tr"                 : tr,
         "site_name"          : tr("site_name"),
-        "og_locale"          : "tr_TR" if lang == "tr" else "en_US",
+        "og_locale"          : {
+            "tr": "tr_TR",
+            "en": "en_US",
+            "fr": "fr_FR",
+            "ru": "ru_RU",
+            "uk": "uk_UA",
+        }.get(lang, "en_US"),
         "provider_url"       : provider_url,
         "provider_name"      : provider_name,
         "is_remote"          : bool(provider_url)
