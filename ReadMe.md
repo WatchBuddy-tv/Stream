@@ -5,7 +5,7 @@
 WatchBuddy needs a reliable, clean streaming layer. This repo provides that layer.
 It is **not** a development sandbox — it is the **production‑ready integration fork** used by WatchBuddy.
 
-Other languages: [ReadMe_TR.md](./ReadMe_TR.md)
+Other languages: [ReadMe_TR.md](./ReadMe_TR.md) • [ReadMe_FR.md](./ReadMe_FR.md) • [ReadMe_RU.md](./ReadMe_RU.md) • [ReadMe_UK.md](./ReadMe_UK.md)
 
 ---
 
@@ -15,7 +15,7 @@ KekikStreamAPI combines the **KekikStream engine** with a Web UI and REST API to
 This fork makes it **WatchBuddy‑ready** without modifying the core engine.
 
 - 🎥 Multi‑source discovery: search and watch from many sources
-- 🌐 Web UI: responsive, user‑friendly experience with cookie‑based language persistence (TR/EN)
+- 🌐 Web UI: responsive, user‑friendly experience with cookie‑based language persistence (TR/EN/FR/RU/UK)
 - 🔌 REST API: aligned to WatchBuddy clients with remote provider support
 - 🔗 Remote Provider Architecture: can connect to other WatchBuddy providers via schema discovery
 - 🎬 yt‑dlp integration: YouTube + 1000+ sites
@@ -33,7 +33,7 @@ The goal is a clean integration surface, predictable API responses, and a multil
 ## ✨ What This Fork Adds
 
 - ✅ WatchBuddy‑aligned API responses and metadata
-- ✅ Public UI with cookie‑based language persistence (TR/EN)
+- ✅ Public UI with cookie‑based language persistence (TR/EN/FR/RU/UK)
 - ✅ Remote provider architecture with schema discovery endpoint
 - ✅ Direct remote provider request routing
 - ✅ Defaults tuned for WatchBuddy clients

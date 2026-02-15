@@ -5,7 +5,7 @@
 WatchBuddy’nin ihtiyacı olan streaming katmanını bu repo sağlar.
 Bu bir geliştirme ortamı değildir; WatchBuddy için **üretim odaklı entegrasyon forkudur**.
 
-English version: [ReadMe.md](./ReadMe.md)
+English version: [ReadMe.md](./ReadMe.md) • [Version Française](./ReadMe_FR.md) • [Русская версия](./ReadMe_RU.md) • [Українська версія](./ReadMe_UK.md)
 
 ---
 
@@ -15,7 +15,7 @@ KekikStreamAPI, **KekikStream engine** ile Web arayüzü ve REST API’yi birle�
 Bu fork, çekirdek motoru değiştirmeden **WatchBuddy uyumunu** sağlar.
 
 - 🎥 Çoklu kaynak desteği: içerik arama ve izleme
-- 🌐 Web arayüzü: responsive, kullanıcı dostu deneyim, cookie tabanlı dil kalıcılığı (TR/EN)
+- 🌐 Web arayüzü: responsive, kullanıcı dostu deneyim, cookie tabanlı dil kalıcılığı (TR/EN/FR/RU/UK)
 - 🔌 REST API: WatchBuddy istemcileriyle uyumlu, uzak provider desteği
 - 🔗 Uzak Provider Mimarisi: schema keşfi ile diğer WatchBuddy provider'larına bağlanabilir
 - 🎬 yt‑dlp entegrasyonu: YouTube + 1000+ site desteği
@@ -33,7 +33,7 @@ Amaç: temiz entegrasyon, öngörülebilir API çıktıları ve çok dilli publi
 ## ✨ Bu Fork Ne Ekler?
 
 - ✅ WatchBuddy uyumlu API çıktı formatları
-- ✅ Public arayüzde cookie tabanlı dil kalıcılığı (TR/EN)
+- ✅ Public arayüzde cookie tabanlı dil kalıcılığı (TR/EN/FR/RU/UK)
 - ✅ Schema keşfi ile uzak provider mimarisi
 - ✅ Direkt uzak provider istek yönlendirmesi
 - ✅ WatchBuddy istemcileri için uygun varsayılanlar
