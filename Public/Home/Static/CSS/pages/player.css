@@ -740,7 +740,8 @@ body.seeking-active {
    Seçim Dropdown Styling
    ======================================== */
 
-#subtitle-select-btn {
+#subtitle-select-btn,
+#source-select-btn {
   background-color: var(--card-bg-color);
   border: 1px solid var(--border-light);
   color: var(--text-color);
@@ -754,18 +755,29 @@ body.seeking-active {
   cursor: pointer;
   transition: all var(--transition-speed) var(--transition-timing);
   box-shadow: 0 2px 8px var(--shadow-color);
+  min-width: 160px;
 }
 
-#subtitle-select-btn:hover {
+#subtitle-select-btn:hover,
+#source-select-btn:hover {
   background-color: var(--card-bg-hover);
   border-color: var(--primary-color);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px var(--shadow-color-hover);
 }
 
-#subtitle-select-btn i {
+#subtitle-select-btn i,
+#source-select-btn i {
   color: var(--primary-color);
   font-size: 1rem;
+}
+
+#subtitle-select-btn i:last-child,
+#source-select-btn i:last-child {
+  margin-left: auto;
+  margin-right: 0;
+  opacity: 0.6;
+  font-size: 0.85rem;
 }
 
 /* Genel Dropdown (Modern Deep Glass Teması) */

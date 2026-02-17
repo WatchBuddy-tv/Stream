@@ -106,5 +106,6 @@
     "example_provider_info": "Want to create your own provider?",
     "learn_more": "Learn more",
     "try_example": "Try Example Provider",
-    "connected": "Connected"
+    "connected": "Connected",
+    "selection_source": "Select Source"
 }

@@ -124,7 +124,7 @@ export default class VideoPlayer {
             } else if (subs.length > 0) {
                 label = subs[0].name || t('selection_selected');
             }
-            subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${label}`;
+            subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${label} <i class="fas fa-ellipsis-v"></i>`;
         }
     }
 
@@ -933,16 +933,51 @@ export default class VideoPlayer {
     }
 
     renderVideoLinks() {
-        this.videoData.forEach((video, index) => {
-            const linkButton = document.createElement('button');
-            linkButton.className = 'button';
-            linkButton.textContent = video.name;
-            linkButton.onclick = () => {
-                this.logger.clear();
-                this.loadVideo(index);
+        if (this.videoData.length > 4) {
+            const sourceSelectBtn = document.createElement('button');
+            sourceSelectBtn.id = 'source-select-btn';
+            sourceSelectBtn.className = 'button button-primary';
+            sourceSelectBtn.setAttribute('data-i18n', 'selection_source');
+            sourceSelectBtn.innerHTML = `<i class="fas fa-server"></i> ${t('selection_source')} <i class="fas fa-ellipsis-v"></i>`;
+
+            const updateLabel = () => {
+                if (this.currentVideoIndex !== null) {
+                    const currentSource = this.videoData[this.currentVideoIndex];
+                    sourceSelectBtn.innerHTML = `<i class="fas fa-server"></i> ${currentSource.name} <i class="fas fa-ellipsis-v"></i>`;
+                }
             };
-            this.videoLinksUI.appendChild(linkButton);
-        });
+
+            sourceSelectBtn.onclick = () => {
+                const sourceOptions = this.videoData.map((video, index) => ({
+                    label: video.name,
+                    value: index,
+                    action: () => {
+                        this.logger.clear();
+                        this.loadVideo(index);
+                        updateLabel();
+                        this.hideSelectionModal();
+                    }
+                }));
+
+                this.showSelectionModal(t('selection_source'), 'fa-server', sourceOptions, sourceSelectBtn, this.currentVideoIndex);
+            };
+
+            this.videoLinksUI.appendChild(sourceSelectBtn);
+
+            // İlk yüklemede de etiketi güncellemek için bir event dinleyelim veya loadVideo içinde halledelim
+            window.addEventListener('video:loaded', updateLabel);
+        } else {
+            this.videoData.forEach((video, index) => {
+                const linkButton = document.createElement('button');
+                linkButton.className = 'button';
+                linkButton.textContent = video.name;
+                linkButton.onclick = () => {
+                    this.logger.clear();
+                    this.loadVideo(index);
+                };
+                this.videoLinksUI.appendChild(linkButton);
+            });
+        }
     }
 
     cleanup() {
@@ -1209,7 +1244,7 @@ export default class VideoPlayer {
                 const currentSubName = this.selectedSubtitleUrl
                     ? selectedVideo.subtitles.find(s => s.url === this.selectedSubtitleUrl)?.name || t('selection_selected')
                     : defaultSubName;
-                subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${currentSubName}`;
+                subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${currentSubName} <i class="fas fa-ellipsis-v"></i>`;
 
                 // Tıklama olayını güncelle
                 subtitleSelectBtn.onclick = (e) => {
@@ -1278,7 +1313,7 @@ export default class VideoPlayer {
                                 // Buton metnini ve tooltip'i güncelle
                                 const ssBtn = document.getElementById('subtitle-select-btn');
                                 if (ssBtn) {
-                                    ssBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name}`;
+                                    ssBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name} <i class="fas fa-ellipsis-v"></i>`;
                                 }
                                 this.setSubtitleTooltip(subtitle.name);
                             }
@@ -1317,6 +1352,9 @@ export default class VideoPlayer {
 
         // Video yükleme tamamlandı (asenkron işlemler devam edebilir ama UI hazır)
         this.isLoadingVideo = false;
+
+        // Kaynak seçim butonu varsa etiketini güncellemek için event fırlat
+        window.dispatchEvent(new CustomEvent('video:loaded', { detail: { index } }));
     }
 
     /**
@@ -1598,7 +1636,7 @@ export default class VideoPlayer {
         document.addEventListener('mousedown', (e) => {
             if (this.selectionModal.style.display !== 'none') {
                 const isClickInside = this.selectionModal.contains(e.target);
-                const isClickOnTrigger = e.target.closest('#custom-cc, #custom-audio, #subtitle-select-btn');
+                const isClickOnTrigger = e.target.closest('#custom-cc, #custom-audio, #subtitle-select-btn, #source-select-btn');
 
                 if (!isClickInside && !isClickOnTrigger) {
                     this.hideSelectionModal();
@@ -1734,7 +1772,7 @@ export default class VideoPlayer {
             this.selectedSubtitleUrl = null;
             this.logger.info('🔇', 'SUBTITLE', 'Closed');
             tracks.forEach(track => track.mode = 'hidden');
-            if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${t('off')}`;
+            if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${t('off')} <i class="fas fa-ellipsis-v"></i>`;
             this.setSubtitleTooltip(t('off'));
 
             const ccBtn = document.getElementById('custom-cc');
@@ -1752,7 +1790,7 @@ export default class VideoPlayer {
                 }
             });
 
-            if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name}`;
+            if (subtitleSelectBtn) subtitleSelectBtn.innerHTML = `<i class="fas fa-closed-captioning"></i> ${subtitle.name} <i class="fas fa-ellipsis-v"></i>`;
             this.setSubtitleTooltip(subtitle.name);
 
             const ccBtn = document.getElementById('custom-cc');

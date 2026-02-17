@@ -106,5 +106,6 @@
     "example_provider_info": "Kendi sağlayıcınızı oluşturmak ister misiniz?",
     "learn_more": "Daha fazla bilgi",
     "try_example": "Örnek Sağlayıcıyı Dene",
-    "connected": "Bağlı"
+    "connected": "Bağlı",
+    "selection_source": "Kaynak Seç"
 }

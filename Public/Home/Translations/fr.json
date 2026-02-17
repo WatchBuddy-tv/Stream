@@ -106,5 +106,6 @@
     "example_provider_info": "Vous voulez créer votre propre fournisseur ?",
     "learn_more": "En savoir plus",
     "try_example": "Essayer le fournisseur exemple",
-    "connected": "Connecté"
+    "connected": "Connecté",
+    "selection_source": "Sélect. Source"
 }
