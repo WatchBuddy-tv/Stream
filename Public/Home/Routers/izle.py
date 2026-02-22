@@ -30,7 +30,7 @@ async def izle(
 ):
     context = await build_context(request)
     provider_url = context.get("provider_url")
-    provider_base_url = (provider_url or "").strip().rstrip("/")
+    provider_base_url = (provider_url or str(request.base_url)).strip().rstrip("/")
     resolved_provider_id = (provider_id or "").strip() or (
         str(uuid5(NAMESPACE_URL, provider_base_url)) if provider_base_url else ""
     )

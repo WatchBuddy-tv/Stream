@@ -17,7 +17,7 @@ from uuid import NAMESPACE_URL, uuid5
 async def icerik(request: Request, eklenti_adi: str, url: str):
     context = await build_context(request)
     provider_url = context.get("provider_url")
-    provider_base_url = (provider_url or "").strip().rstrip("/")
+    provider_base_url = (provider_url or str(request.base_url)).strip().rstrip("/")
     provider_id = (
         str(uuid5(NAMESPACE_URL, provider_base_url)) if provider_base_url else ""
     )
