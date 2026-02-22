@@ -71,7 +71,7 @@
             {% if not content.episodes %}
                 <div>
                     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-                        <a href="/izle/{{ eklenti_adi }}?url={{ content.url }}&baslik={{ content.title }}{{ provider_query_amp }}" class="button">
+                        <a href="/izle/{{ eklenti_adi }}?url={{ content.url }}&baslik={{ content.title }}&provider_id={{ provider_id|default('', true) }}&content_url={{ content.url }}&content_id={{ content.id|default('', true) }}&poster_url={{ content.poster|default('', true) }}&year={{ content.year|default('', true) }}&rating={{ content.rating|default('', true) }}{{ provider_query_amp }}" class="button">
                             <i class="fas fa-play"></i> <span data-i18n="watch_button">{{ tr('watch_button') }}</span>
                         </a>
                         <a href="/api/v1/load_links?plugin={{ eklenti_adi }}&encoded_url={{ content.url }}" class="button">
@@ -94,7 +94,7 @@
                 <h3 class="season-title" data-i18n="season_title" data-i18n-vars='{"season": "{{ season }}"}'>{{ tr('season_title', season=season) }}</h3>
                 <div class="episodes-grid">
                     {% for episode in episodes %}
-                        <a href="/izle/{{ eklenti_adi }}?url={{ episode.url }}&baslik={{ content.title }} - {{ episode.season }}x{{ episode.episode }}{{ provider_query_amp }}" class="episode-card">
+                        <a href="/izle/{{ eklenti_adi }}?url={{ episode.url }}&baslik={{ content.title }} - {{ episode.season }}x{{ episode.episode }}&provider_id={{ provider_id|default('', true) }}&content_url={{ content.url }}&content_id={{ content.id|default('', true) }}&poster_url={{ content.poster|default('', true) }}&year={{ content.year|default('', true) }}&rating={{ content.rating|default('', true) }}&season={{ episode.season|default('', true) }}&episode={{ episode.episode|default('', true) }}{{ provider_query_amp }}" class="episode-card">
                             <div class="episode-title">{{ episode.title }}</div>
                             {% if episode.season and episode.episode %}
                                 <div class="episode-info">{{ episode.season }}x{{ episode.episode }}</div>

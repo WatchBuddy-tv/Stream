@@ -139,7 +139,16 @@
 
     <div id="video-links-data" style="display: none;"
          data-proxy-url="{{ proxy_url|default('', true) }}"
-         data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}">
+         data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}"
+         data-provider-id="{{ media_meta.provider_id|default('', true) }}"
+         data-plugin-name="{{ media_meta.plugin_name|default('', true) }}"
+         data-content-id="{{ media_meta.content_id|default('', true) }}"
+         data-content-url="{{ media_meta.content_url|default('', true) }}"
+         data-poster-url="{{ media_meta.poster_url|default('', true) }}"
+         data-year="{{ media_meta.year|default('', true) }}"
+         data-rating="{{ media_meta.rating|default('', true) }}"
+         data-season="{{ media_meta.season|default('', true) }}"
+         data-episode="{{ media_meta.episode|default('', true) }}">
         {% for link in links %}
             <div class="video-link-item" data-name="{{ link.name }}" data-url="{{ link.url }}" data-referer="{{ link.referer|default('', true) }}" data-user-agent="{{ link.user_agent|default('', true) }}">
                 {% for subtitle in link.subtitles %}

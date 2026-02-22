@@ -910,6 +910,18 @@ export default class VideoPlayer {
         this.proxyUrl = container?.dataset.proxyUrl;
         this.proxyFallbackUrl = container?.dataset.proxyFallbackUrl;
 
+        const pageMediaMeta = {
+            provider_id: container?.dataset.providerId || '',
+            plugin_name: container?.dataset.pluginName || '',
+            content_id: container?.dataset.contentId || '',
+            content_url: container?.dataset.contentUrl || '',
+            poster_url: container?.dataset.posterUrl || '',
+            year: container?.dataset.year || '',
+            rating: container?.dataset.rating || '',
+            season: container?.dataset.season || '',
+            episode: container?.dataset.episode || ''
+        };
+
         const videoLinks = Array.from(document.querySelectorAll('.video-link-item'));
         this.videoData = videoLinks.map(link => {
             // Altyazıları topla
@@ -925,7 +937,8 @@ export default class VideoPlayer {
                 url: link.dataset.url,
                 referer: link.dataset.referer,
                 userAgent: link.dataset.userAgent,
-                subtitles: subtitles
+                subtitles: subtitles,
+                mediaMeta: { ...pageMediaMeta }
             };
         });
 
@@ -1378,6 +1391,15 @@ export default class VideoPlayer {
         // Generate strictly 8-character uppercase HEX ID
         const newRoomId = (crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0')).toUpperCase();
         const wpParams = new URLSearchParams();
+        const mediaMeta = selectedVideo.mediaMeta || {};
+
+        const appendMetaParam = (key, value) => {
+            const safeValue = String(value || '').trim();
+            if (safeValue) {
+                wpParams.set(key, safeValue);
+            }
+        };
+
         wpParams.set('url', selectedVideo.url);
 
         // Sayfa başlığını al (player-title elementinden)
@@ -1398,6 +1420,17 @@ export default class VideoPlayer {
         if (this.proxyUrl) {
             wpParams.set('proxy_url', this.proxyUrl);
         }
+
+        appendMetaParam('provider_id', mediaMeta.provider_id);
+        appendMetaParam('plugin_name', mediaMeta.plugin_name);
+        appendMetaParam('content_id', mediaMeta.content_id);
+        appendMetaParam('content_url', mediaMeta.content_url);
+        appendMetaParam('poster_url', mediaMeta.poster_url);
+        appendMetaParam('year', mediaMeta.year);
+        appendMetaParam('rating', mediaMeta.rating);
+        appendMetaParam('source_name', selectedVideo.name || mediaMeta.source_name);
+        appendMetaParam('season', mediaMeta.season);
+        appendMetaParam('episode', mediaMeta.episode);
 
 
         // Web Butonu guncelle
