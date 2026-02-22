@@ -1,24 +1,19 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core import Request, HTMLResponse
-from . import (
-    home_router,
-    home_template,
-    build_context,
-    RemoteProviderClient,
-    plugin_manager,
-)
+from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+
 from urllib.parse import quote_plus
-from types import SimpleNamespace
-from uuid import NAMESPACE_URL, uuid5
+from types        import SimpleNamespace
+from uuid         import NAMESPACE_URL, uuid5
 
 
 @home_router.get("/icerik/{eklenti_adi}", response_class=HTMLResponse)
 async def icerik(request: Request, eklenti_adi: str, url: str):
-    context = await build_context(request)
-    provider_url = context.get("provider_url")
+    context           = await build_context(request)
+    provider_url      = context.get("provider_url")
     provider_base_url = (provider_url or str(request.base_url)).strip().rstrip("/")
-    provider_id = (
+    provider_id       = (
         str(uuid5(NAMESPACE_URL, provider_base_url)) if provider_base_url else ""
     )
 
@@ -48,7 +43,7 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
             if eklenti_adi not in plugin_manager.get_plugin_names():
                 raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
 
-            plugin = plugin_manager.select_plugin(eklenti_adi)
+            plugin  = plugin_manager.select_plugin(eklenti_adi)
             content = await plugin.load_item(url)
 
         if hasattr(content, "url") and content.url:
@@ -66,18 +61,18 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
                     provider=eklenti_adi,
                     title=content.title,
                 ),
-                "description": context["tr"]("content_desc", title=content.title),
-                "title_key": "title_content",
-                "title_vars": {
-                    "provider_name": context["provider_name"],
-                    "provider": eklenti_adi,
-                    "title": content.title,
+                "description"   : context["tr"]("content_desc", title=content.title),
+                "title_key"     : "title_content",
+                "title_vars"    : {
+                    "provider_name" : context["provider_name"],
+                    "provider"      : eklenti_adi,
+                    "title"         : content.title,
                 },
-                "desc_key": "content_desc",
-                "desc_vars": {"title": content.title},
-                "eklenti_adi": eklenti_adi,
-                "content": content,
-                "provider_id": provider_id,
+                "desc_key"    : "content_desc",
+                "desc_vars"   : {"title": content.title},
+                "eklenti_adi" : eklenti_adi,
+                "content"     : content,
+                "provider_id" : provider_id,
             }
         )
 
