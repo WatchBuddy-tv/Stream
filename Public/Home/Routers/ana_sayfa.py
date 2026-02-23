@@ -12,7 +12,7 @@ async def health_check():
 @home_router.get("/", response_class=HTMLResponse)
 async def ana_sayfa(request: Request):
     """Ana sayfa - Tüm eklentileri listeler"""
-    context = await build_context(request)
+    context      = await build_context(request)
     provider_url = context.get("provider_url")
 
     plugins = []

@@ -1,12 +1,12 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from Core import Request, HTMLResponse
-from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from Core         import Request, HTMLResponse
+from .            import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
 from urllib.parse import quote_plus
 
 @home_router.get("/eklenti/{eklenti_adi}", response_class=HTMLResponse)
 async def eklenti(request: Request, eklenti_adi: str):
-    context = await build_context(request)
+    context      = await build_context(request)
     provider_url = context.get("provider_url")
 
     try:
@@ -20,7 +20,7 @@ async def eklenti(request: Request, eklenti_adi: str):
                 raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
 
             local_plugin = plugin_manager.select_plugin(eklenti_adi)
-            main_page = {}
+            main_page    = {}
             for url, category in local_plugin.main_page.items():
                 main_page[quote_plus(url)] = quote_plus(category)
 

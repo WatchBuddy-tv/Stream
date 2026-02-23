@@ -74,9 +74,9 @@ def detect_provider(request: Request) -> Optional[str]:
     return None
 
 async def build_context(request: Request, **extra):
-    lang = detect_lang(request)
+    lang             = detect_lang(request)
     translations_all = _load_translations()
-    translations = translations_all.get(lang, {})
+    translations     = translations_all.get(lang, {})
 
     def tr(key: str, **kwargs):
         value = translations.get(key, key)
@@ -124,15 +124,15 @@ async def build_context(request: Request, **extra):
         "tr"                 : tr,
         "site_name"          : tr("site_name"),
         "og_locale"          : {
-            "tr": "tr_TR",
-            "en": "en_US",
-            "fr": "fr_FR",
-            "ru": "ru_RU",
-            "uk": "uk_UA",
+            "tr"                 : "tr_TR",
+            "en"                 : "en_US",
+            "fr"                 : "fr_FR",
+            "ru"                 : "ru_RU",
+            "uk"                 : "uk_UA",
         }.get(lang, "en_US"),
-        "provider_url"       : provider_url,
-        "provider_name"      : provider_name,
-        "is_remote"          : bool(provider_url)
+        "provider_url"  : provider_url,
+        "provider_name" : provider_name,
+        "is_remote"     : bool(provider_url)
     }
     context.update(extra)
     return context

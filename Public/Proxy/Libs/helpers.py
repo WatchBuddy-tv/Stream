@@ -98,7 +98,7 @@ def prepare_response_headers(response_headers: dict, url: str, detected_content_
 
 def detect_hls_from_url(url: str) -> bool:
     """URL yapısından HLS olup olmadığını tahmin eder"""
-    url_lower = url.lower()
+    url_lower  = url.lower()
     indicators = (
         ".m3u8",
         ".m3u",
@@ -143,7 +143,7 @@ def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, use
     if not text.strip().startswith('#EXTM3U'):
         return content
 
-    lines = text.split('\n')
+    lines     = text.split('\n')
     new_lines = []
 
     for line in lines:
@@ -152,7 +152,7 @@ def rewrite_hls_manifest(content: bytes, base_url: str, referer: str = None, use
         # URI="..." içeren satırları işle (audio/subtitle tracks, encryption keys)
         if 'URI="' in line:
             def replace_uri(match):
-                uri = match.group(1)
+                uri          = match.group(1)
                 absolute_url = urljoin(base_url, uri)
 
                 # Eğer bir segment DEĞİLSE (key veya alt manifest ise) proxy üzerinden geçmeli

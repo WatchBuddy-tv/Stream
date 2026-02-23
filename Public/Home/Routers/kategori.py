@@ -1,12 +1,12 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from Core import Request, HTMLResponse
-from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from Core         import Request, HTMLResponse
+from .            import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
 from urllib.parse import quote_plus
 
 @home_router.get("/kategori/{eklenti_adi}", response_class=HTMLResponse)
 async def kategori(request: Request, eklenti_adi: str, kategori_url: str, kategori_adi: str, sayfa: int = 1):
-    context = await build_context(request)
+    context      = await build_context(request)
     provider_url = context.get("provider_url")
 
     try:

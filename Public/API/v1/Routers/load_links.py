@@ -7,7 +7,7 @@ from random import choice
 
 @api_v1_router.get("/load_links")
 async def load_links(request:Request):
-    istek = request.state.veri
+    istek        = request.state.veri
     plugin_names = plugin_manager.get_plugin_names()
     if not istek:
         return JSONResponse(status_code=410, content={"hata": f"{request.url.path}?plugin={choice(plugin_names)}&encoded_url="})

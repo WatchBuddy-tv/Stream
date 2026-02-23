@@ -16,9 +16,9 @@ class SegmentCache:
         self.hard_ttl_seconds = hard_ttl_seconds
 
         # Cache storage: {url: (content, created_at, last_access, size)}
-        self._cache: dict[str, tuple[bytes, float, float, int]] = {}
-        self._total_size = 0
-        self._lock = asyncio.Lock()
+        self._cache      : dict[str, tuple[bytes, float, float, int]] = {}
+        self._total_size                                              = 0
+        self._lock                                                    = asyncio.Lock()
 
     async def get(self, url: str) -> bytes | None:
         """Cache'den segment al ve access time'ı güncelle"""

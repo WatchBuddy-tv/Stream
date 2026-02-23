@@ -42,7 +42,7 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
 
     try:
         # GET isteğini başlat
-        req = client.build_request("GET", decoded_url, headers=request_headers)
+        req      = client.build_request("GET", decoded_url, headers=request_headers)
         response = await client.send(req, stream=True)
 
         if response.status_code >= 400:
@@ -51,7 +51,7 @@ async def video_proxy(request: Request, url: str, referer: str = None, user_agen
             return Response(status_code=response.status_code, content=f"Upstream Error: {response.status_code}")
 
         # 3. HLS Tespiti (URL + Header)
-        is_hls = detect_hls_from_url(decoded_url)
+        is_hls       = detect_hls_from_url(decoded_url)
         content_type = response.headers.get("content-type", "").lower()
         if "mpegurl" in content_type or "m3u8" in content_type:
             is_hls = True

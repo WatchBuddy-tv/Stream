@@ -93,11 +93,11 @@ async def log_salla(log_veri: dict, request: Request):
     if log_url == "http://127.0.0.1:3310/api/v1/health":
         return
 
-    LABEL_WIDTH  = 5
-    durum_label  = f"[green]{'durum':<{LABEL_WIDTH}}:[/]"
-    ip_label     = f"[green]{'ip':<{LABEL_WIDTH}}:[/]"
-    konum_label  = f"[green]{'konum':<{LABEL_WIDTH}}:[/]"
-    cihaz_label  = f"[green]{'cihaz':<{LABEL_WIDTH}}:[/]"
+    LABEL_WIDTH = 5
+    durum_label = f"[green]{'durum':<{LABEL_WIDTH}}:[/]"
+    ip_label    = f"[green]{'ip':<{LABEL_WIDTH}}:[/]"
+    konum_label = f"[green]{'konum':<{LABEL_WIDTH}}:[/]"
+    cihaz_label = f"[green]{'cihaz':<{LABEL_WIDTH}}:[/]"
 
     log_lines = []
 

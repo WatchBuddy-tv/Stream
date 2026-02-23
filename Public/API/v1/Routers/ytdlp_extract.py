@@ -16,11 +16,11 @@ async def ytdlp_extract(request: Request):
 
     Returns:
         {
-            "title": str,
-            "stream_url": str,
-            "duration": float,
-            "thumbnail": str,
-            "format": str
+            "title"      : str,
+            "stream_url" : str,
+            "duration"   : float,
+            "thumbnail"  : str,
+            "format"     : str
         }
     """
     istek = request.state.veri
@@ -40,27 +40,27 @@ async def ytdlp_extract(request: Request):
         # yt-dlp bulamadıysa, orijinal URL'i kullan
         return {
             **api_v1_global_message,
-            "result" : {
-                "title"      : "Video",
-                "stream_url" : url,
-                "duration"   : 0,
-                "is_live"    : False,
-                "format"     : "hls" if ".m3u8" in url.lower() else "mp4",
-                "resolved"   : False,
-                "resolved_by": "fallback"
+            "result"      : {
+                "title"       : "Video",
+                "stream_url"  : url,
+                "duration"    : 0,
+                "is_live"     : False,
+                "format"      : "hls" if ".m3u8" in url.lower() else "mp4",
+                "resolved"    : False,
+                "resolved_by" : "fallback"
             }
         }
 
     return {
         **api_v1_global_message,
-        "result" : {
-            "title"      : info.get("title", "Video"),
-            "stream_url" : info.get("stream_url"),
-            "duration"   : info.get("duration", 0),
-            "is_live"    : info.get("is_live", False),
-            "thumbnail"  : info.get("thumbnail"),
-            "format"     : info.get("format", "mp4"),
-            "resolved"   : True,
-            "resolved_by": "ytdlp"
+        "result"      : {
+            "title"       : info.get("title", "Video"),
+            "stream_url"  : info.get("stream_url"),
+            "duration"    : info.get("duration", 0),
+            "is_live"     : info.get("is_live", False),
+            "thumbnail"   : info.get("thumbnail"),
+            "format"      : info.get("format", "mp4"),
+            "resolved"    : True,
+            "resolved_by" : "ytdlp"
         }
     }

@@ -123,14 +123,14 @@ async def izle(
         return home_template.TemplateResponse("pages/player.html.j2", context)
     except Exception as hata:
         context = await build_context(
-            request=request,
-            title="",
-            description="",
-            title_key="title_error",
-            title_vars={"context": f"{eklenti_adi} - {baslik}"},
-            desc_key="error_desc",
-            desc_vars={},
-            hata=hata,
+            request     = request,
+            title       = "",
+            description = "",
+            title_key   = "title_error",
+            title_vars  = {"context": f"{eklenti_adi} - {baslik}"},
+            desc_key    = "error_desc",
+            desc_vars   = {},
+            hata        = hata,
         )
         context["title"] = f"{context['tr']('error_title')} - {eklenti_adi} - {baslik}"
         context["description"] = context["tr"]("error_desc")

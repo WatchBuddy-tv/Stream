@@ -57,9 +57,9 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
             {
                 "title": context["tr"](
                     "title_content",
-                    provider_name=context["provider_name"],
-                    provider=eklenti_adi,
-                    title=content.title,
+                    provider_name = context["provider_name"],
+                    provider      = eklenti_adi,
+                    title         = content.title,
                 ),
                 "description"   : context["tr"]("content_desc", title=content.title),
                 "title_key"     : "title_content",
@@ -79,14 +79,14 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
         return home_template.TemplateResponse("pages/content.html.j2", context)
     except Exception as hata:
         context = await build_context(
-            request=request,
-            title="",
-            description="",
-            title_key="title_error",
-            title_vars={"context": eklenti_adi},
-            desc_key="error_desc",
-            desc_vars={},
-            hata=hata,
+            request     = request,
+            title       = "",
+            description = "",
+            title_key   = "title_error",
+            title_vars  = {"context": eklenti_adi},
+            desc_key    = "error_desc",
+            desc_vars   = {},
+            hata        = hata,
         )
         context["title"] = f"{context['tr']('error_title')} - {eklenti_adi}"
         context["description"] = context["tr"]("error_desc")

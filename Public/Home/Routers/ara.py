@@ -1,12 +1,12 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from Core import Request, HTMLResponse
-from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from Core         import Request, HTMLResponse
+from .            import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
 from urllib.parse import quote_plus
 
 @home_router.get("/ara/{eklenti_adi}", response_class=HTMLResponse)
 async def ara(request: Request, eklenti_adi: str, sorgu: str):
-    context = await build_context(request)
+    context      = await build_context(request)
     provider_url = context.get("provider_url")
 
     try:
@@ -18,7 +18,7 @@ async def ara(request: Request, eklenti_adi: str, sorgu: str):
             if eklenti_adi not in plugin_manager.get_plugin_names():
                 raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
 
-            plugin = plugin_manager.select_plugin(eklenti_adi)
+            plugin  = plugin_manager.select_plugin(eklenti_adi)
             results = await plugin.search(sorgu)
 
         for elem in results:
