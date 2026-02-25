@@ -110,9 +110,10 @@ export class GlobalSearch {
                     completedSearches++;
 
                     if (results && results.length > 0) {
-                        totalResults += results.length;
-                        this.searchResultsByPlugin.set(plugin.name, results);
-                        this.replaceLoadingWithResults(plugin.name, results);
+                        const rankedResults = this.sortResultsByRelevance(results, query);
+                        totalResults += rankedResults.length;
+                        this.searchResultsByPlugin.set(plugin.name, rankedResults);
+                        this.replaceLoadingWithResults(plugin.name, rankedResults);
                     } else {
                         this.removeLoadingCard(plugin.name);
                     }
@@ -134,6 +135,7 @@ export class GlobalSearch {
         // Show filters only if this search is still the current one and we have results
         if (this.currentSearch === query && totalResults > 0) {
             this.renderFilters();
+            this.applyFilters(query);
         }
     }
 
@@ -166,6 +168,80 @@ export class GlobalSearch {
             console.warn(`Failed to search in ${pluginName}:`, error.message);
             return [];
         }
+    }
+
+    normalizeText(value) {
+        if (!value) return '';
+        return String(value)
+            .toLocaleLowerCase('tr')
+            .normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[ıİ]/g, 'i')
+            .replace(/[şŞ]/g, 's')
+            .replace(/[ğĞ]/g, 'g')
+            .replace(/[üÜ]/g, 'u')
+            .replace(/[öÖ]/g, 'o')
+            .replace(/[çÇ]/g, 'c')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    tokenize(value) {
+        if (!value) return [];
+        return this.normalizeText(value).split(/[^a-z0-9]+/).filter(Boolean);
+    }
+
+    calculateRelevanceScore(title, query) {
+        const t = this.normalizeText(title);
+        const q = this.normalizeText(query);
+
+        if (!t || !q) return 0;
+        if (t === q) return 1000;
+
+        let score = 0;
+
+        if (t.startsWith(q)) {
+            score = Math.max(score, 850 - Math.min(200, t.length - q.length));
+        }
+
+        const containsIndex = t.indexOf(q);
+        if (containsIndex !== -1) {
+            score = Math.max(
+                score,
+                700 - Math.min(250, containsIndex * 4) - Math.min(100, Math.max(0, t.length - q.length))
+            );
+        }
+
+        const queryTokens = this.tokenize(q);
+        const titleTokens = this.tokenize(t);
+        if (queryTokens.length > 0 && titleTokens.length > 0) {
+            let common = 0;
+            queryTokens.forEach((token) => {
+                if (titleTokens.includes(token)) common++;
+            });
+
+            let tokenScore = Math.floor((common / queryTokens.length) * 520);
+            if (t.startsWith(queryTokens[0])) {
+                tokenScore += 80;
+            }
+            score = Math.max(score, tokenScore);
+        }
+
+        return score;
+    }
+
+    sortResultsByRelevance(results, query) {
+        if (!Array.isArray(results)) return [];
+
+        return [...results].sort((a, b) => {
+            const scoreA = this.calculateRelevanceScore(a?.title || '', query);
+            const scoreB = this.calculateRelevanceScore(b?.title || '', query);
+            if (scoreA !== scoreB) return scoreB - scoreA;
+
+            const titleA = this.normalizeText(a?.title || '');
+            const titleB = this.normalizeText(b?.title || '');
+            return titleA.localeCompare(titleB);
+        });
     }
 
     addLoadingCard(pluginName) {
@@ -349,20 +425,45 @@ export class GlobalSearch {
         });
     }
 
-    applyFilters() {
+    applyFilters(query = this.currentSearch || '') {
         this.resultsGrid.innerHTML = '';
 
         let visibleResults = 0;
+        const rankedRows = [];
+        let pluginOrder = 0;
 
         this.searchResultsByPlugin.forEach((results, pluginName) => {
-            // Show results if no filters active or if plugin is in active filters
-            if (this.activeFilters.size === 0 || this.activeFilters.has(pluginName)) {
-                results.forEach(result => {
-                    const card = this.createResultCard(pluginName, result);
-                    this.resultsGrid.appendChild(card);
-                    visibleResults++;
+            const isVisiblePlugin = this.activeFilters.size === 0 || this.activeFilters.has(pluginName);
+            if (isVisiblePlugin) {
+                results.forEach((result, resultIndex) => {
+                    rankedRows.push({
+                        pluginName,
+                        result,
+                        pluginOrder,
+                        resultIndex,
+                        score: this.calculateRelevanceScore(result?.title || '', query),
+                    });
                 });
             }
+            pluginOrder++;
+        });
+
+        rankedRows.sort((a, b) => {
+            if (a.score !== b.score) return b.score - a.score;
+
+            const titleA = this.normalizeText(a.result?.title || '');
+            const titleB = this.normalizeText(b.result?.title || '');
+            const titleOrder = titleA.localeCompare(titleB);
+            if (titleOrder !== 0) return titleOrder;
+
+            if (a.pluginOrder !== b.pluginOrder) return a.pluginOrder - b.pluginOrder;
+            return a.resultIndex - b.resultIndex;
+        });
+
+        rankedRows.forEach(({ pluginName, result }) => {
+            const card = this.createResultCard(pluginName, result);
+            this.resultsGrid.appendChild(card);
+            visibleResults++;
         });
 
         // Update status
