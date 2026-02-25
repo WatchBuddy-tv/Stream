@@ -26,6 +26,7 @@ export class GlobalSearch {
         // Filter state
         this.searchResultsByPlugin = new Map(); // { pluginName: [results] }
         this.activeFilters = new Set();
+        this.pendingPlugins = new Set();
 
         // Provider URL (from cookie or URL)
         this.providerUrl = this.getProviderUrl();
@@ -82,6 +83,7 @@ export class GlobalSearch {
         // Reset filter state
         this.searchResultsByPlugin.clear();
         this.activeFilters.clear();
+        this.pendingPlugins.clear();
 
         // UI setup
         this.searchQueryDisplay.textContent = `"${query}"`;
@@ -100,8 +102,9 @@ export class GlobalSearch {
 
         this.showStatus(t('searching_plugins', { count: this.plugins.length }), 'searching');
 
-        // Add loading cards
-        this.plugins.forEach(plugin => this.addLoadingCard(plugin.name));
+        // Add loading cards (pending plugins)
+        this.plugins.forEach(plugin => this.pendingPlugins.add(plugin.name));
+        this.renderRankedResults(query, { showPending: true });
 
         // Progressive search
         const searchPromises = this.plugins.map(plugin =>
@@ -113,11 +116,12 @@ export class GlobalSearch {
                         const rankedResults = this.sortResultsByRelevance(results, query);
                         totalResults += rankedResults.length;
                         this.searchResultsByPlugin.set(plugin.name, rankedResults);
-                        this.replaceLoadingWithResults(plugin.name, rankedResults);
                     } else {
-                        this.removeLoadingCard(plugin.name);
+                        this.searchResultsByPlugin.delete(plugin.name);
                     }
 
+                    this.pendingPlugins.delete(plugin.name);
+                    this.renderRankedResults(query, { showPending: completedSearches < this.plugins.length });
                     this.updateSearchStatus(completedSearches, this.plugins.length, totalResults);
                 })
                 .catch(error => {
@@ -125,7 +129,9 @@ export class GlobalSearch {
                         console.error(`Error searching in ${plugin.name}:`, error);
                     }
                     completedSearches++;
-                    this.removeLoadingCard(plugin.name);
+                    this.searchResultsByPlugin.delete(plugin.name);
+                    this.pendingPlugins.delete(plugin.name);
+                    this.renderRankedResults(query, { showPending: completedSearches < this.plugins.length });
                     this.updateSearchStatus(completedSearches, this.plugins.length, totalResults);
                 })
         );
@@ -255,6 +261,59 @@ export class GlobalSearch {
         this.resultsGrid.appendChild(loadingCard);
     }
 
+    buildRankedRows(query = this.currentSearch || '') {
+        const rankedRows = [];
+        let pluginOrder = 0;
+
+        this.searchResultsByPlugin.forEach((results, pluginName) => {
+            const isVisiblePlugin = this.activeFilters.size === 0 || this.activeFilters.has(pluginName);
+            if (isVisiblePlugin) {
+                results.forEach((result, resultIndex) => {
+                    rankedRows.push({
+                        pluginName,
+                        result,
+                        pluginOrder,
+                        resultIndex,
+                        score: this.calculateRelevanceScore(result?.title || '', query),
+                    });
+                });
+            }
+            pluginOrder++;
+        });
+
+        rankedRows.sort((a, b) => {
+            if (a.score !== b.score) return b.score - a.score;
+
+            const titleA = this.normalizeText(a.result?.title || '');
+            const titleB = this.normalizeText(b.result?.title || '');
+            const titleOrder = titleA.localeCompare(titleB);
+            if (titleOrder !== 0) return titleOrder;
+
+            if (a.pluginOrder !== b.pluginOrder) return a.pluginOrder - b.pluginOrder;
+            return a.resultIndex - b.resultIndex;
+        });
+
+        return rankedRows;
+    }
+
+    renderRankedResults(query = this.currentSearch || '', options = {}) {
+        const { showPending = false } = options;
+        this.resultsGrid.innerHTML = '';
+
+        const rankedRows = this.buildRankedRows(query);
+        rankedRows.forEach(({ pluginName, result }) => {
+            const card = this.createResultCard(pluginName, result);
+            this.resultsGrid.appendChild(card);
+        });
+
+        if (!showPending || this.pendingPlugins.size === 0) return;
+
+        this.pendingPlugins.forEach((pluginName) => {
+            if (this.activeFilters.size > 0 && !this.activeFilters.has(pluginName)) return;
+            this.addLoadingCard(pluginName);
+        });
+    }
+
     showStatus(message, type = '') {
         this.searchStatus.textContent = message;
         this.searchStatus.className = 'search-status';
@@ -357,6 +416,7 @@ export class GlobalSearch {
         // Reset filter state
         this.searchResultsByPlugin.clear();
         this.activeFilters.clear();
+        this.pendingPlugins.clear();
         this.pluginFilters.style.display = 'none';
         this.filtersContainer.innerHTML = '';
 
@@ -426,45 +486,9 @@ export class GlobalSearch {
     }
 
     applyFilters(query = this.currentSearch || '') {
-        this.resultsGrid.innerHTML = '';
+        this.renderRankedResults(query, { showPending: this.pendingPlugins.size > 0 });
 
-        let visibleResults = 0;
-        const rankedRows = [];
-        let pluginOrder = 0;
-
-        this.searchResultsByPlugin.forEach((results, pluginName) => {
-            const isVisiblePlugin = this.activeFilters.size === 0 || this.activeFilters.has(pluginName);
-            if (isVisiblePlugin) {
-                results.forEach((result, resultIndex) => {
-                    rankedRows.push({
-                        pluginName,
-                        result,
-                        pluginOrder,
-                        resultIndex,
-                        score: this.calculateRelevanceScore(result?.title || '', query),
-                    });
-                });
-            }
-            pluginOrder++;
-        });
-
-        rankedRows.sort((a, b) => {
-            if (a.score !== b.score) return b.score - a.score;
-
-            const titleA = this.normalizeText(a.result?.title || '');
-            const titleB = this.normalizeText(b.result?.title || '');
-            const titleOrder = titleA.localeCompare(titleB);
-            if (titleOrder !== 0) return titleOrder;
-
-            if (a.pluginOrder !== b.pluginOrder) return a.pluginOrder - b.pluginOrder;
-            return a.resultIndex - b.resultIndex;
-        });
-
-        rankedRows.forEach(({ pluginName, result }) => {
-            const card = this.createResultCard(pluginName, result);
-            this.resultsGrid.appendChild(card);
-            visibleResults++;
-        });
+        const visibleResults = this.buildRankedRows(query).length;
 
         // Update status
         const totalResults = Array.from(this.searchResultsByPlugin.values())
