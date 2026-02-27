@@ -507,7 +507,7 @@ export default class VideoPlayer {
         });
 
         const handleFullscreenChange = () => {
-            const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || this.videoPlayer.webkitDisplayingFullscreen);
+            const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || this.videoPlayer?.webkitDisplayingFullscreen);
 
             // İkonu güncelle
             if (fullscreenBtn) {
