@@ -520,7 +520,7 @@ export default class VideoPlayer {
             // Fullscreen çıkışında orientation kilidini kaldır ve cleanup
             if (!isFS) {
                 if (screen.orientation?.unlock) {
-                    screen.orientation.unlock().catch(() => {});
+                    try { screen.orientation.unlock(); } catch (_) {}
                 }
                 document.body.classList.remove('keyboard-open');
                 window.dispatchEvent(new Event('resize'));
