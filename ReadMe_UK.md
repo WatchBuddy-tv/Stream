@@ -2,16 +2,16 @@
 
 [![Додати stream.watchbuddy.tv у WatchBuddy](https://img.shields.io/badge/Add-stream.watchbuddy.tv-blue?style=flat-square)](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=https://stream.watchbuddy.tv)
 
-WatchBuddy потребує надійного та чистого streaming-шару. Цей репозиторій надає саме його.  
+WatchBuddy потребує надійного та чистого streaming-шару. Цей репозиторій надає саме його.
 Це **не** sandbox для розробки — це **production-ready інтеграційний форк**, який використовує WatchBuddy.
 
-Інші мови: [ReadMe.md](./ReadMe.md) • [ReadMe_TR.md](./ReadMe_TR.md) • [ReadMe_FR.md](./ReadMe_FR.md) • [ReadMe_RU.md](./ReadMe_RU.md)
+[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇷🇺 Русский](./ReadMe_RU.md)
 
 ---
 
 ## 🚦 Що надає цей форк
 
-KekikStreamAPI поєднує **рушій KekikStream** із Web UI та REST API, формуючи наскрізний streaming-процес.  
+KekikStreamAPI поєднує **рушій KekikStream** із Web UI та REST API, формуючи наскрізний streaming-процес.
 Цей форк робить його **готовим для WatchBuddy**, не змінюючи логіку ядра.
 
 - 🎥 Мультиджерела: пошук і перегляд із багатьох джерел
@@ -25,7 +25,7 @@ KekikStreamAPI поєднує **рушій KekikStream** із Web UI та REST A
 
 ## 🎯 Навіщо існує цей форк
 
-Ми форкнули **KekikStreamAPI**, щоб надати для WatchBuddy **drop-in streaming service** з мінімальним налаштуванням.  
+Ми форкнули **KekikStreamAPI**, щоб надати для WatchBuddy **drop-in streaming service** з мінімальним налаштуванням.
 Мета: чиста поверхня інтеграції, передбачувані API-відповіді та публічний багатомовний UI.
 
 ---
@@ -91,7 +91,7 @@ python basla.py
 
 ## 🛠️ Хочете додати нові джерела?
 
-Цей репозиторій **не** призначений для розробки providers.  
+Цей репозиторій **не** призначений для розробки providers.
 Якщо хочете створити власний провайдер, використовуйте офіційний гайд і шаблони: [WatchBuddy ExampleProvider](https://github.com/WatchBuddy-tv/ExampleProvider)
 
 ---

@@ -5,7 +5,7 @@
 WatchBuddy needs a reliable, clean streaming layer. This repo provides that layer.
 It is **not** a development sandbox — it is the **production‑ready integration fork** used by WatchBuddy.
 
-Other languages: [ReadMe_TR.md](./ReadMe_TR.md) • [ReadMe_FR.md](./ReadMe_FR.md) • [ReadMe_RU.md](./ReadMe_RU.md) • [ReadMe_UK.md](./ReadMe_UK.md)
+[🇹🇷 Türkçe](./ReadMe_TR.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇷🇺 Русский](./ReadMe_RU.md) • [🇺🇦 Українська](./ReadMe_UK.md)
 
 ---
 

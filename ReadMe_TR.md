@@ -5,7 +5,7 @@
 WatchBuddy’nin ihtiyacı olan streaming katmanını bu repo sağlar.
 Bu bir geliştirme ortamı değildir; WatchBuddy için **üretim odaklı entegrasyon forkudur**.
 
-English version: [ReadMe.md](./ReadMe.md) • [Version Française](./ReadMe_FR.md) • [Русская версия](./ReadMe_RU.md) • [Українська версія](./ReadMe_UK.md)
+[🇺🇸 English](./ReadMe.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇷🇺 Русский](./ReadMe_RU.md) • [🇺🇦 Українська](./ReadMe_UK.md)
 
 ---
 
