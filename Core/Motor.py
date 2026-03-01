@@ -22,7 +22,6 @@ def basla():
         "--log-level", "error",
         "--bind", f"{HOST}:{PORT}",
         "--workers", str(workers),
-        "--proxy-headers",
         "--forwarded-allow-ips", "*",
         "--keep-alive", "5",
         "--worker-tmp-dir", "/dev/shm",
