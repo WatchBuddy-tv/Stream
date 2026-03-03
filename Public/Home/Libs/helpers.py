@@ -6,6 +6,7 @@ from typing       import Optional, Any
 from fastapi      import Request
 from urllib.parse import quote, unquote
 
+from Settings         import PROVIDER_NAME, PRODUCTION
 from .provider_client import RemoteProviderClient
 
 _TRANSLATIONS    = {}
@@ -100,7 +101,6 @@ async def build_context(request: Request, **extra):
             provider_name = "Remote Provider"
     else:
         # Local provider için Settings'ten al
-        from Settings import PROVIDER_NAME
         provider_name = PROVIDER_NAME
 
     # Provider URL parametreleri (template linkleri için)
@@ -132,7 +132,8 @@ async def build_context(request: Request, **extra):
         }.get(lang, "en_US"),
         "provider_url"  : provider_url,
         "provider_name" : provider_name,
-        "is_remote"     : bool(provider_url)
+        "is_remote"     : bool(provider_url),
+        "production"    : PRODUCTION
     }
     context.update(extra)
     return context

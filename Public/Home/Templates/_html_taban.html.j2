@@ -107,6 +107,7 @@
 
     <!-- ? I18n -->
     <script>
+        window.PRODUCTION = {{ production | tojson }};
         window.LANG = "{{ lang }}";
         window.TRANSLATIONS = {{ translations | tojson }};
         window.TRANSLATIONS_ALL = {{ translations_all | tojson }};

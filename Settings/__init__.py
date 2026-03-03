@@ -14,9 +14,10 @@ with open("AYAR.yml", "r", encoding="utf-8") as yaml_dosyasi:
     AYAR = load(yaml_dosyasi, Loader=FullLoader)
 
 # Genel ayarlar
-PROJE = AYAR["PROJE"]
-HOST  = AYAR["APP"]["HOST"]
-PORT  = AYAR["APP"]["PORT"]
+PRODUCTION = os.getenv("PRODUCTION", "false").lower() == "true"
+PROJE      = AYAR["PROJE"]
+HOST       = AYAR["APP"]["HOST"]
+PORT       = AYAR["APP"]["PORT"]
 
 # Provider Metadata
 def _clean_url(value: str) -> str:

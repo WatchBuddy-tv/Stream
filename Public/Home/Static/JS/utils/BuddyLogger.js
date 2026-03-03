@@ -3,6 +3,7 @@
 export default class BuddyLogger {
     static logs = [];
     static isDebug = false;
+    static isProduction = false;
     static startTime = Date.now();
     static maxLogs = 200;
     static lastLog = null;
@@ -10,6 +11,7 @@ export default class BuddyLogger {
     static init(isDebug = false) {
         this.isDebug = isDebug;
         if (typeof window !== 'undefined') {
+            this.isProduction = window.PRODUCTION === true;
             const params = new URLSearchParams(window.location.search);
             if (params.has('debug')) this.isDebug = params.get('debug') === 'true';
 
@@ -34,6 +36,7 @@ export default class BuddyLogger {
     }
 
     static _print(emoji, category, title, details, level = 'info') {
+        if (this.isProduction) return;
         const elapsed = Math.round((Date.now() - this.startTime) / 10) / 100;
         const msgKey = `${category}|${title}|${JSON.stringify(details)}`;
 
