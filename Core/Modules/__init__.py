@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
 
                 removed_count = 0
                 for name, is_available, status_code in results:
-                    if name in ["RecTV"]:
+                    if name in ["RecTV", "WebteIzle"]:
                         continue
 
                     if is_available:
