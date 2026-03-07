@@ -9,9 +9,9 @@
   padding: 14px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: var(--spacing-lg);
-  background: rgba(37, 36, 35, 0.82);
+  background: rgba(28, 27, 26, 0.84);
   backdrop-filter: blur(16px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
 }
 
 .header .container {
@@ -55,7 +55,7 @@
 .lang-switch {
   display: inline-flex;
   gap: var(--spacing-xs);
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.24);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   padding: 4px;
