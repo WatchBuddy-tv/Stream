@@ -3,20 +3,22 @@
 /* ==================== KARTLAR ==================== */
 
 .card {
-  background-color: var(--card-bg-color);
-  border-radius: var(--border-radius);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.1) 0%, rgba(239, 127, 26, 0) 34%),
+    var(--card-bg-color);
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
   transition: all var(--transition-speed) ease-out;
-  box-shadow: 0 2px 8px var(--shadow-color);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px var(--shadow-color-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-strong);
   background-color: var(--card-bg-hover);
   border-color: var(--primary-color);
 }
@@ -24,6 +26,7 @@
 .card-header {
   display: flex;
   align-items: center;
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-sm);
   border-bottom: 1px solid var(--border-light);
@@ -32,7 +35,6 @@
 .plugin-favicon {
   width: 28px;
   height: 28px;
-  margin-right: var(--spacing-md);
   object-fit: contain;
   border-radius: var(--border-radius-sm);
   flex-shrink: 0;
@@ -44,9 +46,24 @@
 .plugin-icon {
   width: 24px;
   height: 24px;
-  margin-right: var(--spacing-sm);
   color: var(--primary-color);
   flex-shrink: 0;
+}
+
+.plugin-card-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+.plugin-card-copy .card-title {
+  min-height: 0;
+}
+
+.plugin-card-copy .plugin-card-meta {
+  margin-top: 1px;
 }
 
 .card-image {
@@ -62,19 +79,20 @@
 }
 
 .card-content {
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  gap: 6px;
 }
 
 .card-title {
   font-size: var(--font-size-md);
   color: var(--primary-color);
-  margin-bottom: var(--spacing-sm);
-  font-weight: 600;
-  line-height: 1.3;
-  min-height: 40px;
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.18;
+  min-height: calc(1.18em * 2);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -85,15 +103,59 @@
 .card-text {
   color: var(--text-color);
   font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0;
   line-height: var(--line-height-base);
+  opacity: 0.88;
+}
+
+.card-meta-line,
+.plugin-card-meta {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.plugin-card-meta {
+  display: flex;
+  align-items: center;
+}
+
+.plugin-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.plugin-meta-pill i {
+  color: var(--primary-color);
+  opacity: 0.9;
 }
 
 .card-actions {
   margin-top: auto;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-sm);
   padding-top: var(--spacing-md);
-  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.card-actions .button {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .card-actions {
+    grid-template-columns: 1fr;
+  }
 }

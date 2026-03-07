@@ -17,7 +17,7 @@ export default class BuddyLogger {
 
             if (this.isDebug) {
                 const toggleBtn = document.getElementById('toggle-diagnostics');
-                if (toggleBtn) toggleBtn.style.display = 'block';
+                if (toggleBtn) toggleBtn.classList.remove('is-hidden');
             }
         }
     }

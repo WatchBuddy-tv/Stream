@@ -10,7 +10,7 @@
   padding: var(--spacing-md) var(--spacing-lg);
   background-color: var(--primary-color);
   color: var(--background-color);
-  border-radius: var(--border-radius);
+  border-radius: 999px;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all var(--transition-speed) ease-out;
@@ -46,16 +46,17 @@
 }
 
 .button-secondary {
-  background-color: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-color);
   box-shadow: none;
 }
 
 .button-secondary:hover {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.3);
+  background-color: rgba(239, 127, 26, 0.14);
+  border-color: rgba(239, 127, 26, 0.35);
+  color: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.16);
 }
 
 .button-small {

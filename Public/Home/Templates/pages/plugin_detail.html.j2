@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <div class="search-container">
+    <div class="search-container plugin-search-shell">
         <form method="GET" action="/ara/{{ plugin.name }}" class="search-form">
             <input type="hidden" name="lang" value="{{ lang }}">
             <input type="text" name="sorgu" class="search-input" placeholder="{{ tr('search_plugin_placeholder') }}" data-i18n="search_plugin_placeholder" data-i18n-attr="placeholder" required>
@@ -50,9 +50,9 @@
         </form>
     </div>
 
-    <div>
-        <h2 data-i18n="categories_title">{{ tr('categories_title') }}</h2>
-        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+    <section class="detail-section-shell">
+        <h2 class="section-title" data-i18n="categories_title">{{ tr('categories_title') }}</h2>
+        <div class="grid grid-compact">
             {% for url, category in plugin.main_page.items() %}
                 <a href="/kategori/{{ plugin.name }}?kategori_url={{ url }}&kategori_adi={{ category }}{{ provider_query_amp }}" class="card">
                     <div class="card-content">
@@ -61,7 +61,7 @@
                 </a>
             {% endfor %}
         </div>
-    </div>
+    </section>
 </div>
 
 {% endblock %}

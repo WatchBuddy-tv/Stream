@@ -24,7 +24,7 @@
         <p data-i18n="search_in_plugin" data-i18n-vars='{"plugin": "{{ eklenti_adi }}"}'>{{ tr('search_in_plugin', plugin=eklenti_adi) }}</p>
     </div>
 
-    <div class="search-container">
+    <div class="search-container plugin-search-shell">
         <form method="GET" action="/ara/{{ eklenti_adi }}" class="search-form">
             <input type="hidden" name="lang" value="{{ lang }}">
             <input type="text" name="sorgu" value="{{ sorgu }}" class="search-input" placeholder="{{ tr('search_placeholder') }}" data-i18n="search_placeholder" data-i18n-attr="placeholder" required>
@@ -46,7 +46,7 @@
                 </div>
             </a>
         {% else %}
-            <div style="grid-column: 1 / -1; text-align: center;">
+            <div class="empty-state-full">
                 <p data-i18n="search_no_results">{{ tr('search_no_results') }}</p>
             </div>
         {% endfor %}

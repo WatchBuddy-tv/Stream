@@ -3,10 +3,9 @@
 /* ==================== DÜZEN VE GRID SİSTEMİ ==================== */
 
 .container {
-  width: 90%;
-  max-width: var(--container-max-width);
+  width: min(100% - 32px, var(--container-max-width));
   margin: 0 auto;
-  padding: var(--spacing-md);
+  padding: 0;
 }
 
 .row {
@@ -27,16 +26,100 @@
   margin: var(--spacing-lg) 0;
 }
 
+.grid-compact {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.content-shell {
+  padding: 20px 0 40px;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.page-hero {
+  margin-bottom: var(--spacing-xl);
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-self: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(239, 127, 26, 0.12);
+  border: 1px solid rgba(239, 127, 26, 0.24);
+  color: var(--primary-light);
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.hero-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--font-size-md);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.detail-section-shell {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-xl);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-soft);
+}
+
+.empty-state-full {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-top: 2rem;
+}
+
 /* Section Title */
 .section-title {
   color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
-  font-size: var(--font-size-xl);
+  font-size: clamp(1.35rem, 2vw, var(--font-size-xl));
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  letter-spacing: -0.02em;
 }
 
 .section-title i {

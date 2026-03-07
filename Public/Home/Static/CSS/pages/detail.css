@@ -6,11 +6,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
-  background-color: var(--card-bg-color);
-  border-radius: var(--border-radius);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.12) 0%, rgba(239, 127, 26, 0) 34%),
+    rgba(51, 51, 51, 0.84);
+  border-radius: var(--border-radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: 0 4px 16px var(--shadow-color);
-  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .detail-header {
@@ -18,7 +20,7 @@
   flex-direction: column;
   gap: var(--spacing-md);
   padding-bottom: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -44,11 +46,12 @@
 }
 
 .detail-title {
-  font-size: var(--font-size-xl);
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
   color: var(--primary-color);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
   margin: 0;
+  letter-spacing: -0.03em;
 }
 
 .detail-subtitle {
@@ -138,7 +141,7 @@
 .detail-poster {
   width: 100%;
   max-width: 300px;
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-lg);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   transition: all var(--transition-speed) ease-out;
   border: 1px solid var(--border-light);
@@ -164,9 +167,9 @@
 }
 
 .detail-meta-item {
-  background-color: var(--background-alt);
+  background-color: rgba(255, 255, 255, 0.04);
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  border-radius: 999px;
   font-size: var(--font-size-sm);
   transition: all var(--transition-speed) ease-out;
   border: 1px solid var(--border-light);
@@ -181,26 +184,61 @@
 .content-description {
   line-height: var(--line-height-loose);
   color: var(--text-color);
-  padding: var(--spacing-sm) 0;
+  padding: var(--spacing-md) 0;
 }
 
 .content-info {
   margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.content-info-head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.content-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.content-info-value {
+  color: var(--text-color);
+  line-height: var(--line-height-base);
+  opacity: 0.92;
 }
 
 .content-info p {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0;
 }
 
 .content-info strong {
   color: var(--primary-color);
 }
 
+.content-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.content-actions .button {
+  min-width: 170px;
+}
+
 /* Bölümler Bölümü */
 .episodes-container {
   margin-top: var(--spacing-xl);
   padding-top: var(--spacing-lg);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .episodes-title {
@@ -231,7 +269,7 @@
   padding-bottom: var(--spacing-xs);
   font-size: var(--font-size-lg);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .season-title:first-of-type {
@@ -245,12 +283,12 @@
 }
 
 .episode-card {
-  background-color: var(--card-bg-color);
-  border-radius: var(--border-radius);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--border-radius-lg);
   padding: var(--spacing-md);
   transition: all var(--transition-speed) ease-out;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 2px 6px var(--shadow-color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
 .episode-card:hover {

@@ -3,9 +3,14 @@
 
 {% block icerik %}
 
-<!-- Global Arama (üstte) -->
-<div class="search-container">
-    <div class="search-form">
+<section class="page-hero page-hero-home">
+    <div class="search-container home-search-shell">
+        <div class="hero-copy">
+            <span class="hero-kicker">{{ provider_name }}</span>
+            <h1 class="hero-title">{{ tr('site_name') }}</h1>
+            <p class="hero-subtitle" data-i18n="site_tagline">{{ tr('site_tagline') }}</p>
+        </div>
+        <div class="search-form">
         <input
             type="text"
             id="global-search-input"
@@ -18,82 +23,85 @@
         <button type="button" id="global-search-button" class="search-button">
             <i class="fas fa-search"></i>
         </button>
-    </div>
+        </div>
 
-    <!-- Provider Settings Toggle -->
-    <button type="button" id="toggle-provider-settings" class="button button-secondary button-small">
+        <button type="button" id="toggle-provider-settings" class="button button-secondary button-small hero-settings-toggle" aria-expanded="false" aria-controls="provider-settings-panel">
         <i class="fas fa-cog"></i>
         <span data-i18n="provider_settings">Sağlayıcı Ayarları</span>
         <i class="fas fa-chevron-down" id="settings-chevron"></i>
-    </button>
-</div>
+        </button>
+    </div>
+</section>
 
 <!-- Provider Settings Panel (Collapsible) -->
-<section id="provider-settings-panel" class="provider-settings-panel" style="display: none;">
-    <div class="card">
-        <div class="card-content">
-            <div style="display: grid; gap: 15px;">
-                <!-- Status Badge -->
-                {% if is_remote %}
-                <div class="status-badge success">
-                    <i class="fas fa-link"></i>
-                    <div style="flex: 1;">
-                        <strong>{{ provider_name }}</strong>
-                        <div class="status-url">{{ provider_url }}</div>
-                    </div>
+<section id="provider-settings-panel" class="provider-settings-panel is-hidden">
+    <div class="provider-settings-shell">
+        <div class="provider-settings-head">
+            <div class="provider-settings-copy">
+                <span class="provider-settings-kicker" data-i18n="provider_kicker">{{ tr('provider_kicker') }}</span>
+                <h2 class="provider-settings-title" data-i18n="provider_settings">{{ tr('provider_settings') }}</h2>
+                <p class="provider-settings-subtitle" data-i18n="provider_help_text">{{ tr('provider_help_text') }}</p>
+            </div>
+
+            {% if is_remote %}
+            <div class="status-badge success provider-status-card">
+                <i class="fas fa-link"></i>
+                <div class="status-badge-copy">
+                    <strong>{{ provider_name }}</strong>
+                    <div class="status-url">{{ provider_url }}</div>
                 </div>
-                {% else %}
-                <div class="status-badge info">
-                    <i class="fas fa-home"></i>
+            </div>
+            {% else %}
+            <div class="status-badge info provider-status-card">
+                <i class="fas fa-home"></i>
+                <div class="status-badge-copy">
                     <strong><span data-i18n="local_provider">Yerel sağlayıcı kullanılıyor</span></strong>
+                    <div class="status-url" data-i18n="local_provider_meta">{{ tr('local_provider_meta') }}</div>
                 </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="provider-settings-stack">
+            <div class="provider-input-group">
+                <div class="provider-input-wrapper">
+                    <input
+                        type="url"
+                        id="provider-url-input"
+                        class="search-input"
+                        placeholder="{{ tr('provider_url_placeholder') }}"
+                        data-i18n="provider_url_placeholder"
+                        data-i18n-attr="placeholder"
+                        value="{{ provider_url or '' }}"
+                    >
+                    <i class="fas fa-server"></i>
+                </div>
+                <button type="button" id="set-provider-button" class="button">
+                    <i class="fas fa-check"></i>
+                    <span data-i18n="apply">Uygula</span>
+                </button>
+                {% if is_remote %}
+                <button type="button" id="reset-provider-button" class="button button-secondary">
+                    <i class="fas fa-undo"></i>
+                    <span data-i18n="reset">Sıfırla</span>
+                </button>
                 {% endif %}
+            </div>
 
-                <!-- Input Group -->
-                <div class="provider-input-group">
-                    <div class="provider-input-wrapper">
-                        <input
-                            type="url"
-                            id="provider-url-input"
-                            class="search-input"
-                            placeholder="{{ tr('provider_url_placeholder') }}"
-                            data-i18n="provider_url_placeholder"
-                            data-i18n-attr="placeholder"
-                            value="{{ provider_url or '' }}"
-                        >
-                        <i class="fas fa-server"></i>
-                    </div>
-                    <button type="button" id="set-provider-button" class="button">
-                        <i class="fas fa-check"></i>
-                        <span data-i18n="apply">Uygula</span>
-                    </button>
-                    {% if is_remote %}
-                    <button type="button" id="reset-provider-button" class="button button-secondary">
-                        <i class="fas fa-undo"></i>
-                        <span data-i18n="reset">Sıfırla</span>
-                    </button>
-                    {% endif %}
-                </div>
-
-                <!-- Help Text -->
-                <p class="help-text">
-                    <i class="fas fa-info-circle"></i>
-                    <span data-i18n="provider_help_text">{{ tr('provider_help_text') }}</span>
-                </p>
-
-                <!-- Example Provider Info -->
-                <div class="help-text" style="border-top: 1px solid var(--border-light); padding-top: var(--spacing-md); margin-top: 0;">
+            <div class="provider-support-row">
+                <div class="provider-help-card">
                     <i class="fab fa-github"></i>
-                    <span data-i18n="example_provider_info">{{ tr('example_provider_info') }}</span>
-                    <a href="https://github.com/WatchBuddy-tv/ExampleProvider" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: underline; margin-left: 5px;">
-                        <span data-i18n="learn_more">{{ tr('learn_more') }}</span>
-                        <i class="fas fa-external-link-alt" style="font-size: 0.75em; margin-left: 3px;"></i>
-                    </a>
+                    <div class="provider-help-copy">
+                        <strong data-i18n="example_provider_info">{{ tr('example_provider_info') }}</strong>
+                        <a href="https://github.com/WatchBuddy-tv/ExampleProvider" target="_blank" rel="noopener noreferrer" class="provider-help-link">
+                            <span data-i18n="learn_more">{{ tr('learn_more') }}</span>
+                            <i class="fas fa-external-link-alt provider-help-link-icon"></i>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Example Button -->
                 {% if not is_remote %}
-                <div style="text-align: center;">
+                <div class="provider-example-action">
                     <button type="button" id="try-example-button" class="button button-secondary button-small">
                         <i class="fas fa-magic"></i>
                         <span data-i18n="try_example">{{ tr('try_example') }}</span>
@@ -105,28 +113,10 @@
     </div>
 </section>
 
-<style>
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.provider-settings-panel {
-    overflow: hidden;
-    transition: all 0.3s ease-out;
-}
-</style>
-
 <!-- Arama Sonuçları -->
-<section id="search-results" class="search-results" style="display: none;">
+<section id="search-results" class="search-results is-hidden">
     <div class="detail-container">
-        <div class="detail-header">
+        <div class="detail-header search-results-head">
             <h2 class="detail-title">
                 <i class="fas fa-search"></i> <span data-i18n="search_results_title">{{ tr('search_results_title') }}</span>: <span id="search-query-display"></span>
             </h2>
@@ -136,7 +126,7 @@
         </div>
 
         <!-- Plugin Filtreleri -->
-        <div id="plugin-filters" class="plugin-filters" style="display: none;">
+        <div id="plugin-filters" class="plugin-filters is-hidden">
             <div class="filters-header">
                 <h3 class="filters-title">
                     <i class="fas fa-filter"></i> <span data-i18n="plugins_filter_title">{{ tr('plugins_filter_title') }}</span>
@@ -155,9 +145,11 @@
 
 <!-- Eklenti Listesi -->
 <section id="plugins-list">
-    <h2 class="section-title">
-        <i class="fas fa-plug"></i> <span data-i18n="all_plugins">{{ tr('all_plugins') }}</span>
-    </h2>
+    <div class="section-heading">
+        <h2 class="section-title">
+            <i class="fas fa-plug"></i> <span data-i18n="all_plugins">{{ tr('all_plugins') }}</span>
+        </h2>
+    </div>
 
     <div class="grid">
         {% for plugin in plugins %}
@@ -171,15 +163,18 @@
                             <i class="fas fa-film plugin-icon"></i>
                         {% endif %}
 
-                        <h3 class="card-title">
-                            {{ plugin.name }}
-                            <hr>
-                            <small><span data-i18n="language_label">{{ tr('language_label') }}</span>: {{ plugin.language }}</small>
-                        </h3>
+                        <div class="plugin-card-copy">
+                            <h3 class="card-title">{{ plugin.name }}</h3>
+                            <div class="plugin-card-meta">
+                                <span class="plugin-meta-pill">
+                                    <i class="fas fa-language" aria-hidden="true"></i>
+                                    <span>{{ plugin.language | upper }}</span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     <p class="card-text">{{ plugin.description }}</p>
-                    <p class="card-text"></p>
 
                     <div class="card-actions">
                         <a href="{{ plugin.main_url }}" target="_blank" class="button button-secondary">
@@ -217,9 +212,10 @@
             // Toggle Settings Panel
             if (toggleBtn && settingsPanel) {
                 toggleBtn.onclick = () => {
-                    const isVisible = settingsPanel.style.display !== 'none';
-                    settingsPanel.style.display = isVisible ? 'none' : 'block';
+                    const isVisible = !settingsPanel.classList.contains('is-hidden');
+                    settingsPanel.classList.toggle('is-hidden', isVisible);
                     chevron.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+                    toggleBtn.setAttribute('aria-expanded', String(!isVisible));
                 };
             }
 

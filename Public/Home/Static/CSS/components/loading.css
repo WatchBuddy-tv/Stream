@@ -71,11 +71,13 @@
 
 /* Loading Card (Search Results) */
 .loading-card {
-  background-color: var(--card-bg-color);
-  border-radius: var(--border-radius);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.12) 0%, rgba(239, 127, 26, 0) 36%),
+    var(--card-bg-color);
+  border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   text-align: center;
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,6 +85,21 @@
   gap: var(--spacing-md);
   min-height: 150px;
   transition: all 0.3s ease;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+}
+
+.loading-card-title {
+  margin: 0;
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.loading-card-meta {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 /* Small Spinner (Search Status etc) */

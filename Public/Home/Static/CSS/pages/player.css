@@ -4,11 +4,12 @@
 
 /* Player Container */
 #video-player-container {
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-xl);
   overflow: hidden;
   background-color: #000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-strong);
   width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 #video-player-wrapper {
@@ -77,10 +78,22 @@ video::cue {
   gap: var(--spacing-lg);
 }
 
+.player-panel-shell {
+  padding: var(--spacing-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-xl);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
 /* Player Header */
 .player-header {
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  border-bottom: none;
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  min-height: 88px;
 }
 
 .player-title {
@@ -90,6 +103,13 @@ video::cue {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  line-height: 1.1;
+}
+
+.player-title i {
+  flex: 0 0 auto;
+  line-height: 1;
+  transform: translateY(1px);
 }
 
 /* Source Selection */
@@ -113,10 +133,11 @@ video::cue {
   min-width: auto;
   padding: var(--spacing-sm) var(--spacing-lg);
   font-size: var(--font-size-sm);
-  background-color: var(--card-bg-color);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
   color: var(--text-muted);
-  border: 1px solid var(--border-color);
-  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 .source-list .button:hover {
@@ -137,26 +158,28 @@ video::cue {
 
 /* Control Buttons */
 .control-buttons {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
   padding-top: var(--spacing-md);
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .control-buttons .button {
-  flex: 1;
+  width: 100%;
+  justify-content: center;
 }
 
 /* Diagnostics Panel */
 #diagnostics-panel {
   margin-top: var(--spacing-xl);
-  padding: var(--spacing-md);
-  background-color: var(--background-alt);
-  border-radius: var(--border-radius);
-  display: none;
-  border: 1px solid var(--border-light);
+  padding: var(--spacing-lg);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(0, 160, 194, 0.12), rgba(0, 160, 194, 0) 34%),
+    rgba(255, 255, 255, 0.03);
+  border-radius: var(--border-radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .diagnostics-header {
@@ -179,27 +202,30 @@ video::cue {
 .diagnostics-toolbar {
   display: flex;
   gap: var(--spacing-xs);
+  flex-wrap: wrap;
 }
 
 .button-diagnostic {
-  padding: 2px 8px !important;
+  padding: 6px 10px !important;
   font-size: 11px !important;
-  min-height: 24px !important;
+  min-height: 32px !important;
   min-width: auto !important;
   line-height: 1 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 #diagnostics-log {
   max-height: 300px;
   overflow-y: auto;
   overflow-x: auto;
-  background-color: var(--background-color);
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  background: rgba(8, 10, 14, 0.82);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
   font-family: "Consolas", "Monaco", "Courier New", monospace;
   font-size: 12px;
   color: var(--text-muted);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -217,14 +243,12 @@ video::cue {
 /* Mobile: Control buttons in single row */
 @media (max-width: 767px) {
   .control-buttons {
-    flex-wrap: nowrap;
-    overflow-x: auto; /* Safety for very small screens */
+    grid-template-columns: 1fr;
   }
 
   .control-buttons .button {
-    flex: 1;
     white-space: nowrap;
-    min-width: auto; /* Allow shrinking if needed */
+    min-width: auto;
     padding-left: var(--spacing-xs);
     padding-right: var(--spacing-xs);
   }
@@ -620,6 +644,10 @@ body.seeking-active {
   color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
   margin-left: 0.5rem;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Animations */
@@ -784,15 +812,17 @@ body.seeking-active {
 .selection-dropdown {
   position: absolute;
   z-index: 10000;
-  background: rgba(25, 24, 23, 0.95);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.16), rgba(239, 127, 26, 0) 38%),
+    rgba(25, 24, 23, 0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--border-radius);
-  min-width: 200px;
+  border-radius: var(--border-radius-xl);
+  min-width: 240px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.45);
   overflow: hidden;
   animation: dropdownFadeIn 0.2s var(--transition-timing);
 }
@@ -803,8 +833,8 @@ body.seeking-active {
 }
 
 .selection-dropdown-header {
-  padding: 0 12px;
-  min-height: 40px;
+  padding: 0 16px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -819,16 +849,16 @@ body.seeking-active {
   align-items: center;
   gap: var(--spacing-sm);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.8px;
   font-weight: 700;
 }
 
 .selection-dropdown-body {
-  padding: var(--spacing-xs);
+  padding: var(--spacing-sm);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   max-height: 300px;
 }
 
@@ -837,10 +867,10 @@ body.seeking-active {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  padding: 12px 14px;
   background: transparent;
   border: none;
-  border-radius: var(--border-radius-sm);
+  border-radius: 14px;
   color: rgba(255, 255, 255, 0.8);
   font-size: var(--font-size-sm);
   text-align: left;

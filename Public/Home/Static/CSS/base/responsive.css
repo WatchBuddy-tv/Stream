@@ -33,12 +33,28 @@
     margin: 0 auto var(--spacing-lg);
   }
 
+  .header .container,
+  .footer .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lang-switch {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .pagination-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .episodes-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 
   .card-actions {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .button {
@@ -75,7 +91,7 @@
 
   .container {
     width: 95%;
-    padding: var(--spacing-sm);
+    padding: 0;
   }
 
   .detail-container {
@@ -90,6 +106,20 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
     margin: var(--spacing-md) 0;
+  }
+
+  .home-search-shell,
+  .plugin-search-shell,
+  .detail-section-shell {
+    padding: var(--spacing-md);
+  }
+
+  .hero-copy {
+    text-align: left;
+  }
+
+  .hero-kicker {
+    align-self: flex-start;
   }
 
   .card:hover {

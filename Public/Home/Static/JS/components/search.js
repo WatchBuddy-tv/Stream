@@ -87,10 +87,10 @@ export class GlobalSearch {
 
         // UI setup
         this.searchQueryDisplay.textContent = `"${query}"`;
-        this.searchResults.style.display = 'block';
-        this.pluginsList.style.display = 'none';
+        this.searchResults.classList.remove('is-hidden');
+        this.pluginsList.classList.add('is-hidden');
         this.resultsGrid.innerHTML = '';
-        this.pluginFilters.style.display = 'none';
+        this.pluginFilters.classList.add('is-hidden');
         this.filtersContainer.innerHTML = '';
 
         // Scroll to results
@@ -256,7 +256,8 @@ export class GlobalSearch {
         loadingCard.id = `loading-${pluginName}`;
         loadingCard.innerHTML = `
             <div class="wp-spinner"></div>
-            <p>${escapeHtml(pluginName)}</p>
+            <p class="loading-card-title">${escapeHtml(pluginName)}</p>
+            <span class="loading-card-meta">${escapeHtml(t('connected'))}</span>
         `;
         this.resultsGrid.appendChild(loadingCard);
     }
@@ -369,6 +370,11 @@ export class GlobalSearch {
         card.href = `/icerik/${encodeURIComponent(pluginName)}?url=${result.url}${providerParam}`;
         card.className = 'card';
 
+        const metaBits = [];
+        if (result.year) metaBits.push(String(result.year));
+        if (result.rating) metaBits.push(`IMDB ${result.rating}`);
+        if (result.duration) metaBits.push(String(result.duration));
+
         let cardContent = `<div class="plugin-badge">${escapeHtml(pluginName)}</div>`;
 
         if (result.poster) {
@@ -377,6 +383,9 @@ export class GlobalSearch {
 
         cardContent += `<div class="card-content">`;
         cardContent += `<h3 class="card-title">${escapeHtml(result.title)}</h3>`;
+        if (metaBits.length > 0) {
+            cardContent += `<p class="card-meta-line">${escapeHtml(metaBits.join(' • '))}</p>`;
+        }
         cardContent += `</div>`;
 
         card.innerHTML = cardContent;
@@ -397,7 +406,7 @@ export class GlobalSearch {
 
     showNoResults() {
         this.resultsGrid.innerHTML = `
-            <div class="no-results" style="grid-column: 1 / -1;">
+            <div class="no-results no-results-wide">
                 <i class="fas fa-search"></i>
                 <h3>${t('search_no_results_title')}</h3>
                 <p>${t('search_no_results_message')}</p>
@@ -408,8 +417,8 @@ export class GlobalSearch {
 
     clearSearch() {
         this.searchInput.value = '';
-        this.searchResults.style.display = 'none';
-        this.pluginsList.style.display = 'block';
+        this.searchResults.classList.add('is-hidden');
+        this.pluginsList.classList.remove('is-hidden');
         this.resultsGrid.innerHTML = '';
         this.showStatus('');
 
@@ -417,7 +426,7 @@ export class GlobalSearch {
         this.searchResultsByPlugin.clear();
         this.activeFilters.clear();
         this.pendingPlugins.clear();
-        this.pluginFilters.style.display = 'none';
+        this.pluginFilters.classList.add('is-hidden');
         this.filtersContainer.innerHTML = '';
 
         // Abort ongoing searches
@@ -426,7 +435,7 @@ export class GlobalSearch {
 
     renderFilters() {
         if (this.searchResultsByPlugin.size === 0) {
-            this.pluginFilters.style.display = 'none';
+            this.pluginFilters.classList.add('is-hidden');
             return;
         }
 
@@ -451,7 +460,7 @@ export class GlobalSearch {
             this.filtersContainer.appendChild(filterButton);
         });
 
-        this.pluginFilters.style.display = 'block';
+        this.pluginFilters.classList.remove('is-hidden');
     }
 
     toggleFilter(pluginName) {

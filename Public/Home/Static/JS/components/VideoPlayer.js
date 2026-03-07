@@ -87,6 +87,18 @@ export default class VideoPlayer {
         ccBtn.title = label ? t('subtitle_tooltip', { label }) : t('tooltip_subtitle');
     }
 
+    showElement(element) {
+        if (!element) return;
+        element.classList.remove('is-hidden');
+        element.style.removeProperty('display');
+    }
+
+    hideElement(element) {
+        if (!element) return;
+        element.classList.add('is-hidden');
+        element.style.removeProperty('display');
+    }
+
     refreshI18n() {
         if (this.currentHls && this.currentHls.audioTracks && this.currentHls.audioTracks.length > 1) {
             let currentIndex = typeof this.currentHls.audioTrack === 'number' ? this.currentHls.audioTrack : 0;
@@ -697,7 +709,7 @@ export default class VideoPlayer {
         const hideBufferSpinner = () => {
             if (bufferSpinnerTimer) { clearTimeout(bufferSpinnerTimer); bufferSpinnerTimer = null; }
             if (this.loadingOverlay) {
-                this.loadingOverlay.style.display = 'none';
+                this.hideElement(this.loadingOverlay);
                 this.loadingOverlay.classList.remove('is-buffering');
             }
         };
@@ -705,7 +717,7 @@ export default class VideoPlayer {
         const showBufferSpinner = () => {
             if (this.loadingOverlay) {
                 this.loadingOverlay.classList.add('is-buffering');
-                this.loadingOverlay.style.display = 'flex';
+                this.showElement(this.loadingOverlay);
             }
             // Güvenlik: 8s sonra hâlâ görünüyorsa otomatik gizle
             if (bufferSpinnerTimer) clearTimeout(bufferSpinnerTimer);
@@ -840,11 +852,13 @@ export default class VideoPlayer {
         if (this.toggleDiagnosticsBtn) {
             // Panel göster/gizle
             this.toggleDiagnosticsBtn.addEventListener('click', () => {
-                if (this.diagnosticsPanel.style.display === 'none' || !this.diagnosticsPanel.style.display) {
-                    this.diagnosticsPanel.style.display = 'block';
+                if (this.diagnosticsPanel.classList.contains('is-hidden')) {
+                    this.showElement(this.diagnosticsPanel);
+                    this.toggleDiagnosticsBtn.setAttribute('aria-expanded', 'true');
                     this.logger.updateDiagnosticsPanel();
                 } else {
-                    this.diagnosticsPanel.style.display = 'none';
+                    this.hideElement(this.diagnosticsPanel);
+                    this.toggleDiagnosticsBtn.setAttribute('aria-expanded', 'false');
                 }
             });
 
@@ -1027,7 +1041,7 @@ export default class VideoPlayer {
 
     onVideoCanPlay() {
         this.logger.info('▶️', 'PLAYER', 'Can Play Now');
-        this.loadingOverlay.style.display = 'none';
+        this.hideElement(this.loadingOverlay);
 
         // Timeout'u temizle
         if (this.loadingTimeout) {
@@ -1045,7 +1059,7 @@ export default class VideoPlayer {
 
     onVideoError() {
         const error = this.videoPlayer.error;
-        this.loadingOverlay.style.display = 'none';
+        this.hideElement(this.loadingOverlay);
 
         // Timeout'u temizle
         if (this.loadingTimeout) {
@@ -1108,12 +1122,12 @@ export default class VideoPlayer {
         const selectedVideo = this.videoData[index];
 
         // Loading overlay'i göster
-        this.loadingOverlay.style.display = 'flex';
+        this.showElement(this.loadingOverlay);
 
         // Yükleme zaman aşımı kontrolü ekle (45 saniye)
         this.loadingTimeout = setTimeout(() => {
-            if (this.loadingOverlay.style.display === 'flex') {
-                this.loadingOverlay.style.display = 'none';
+            if (this.loadingOverlay && !this.loadingOverlay.classList.contains('is-hidden')) {
+                this.hideElement(this.loadingOverlay);
                 this.logger.error('❌', 'PLAYER', 'Loading Timeout (45s)');
 
                 const errorEl = document.createElement('div');
@@ -1135,11 +1149,11 @@ export default class VideoPlayer {
         const onCanPlay = () => this.onVideoCanPlay();
         const onError = () => this.onVideoError();
         const onWaiting = () => {
-            if (this.loadingOverlay) this.loadingOverlay.style.display = 'flex';
+            if (this.loadingOverlay) this.showElement(this.loadingOverlay);
             this.logger.info('⌛', 'PLAYER', 'Buffering...');
         };
         const onPlaying = () => {
-            if (this.loadingOverlay) this.loadingOverlay.style.display = 'none';
+            if (this.loadingOverlay) this.hideElement(this.loadingOverlay);
         };
 
         // Clear old ones if they were specifically named, but since we replaced the element before,
@@ -1230,7 +1244,7 @@ export default class VideoPlayer {
         if (selectedVideo.subtitles && selectedVideo.subtitles.length > 0) {
             this.logger.info('💬', 'SUBTITLE', 'Subtitles Loaded', { 'Count': selectedVideo.subtitles.length });
             if (ccBtn) {
-                ccBtn.style.display = 'flex';
+                this.showElement(ccBtn);
                 ccBtn.classList.add('active');
             }
 
@@ -1309,7 +1323,7 @@ export default class VideoPlayer {
                         // Eğer başka başarılı track yoksa butonu gizleyelim
                         const activeTracks = Array.from(this.videoPlayer.textTracks).filter(t => t.mode !== 'disabled');
                         if (activeTracks.length === 0 && ccBtn) {
-                            ccBtn.style.display = 'none';
+                            this.hideElement(ccBtn);
                             ccBtn.classList.remove('active');
                         }
                     };
@@ -1339,7 +1353,7 @@ export default class VideoPlayer {
                 }
             });
         } else if (ccBtn) {
-            ccBtn.style.display = 'none';
+            this.hideElement(ccBtn);
             ccBtn.classList.remove('active');
             this.setSubtitleTooltip(null);
 
@@ -1443,11 +1457,11 @@ export default class VideoPlayer {
             // Sadece mobil cihazlarda göster
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
             if (isMobile) {
-                watchPartyAppButton.style.display = 'inline-flex';
+                this.showElement(watchPartyAppButton);
                 // watchbuddy://room/ROOM_ID?params...
                 watchPartyAppButton.href = `watchbuddy://room/${newRoomId}?${wpParams.toString()}`;
             } else {
-                watchPartyAppButton.style.display = 'none';
+                this.hideElement(watchPartyAppButton);
             }
         }
 
@@ -1471,13 +1485,13 @@ export default class VideoPlayer {
             this.setAudioTooltip(currentLabel);
 
             if (audioBtn) {
-                audioBtn.style.display = 'block'; // Butonu göster
+                this.showElement(audioBtn);
 
                 // Tıklama olayı (Tekrar tekrar eklememek için kontrol et veya replace et)
                 // En temizi: eski listener'ı kaldırmak zordur, cloneNode ile temizleyelim
                 const newBtn = audioBtn.cloneNode(true);
                 audioBtn.parentNode.replaceChild(newBtn, audioBtn);
-                newBtn.style.display = 'block';
+                this.showElement(newBtn);
 
                 newBtn.onclick = () => {
                     this.showSelectionModal(
@@ -1505,7 +1519,7 @@ export default class VideoPlayer {
             }
 
         } else if (audioBtn) {
-            audioBtn.style.display = 'none';
+            this.hideElement(audioBtn);
             this.setAudioTooltip(null);
         }
     }
@@ -1653,21 +1667,21 @@ export default class VideoPlayer {
 
         // Pencere boyutu değişince kapat (Responsive güvenliği)
         window.addEventListener('resize', () => {
-            if (this.selectionModal.style.display !== 'none') {
+            if (!this.selectionModal.classList.contains('is-hidden')) {
                 this.hideSelectionModal();
             }
         });
 
         // ESC tuşu ile kapat
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.selectionModal.style.display !== 'none') {
+            if (e.key === 'Escape' && !this.selectionModal.classList.contains('is-hidden')) {
                 this.hideSelectionModal();
             }
         });
 
         // Dışına tıklayınca kapat
         document.addEventListener('mousedown', (e) => {
-            if (this.selectionModal.style.display !== 'none') {
+            if (!this.selectionModal.classList.contains('is-hidden')) {
                 const isClickInside = this.selectionModal.contains(e.target);
                 const isClickOnTrigger = e.target.closest('#custom-cc, #custom-audio, #subtitle-select-btn, #source-select-btn');
 
@@ -1690,7 +1704,7 @@ export default class VideoPlayer {
         if (!this.selectionModal || !this.selectionList) return;
 
         // Toggle Mantığı: Eğer zaten açıksa ve aynı trigger tıklandıysa kapat
-        if (this.selectionModal.style.display !== 'none' && this.lastSelectionTrigger === trigger) {
+        if (!this.selectionModal.classList.contains('is-hidden') && this.lastSelectionTrigger === trigger) {
             this.hideSelectionModal();
             return;
         }
@@ -1746,7 +1760,7 @@ export default class VideoPlayer {
                 }
             }
 
-            this.selectionModal.style.display = 'flex';
+            this.showElement(this.selectionModal);
             const rect = trigger.getBoundingClientRect();
             const dropdownRect = this.selectionModal.getBoundingClientRect();
 
@@ -1779,7 +1793,7 @@ export default class VideoPlayer {
                 this.selectionModal.style.left = `${window.innerWidth - finalRect.width - 10}px`;
             }
         } else {
-            this.selectionModal.style.display = 'flex';
+            this.showElement(this.selectionModal);
         }
     }
 
@@ -1788,7 +1802,7 @@ export default class VideoPlayer {
      */
     hideSelectionModal() {
         if (this.selectionModal) {
-            this.selectionModal.style.display = 'none';
+            this.hideElement(this.selectionModal);
             this.lastSelectionTrigger = null;
         }
     }

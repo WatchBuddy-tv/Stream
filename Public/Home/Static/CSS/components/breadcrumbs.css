@@ -7,8 +7,11 @@
   flex-wrap: wrap;
   align-items: center;
   margin-bottom: var(--spacing-lg);
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--border-color);
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
   font-size: var(--font-size-sm);
 }
 

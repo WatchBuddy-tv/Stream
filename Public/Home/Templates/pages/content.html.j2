@@ -51,8 +51,10 @@
 
             {% if content.tags %}
                 <div class="content-info">
-                    <hr>
-                    <div class="tags-container" style="display: flex; flex-wrap: wrap; gap: 6px; width: 100%;">
+                    <div class="content-info-head">
+                        <strong><span data-i18n="tags_label">{{ tr('tags_label') }}</span></strong>
+                    </div>
+                    <div class="content-tags-row">
                         {% for tag in content.tags.split(',') %}
                             <span class="detail-meta-item">{{ tag | trim }}</span>
                         {% endfor %}
@@ -61,26 +63,26 @@
             {% endif %}
 
             {% if content.actors %}
-                <hr>
                 <div class="content-info">
-                    <p><strong><span data-i18n="actors_label">{{ tr('actors_label') }}</span>:</strong> {{ content.actors }}</p>
+                    <div class="content-info-head">
+                        <strong><span data-i18n="actors_label">{{ tr('actors_label') }}</span></strong>
+                    </div>
+                    <div class="content-info-value">{{ content.actors }}</div>
                 </div>
             {% endif %}
 
 
             {% if not content.episodes %}
-                <div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
+                <div class="content-actions">
                         <a href="/izle/{{ eklenti_adi }}?url={{ content.url }}&baslik={{ content.title }}&provider_id={{ provider_id|default('', true) }}&content_url={{ content.url }}&content_id={{ content.id|default('', true) }}&poster_url={{ content.poster|default('', true) }}&year={{ content.year|default('', true) }}&rating={{ content.rating|default('', true) }}{{ provider_query_amp }}" class="button">
                             <i class="fas fa-play"></i> <span data-i18n="watch_button">{{ tr('watch_button') }}</span>
                         </a>
-                        <a href="/api/v1/load_links?plugin={{ eklenti_adi }}&encoded_url={{ content.url }}" class="button">
+                        <a href="/api/v1/load_links?plugin={{ eklenti_adi }}&encoded_url={{ content.url }}" class="button button-secondary">
                             <i class="fas fa-database"></i> <span data-i18n="api_button">{{ tr('api_button') }}</span>
                         </a>
-                        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button">
+                        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button button-secondary">
                             <i class="fas fa-arrow-left"></i> <span data-i18n="back_to_plugin">{{ tr('back_to_plugin') }}</span>
                         </a>
-                    </div>
                 </div>
             {% endif %}
         </div>

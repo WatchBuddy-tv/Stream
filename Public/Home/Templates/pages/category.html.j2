@@ -19,7 +19,7 @@
 {% block icerik %}
 
 <div class="detail-container">
-    <div class="detail-header card-header-style">
+    <div class="detail-header">
         <div class="header-top">
             <div class="header-content">
                 <h1 class="detail-title">{{ baslik }}</h1>
@@ -47,7 +47,7 @@
                 </a>
             {% endfor %}
         {% else %}
-            <div style="grid-column: 1 / -1; text-align: center;">
+            <div class="empty-state-full">
                 <p data-i18n="category_empty">{{ tr('category_empty') }}</p>
             </div>
             <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
@@ -57,7 +57,7 @@
     </div>
 
     {% if items %}
-        <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+        <div class="pagination-row">
             {% if sayfa > 1 %}
                 <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa - 1 }}{{ provider_query_amp }}" class="button button-secondary">
                     <i class="fas fa-arrow-left"></i> <span data-i18n="prev_page">{{ tr('prev_page') }}</span>

@@ -20,7 +20,10 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
-  background-color: var(--background-color);
+  background:
+    radial-gradient(circle at top right, rgba(239, 127, 26, 0.14) 0%, rgba(239, 127, 26, 0) 32%),
+    radial-gradient(circle at left top, rgba(0, 160, 194, 0.12) 0%, rgba(0, 160, 194, 0) 28%),
+    linear-gradient(180deg, #252423 0%, #1d1c1b 100%);
   color: var(--text-color);
   min-height: 100vh;
   min-height: 100dvh;
@@ -96,6 +99,11 @@ h4 {
 p {
   margin-bottom: var(--spacing-md);
   line-height: var(--line-height-loose);
+}
+
+img {
+  max-width: 100%;
+  display: block;
 }
 
 small {

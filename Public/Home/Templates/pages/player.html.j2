@@ -19,18 +19,18 @@
 {% block icerik %}
 
 <div class="detail-container">
-    <div class="player-header">
+    <div class="player-header player-panel-shell">
         <h1 class="player-title"><i class="fas fa-play-circle"></i> {{ baslik }}</h1>
     </div>
 
-    <div class="source-selection">
+    <div class="source-selection player-panel-shell">
         <h3><i class="fas fa-server"></i> <span data-i18n="sources_title">{{ tr('sources_title') }}</span></h3>
         <div id="video-links-ui" class="source-list"></div>
     </div>
 
     <div id="video-player-container">
         <div id="video-player-wrapper">
-            <div id="loading-overlay" class="player-loading" style="display: none;">
+            <div id="loading-overlay" class="player-loading is-hidden">
                 <div class="player-message">
                     <div class="wp-spinner"></div>
                 </div>
@@ -87,10 +87,10 @@
                         </div>
 
                         <div class="control-group">
-                            <button class="ctrl-btn" id="custom-audio" style="display: none;" title="{{ tr('tooltip_audio') }}" data-i18n="tooltip_audio" data-i18n-attr="title">
+                            <button class="ctrl-btn is-hidden" id="custom-audio" title="{{ tr('tooltip_audio') }}" data-i18n="tooltip_audio" data-i18n-attr="title">
                                 <i class="fas fa-headphones-alt"></i>
                             </button>
-                            <button class="ctrl-btn" id="custom-cc" style="display: none;" title="{{ tr('tooltip_subtitle') }}" data-i18n="tooltip_subtitle" data-i18n-attr="title">
+                            <button class="ctrl-btn is-hidden" id="custom-cc" title="{{ tr('tooltip_subtitle') }}" data-i18n="tooltip_subtitle" data-i18n-attr="title">
                                 <i class="fas fa-closed-captioning"></i>
                             </button>
                             <button class="ctrl-btn" id="custom-fullscreen" title="{{ tr('tooltip_fullscreen') }}" data-i18n="tooltip_fullscreen" data-i18n-attr="title">
@@ -113,19 +113,19 @@
             <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button button-secondary">
                 <i class="fas fa-th"></i> <span data-i18n="player_back_plugin">{{ tr('player_back_plugin') }}</span>
             </a>
-            <button id="toggle-diagnostics" class="button button-secondary">
+            <button id="toggle-diagnostics" class="button button-secondary" aria-expanded="false" aria-controls="diagnostics-panel">
                 <i class="fas fa-bug"></i> <span data-i18n="diagnostics_button">{{ tr('diagnostics_button') }}</span>
             </button>
             <a href="#" target="_blank" id="watch-party-button" class="button button-secondary">
                 <i class="fas fa-users"></i> <span data-i18n="watchbuddy_web">{{ tr('watchbuddy_web') }}</span>
             </a>
-            <a href="#" id="watch-party-app-button" class="button button-secondary" style="display: none;">
+            <a href="#" id="watch-party-app-button" class="button button-secondary is-hidden">
                 <i class="fas fa-mobile-alt"></i> <span data-i18n="watchbuddy_app">{{ tr('watchbuddy_app') }}</span>
             </a>
         </div>
     </div>
 
-    <div id="diagnostics-panel">
+    <div id="diagnostics-panel" class="player-panel-shell is-hidden">
         <div class="diagnostics-header">
             <h3 data-i18n="diagnostics_title">{{ tr('diagnostics_title') }}</h3>
             <div class="diagnostics-toolbar">
@@ -137,7 +137,7 @@
         <pre id="diagnostics-log"></pre>
     </div>
 
-    <div id="video-links-data" style="display: none;"
+    <div id="video-links-data" class="is-hidden"
          data-proxy-url="{{ proxy_url|default('', true) }}"
          data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}"
          data-provider-id="{{ media_meta.provider_id|default('', true) }}"
@@ -159,7 +159,7 @@
     </div>
 
     <!-- Seçim Dropdown (Altyazı / Ses) -->
-    <div id="selection-modal" class="selection-dropdown" style="display: none;">
+    <div id="selection-modal" class="selection-dropdown is-hidden">
         <div class="selection-dropdown-header">
             <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span data-i18n="selection_prompt">{{ tr('selection_prompt') }}</span></h3>
         </div>
