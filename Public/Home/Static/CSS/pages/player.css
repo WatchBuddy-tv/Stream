@@ -750,7 +750,7 @@ body.seeking-active {
   }
 
   .time-display {
-    margin-left: auto;
+    margin-left: 0;
     flex: 0 0 auto;
   }
 }
