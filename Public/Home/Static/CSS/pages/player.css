@@ -706,6 +706,11 @@ body.seeking-active {
     display: none !important;
   }
 
+  #video-player-wrapper:not(.show-seek-buttons) #custom-backward,
+  #video-player-wrapper:not(.show-seek-buttons) #custom-forward {
+    display: none;
+  }
+
   .center-controls {
     gap: 1rem;
   }
@@ -717,37 +722,52 @@ body.seeking-active {
   }
 
   .time-display {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
+    min-height: 34px;
+    padding: 0 10px;
   }
 
   .control-row {
-    flex-wrap: wrap;
-    row-gap: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.45rem;
   }
 
   .control-group {
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 0.45rem;
+  }
+
+  .control-group:first-child {
+    justify-content: flex-start;
   }
 
   .control-group:last-child {
-    margin-left: auto;
+    justify-content: flex-end;
+    gap: 0.35rem;
   }
 
-
+  .time-display {
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
 }
 
 @media (max-width: 480px) {
-  .control-group {
-    gap: 0.5rem;
+  .bottom-controls {
+    padding: 0 0.7rem 0.65rem 0.7rem;
   }
 
-  .control-row {
-    row-gap: 0.35rem;
+  .control-group {
+    gap: 0.35rem;
   }
 
   .ctrl-btn {
     font-size: 1rem;
+    min-width: 40px;
+    min-height: 40px;
   }
 
   #video-player-wrapper:not(.show-seek-buttons) #custom-backward,
@@ -756,7 +776,9 @@ body.seeking-active {
   }
 
   .time-display {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
+    padding: 0 9px;
+    min-height: 32px;
   }
 }
 
