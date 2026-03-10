@@ -70,6 +70,14 @@ python basla.py
 
 👉 [http://localhost:3310'u WatchBuddy'ye Ekle](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=http://localhost:3310)
 
+### 📱 Ekosisteme Göz Atın
+
+WatchBuddy **Android** ve **iOS**'ta kullanılabilir.
+
+Daha fazla içerik keşfetmek ve bir film ya da diziyi odaya aktarmak için şu servisleri de kullanabilirsiniz:
+- 🌐 **Stream Web:** stream.watchbuddy.tv
+- 🤖 **Telegram Bot:** t.me/WatchBuddyRobot
+
 ---
 
 ## 🔌 API Endpoints (Özet)

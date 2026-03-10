@@ -4,8 +4,18 @@
 <header class="header">
     <div class="container">
         <div class="header-brand">
-            <a href="/" class="logo" data-i18n="site_name">{{ tr('site_name') }}</a>
+            <a href="/" class="logo" aria-label="{{ tr('site_name') }}">
+                <span class="logo-wordmark" data-i18n="site_name">{{ tr('site_name') }}</span>
+            </a>
             <p class="header-tagline" data-i18n="site_tagline">{{ tr('site_tagline') }}</p>
+        </div>
+        <div class="header-app-links" aria-label="{{ tr('download_app_links') }}">
+            <a href="https://play.google.com/store/apps/details?id=com.keyiflerolsun.watchbuddy" class="header-app-link header-app-link-google" target="_blank" rel="noopener noreferrer" aria-label="{{ tr('download_google') }}" title="{{ tr('download_google') }}">
+                <i class="fa-brands fa-google-play" aria-hidden="true"></i>
+            </a>
+            <a href="https://apps.apple.com/us/app/watchbuddy-watch-together/id6758553756" class="header-app-link header-app-link-apple" target="_blank" rel="noopener noreferrer" aria-label="{{ tr('download_apple') }}" title="{{ tr('download_apple') }}">
+                <i class="fa-brands fa-apple" aria-hidden="true"></i>
+            </a>
         </div>
         <div class="lang-switch" role="group" aria-label="Language">
             <button type="button" class="lang-btn{% if lang == 'tr' %} active{% endif %}" data-lang="tr" aria-pressed="{{ 'true' if lang == 'tr' else 'false' }}">TR</button>

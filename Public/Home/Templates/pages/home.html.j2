@@ -7,7 +7,7 @@
     <div class="search-container home-search-shell">
         <div class="hero-copy">
             <span class="hero-kicker">{{ provider_name }}</span>
-            <h1 class="hero-title">{{ tr('site_name') }}</h1>
+            <h1 class="hero-title"><span class="hero-title-wordmark">{{ tr('site_name') }}</span></h1>
             <p class="hero-subtitle" data-i18n="site_tagline">{{ tr('site_tagline') }}</p>
         </div>
         <div class="search-form">
@@ -25,11 +25,18 @@
         </button>
         </div>
 
-        <button type="button" id="toggle-provider-settings" class="button button-secondary button-small hero-settings-toggle" aria-expanded="false" aria-controls="provider-settings-panel">
-        <i class="fas fa-cog"></i>
-        <span data-i18n="provider_settings">Sağlayıcı Ayarları</span>
-        <i class="fas fa-chevron-down" id="settings-chevron"></i>
-        </button>
+        <div class="hero-settings-actions">
+            <button type="button" id="toggle-provider-settings" class="button button-secondary button-small hero-settings-toggle" aria-expanded="false" aria-controls="provider-settings-panel">
+                <i class="fas fa-server"></i>
+                <span data-i18n="provider_settings">Sağlayıcı Ayarları</span>
+                <i class="fas fa-chevron-down" id="provider-settings-chevron"></i>
+            </button>
+            <button type="button" id="toggle-plugin-settings" class="button button-secondary button-small hero-settings-toggle" aria-expanded="false" aria-controls="plugin-settings-panel">
+                <i class="fas fa-puzzle-piece"></i>
+                <span data-i18n="plugin_management">Eklenti Yönetimi</span>
+                <i class="fas fa-chevron-down" id="plugin-settings-chevron"></i>
+            </button>
+        </div>
     </div>
 </section>
 
@@ -113,6 +120,21 @@
     </div>
 </section>
 
+<section id="plugin-settings-panel" class="provider-settings-panel plugin-settings-panel is-hidden">
+    <div id="plugin-preferences-panel" class="provider-settings-shell plugin-preferences-panel">
+        <div class="plugin-preferences-head">
+            <div class="plugin-preferences-copy">
+                <span class="provider-settings-kicker" data-i18n="plugin_management">{{ tr('plugin_management') }}</span>
+                <h3 class="plugin-preferences-title" data-i18n="all_plugins">{{ tr('all_plugins') }}</h3>
+                <p class="plugin-preferences-subtitle" data-i18n="plugin_management_subtitle">{{ tr('plugin_management_subtitle') }}</p>
+            </div>
+            <span id="plugin-preferences-summary" class="plugin-preferences-summary"></span>
+        </div>
+        <div id="plugin-preferences-filters" class="plugin-preferences-filters"></div>
+        <div id="plugin-preferences-list" class="plugin-preferences-list"></div>
+    </div>
+</section>
+
 <!-- Arama Sonuçları -->
 <section id="search-results" class="search-results is-hidden">
     <div class="detail-container">
@@ -153,7 +175,7 @@
 
     <div class="grid">
         {% for plugin in plugins %}
-            <div class="card">
+            <div class="card" data-plugin-name="{{ plugin.name }}">
                 <div class="card-content">
 
                     <div class="card-header">
@@ -204,18 +226,35 @@
             const input = document.getElementById('provider-url-input');
             const toggleBtn = document.getElementById('toggle-provider-settings');
             const settingsPanel = document.getElementById('provider-settings-panel');
-            const chevron = document.getElementById('settings-chevron');
+            const pluginSettingsPanel = document.getElementById('plugin-settings-panel');
+            const providerChevron = document.getElementById('provider-settings-chevron');
+            const pluginToggleBtn = document.getElementById('toggle-plugin-settings');
+            const pluginChevron = document.getElementById('plugin-settings-chevron');
             const isRemote = {{ 'true' if is_remote else 'false' }};
 
             const EXAMPLE_PROVIDER_URL = 'https://example.watchbuddy.tv';
 
             // Toggle Settings Panel
+            const syncPanel = (button, panel, icon, isVisible) => {
+                if (!button || !panel || !icon) return;
+                panel.classList.toggle('is-hidden', !isVisible);
+                icon.className = isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                button.setAttribute('aria-expanded', String(isVisible));
+            };
+
             if (toggleBtn && settingsPanel) {
                 toggleBtn.onclick = () => {
-                    const isVisible = !settingsPanel.classList.contains('is-hidden');
-                    settingsPanel.classList.toggle('is-hidden', isVisible);
-                    chevron.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
-                    toggleBtn.setAttribute('aria-expanded', String(!isVisible));
+                    const nextState = settingsPanel.classList.contains('is-hidden');
+                    syncPanel(toggleBtn, settingsPanel, providerChevron, nextState);
+                    if (nextState) syncPanel(pluginToggleBtn, pluginSettingsPanel, pluginChevron, false);
+                };
+            }
+
+            if (pluginToggleBtn && pluginSettingsPanel) {
+                pluginToggleBtn.onclick = () => {
+                    const nextState = pluginSettingsPanel.classList.contains('is-hidden');
+                    syncPanel(pluginToggleBtn, pluginSettingsPanel, pluginChevron, nextState);
+                    if (nextState) syncPanel(toggleBtn, settingsPanel, providerChevron, false);
                 };
             }
 

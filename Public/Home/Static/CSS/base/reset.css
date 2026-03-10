@@ -21,9 +21,9 @@ body {
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   background:
-    radial-gradient(circle at top right, rgba(239, 127, 26, 0.1) 0%, rgba(239, 127, 26, 0) 26%),
-    radial-gradient(circle at left top, rgba(0, 160, 194, 0.08) 0%, rgba(0, 160, 194, 0) 22%),
-    linear-gradient(180deg, #211f1e 0%, #171615 100%);
+    radial-gradient(circle at top right, rgba(239, 127, 26, 0.1) 0%, rgba(239, 127, 26, 0) 28%),
+    radial-gradient(circle at left top, rgba(0, 135, 163, 0.08) 0%, rgba(0, 135, 163, 0) 24%),
+    linear-gradient(180deg, var(--background-color) 0%, #1E1E1E 100%);
   color: var(--text-color);
   min-height: 100vh;
   min-height: 100dvh;

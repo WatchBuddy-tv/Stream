@@ -1,7 +1,7 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
 /* ==================== CSS DEĞİŞKENLER ==================== */
-@import "https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800&display=swap";
+@import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mulish:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap";
 
 :root {
   /* Ana renkler */
@@ -11,15 +11,21 @@
   --secondary-color: #0087a3;
   --secondary-light: #00a0c2;
   --secondary-dark: #006e85;
+  --primary-soft: rgba(239, 127, 26, 0.15);
+  --secondary-soft: rgba(0, 135, 163, 0.15);
   --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
 
   /* Arka plan ve metin renkleri */
-  --background-color: #2b2a29;
+  --background-color: #2B2A29;
   --background-alt: #252423;
   --card-bg-color: #333333;
-  --card-bg-hover: #3a3a3a;
+  --card-bg-hover: #3D3D3D;
+  --surface-variant: #2A2928;
+  --surface-emphasis: #404040;
+  --overlay-dark: #1E1E23;
   --text-color: #f5f5f5;
   --text-muted: #b0b0b0;
+  --text-dim: #888888;
   --hover-color: #444444;
 
   /* Kenar ve gölge renkleri */
@@ -29,7 +35,7 @@
   --shadow-color-hover: rgba(0, 0, 0, 0.35);
 
   /* Surface ve durum renkleri */
-  --surface-dark: #1a1a1a;
+  --surface-dark: #1E1E1E;
   --success-color: #10B981; /* Mobil app ile uyumlu */
   --success-bg: rgba(16, 185, 129, 0.1);
   --info-color: #3498db;
@@ -40,10 +46,11 @@
   --error-bg: rgba(239, 68, 68, 0.1);
 
   /* Boyutlar ve boşluklar */
-  --border-radius-sm: 4px;
-  --border-radius: 8px;
-  --border-radius-lg: 12px;
+  --border-radius-sm: 8px;
+  --border-radius: 12px;
+  --border-radius-lg: 16px;
   --border-radius-xl: 20px;
+  --border-radius-2xl: 24px;
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 0.75rem;
@@ -52,8 +59,8 @@
   --spacing-xxl: 2rem;
 
   /* Tipografi */
-  --font-family: "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-  --font-family-display: "Sora", "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family: "Inter", "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  --font-family-display: "Space Grotesk", "Mulish", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -80,6 +87,15 @@
 
   --surface-glass: rgba(255, 255, 255, 0.04);
   --surface-glass-strong: rgba(255, 255, 255, 0.07);
-  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.24);
-  --shadow-strong: 0 28px 60px rgba(0, 0, 0, 0.3);
+  --glass-edge: rgba(255, 255, 255, 0.12);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --glass-panel:
+    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.14), rgba(239, 127, 26, 0) 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.016)),
+    rgba(43, 42, 41, 0.9);
+  --glass-panel-soft:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
+    rgba(37, 36, 35, 0.86);
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+  --shadow-strong: 0 28px 60px rgba(0, 0, 0, 0.36);
 }

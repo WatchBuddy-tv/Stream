@@ -4,7 +4,7 @@
 
 .card {
   background:
-    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.075) 0%, rgba(239, 127, 26, 0) 28%),
+    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.08) 0%, rgba(239, 127, 26, 0) 30%),
     var(--card-bg-color);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
@@ -13,7 +13,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-edge);
 }
 
 .card:hover {
@@ -53,17 +53,25 @@
 .plugin-card-copy {
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  flex: 1;
 }
 
 .plugin-card-copy .card-title {
   min-height: 0;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .plugin-card-copy .plugin-card-meta {
-  margin-top: 1px;
+  margin-top: 0;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .card-image {
@@ -90,6 +98,7 @@
   font-size: var(--font-size-md);
   color: var(--primary-color);
   margin: 0;
+  font-family: var(--font-family-display);
   font-weight: 700;
   line-height: 1.18;
   min-height: calc(1.18em * 2);
@@ -127,8 +136,8 @@
   gap: 6px;
   padding: 5px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-edge);
   color: var(--text-muted);
   letter-spacing: 0.06em;
   text-transform: uppercase;

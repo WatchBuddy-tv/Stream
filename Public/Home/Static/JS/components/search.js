@@ -4,6 +4,7 @@ import { $, $$, escapeHtml, scrollTo, addClass, removeClass } from '../utils/dom
 import { AbortableFetch } from '../utils/fetch.min.js';
 
 const t = (key, vars = {}) => (window.t ? window.t(key, vars) : key);
+const PLUGIN_PREFERENCES_STORAGE_KEY = 'wb_stream_disabled_plugins_v1';
 
 export class GlobalSearch {
     constructor() {
@@ -15,21 +16,30 @@ export class GlobalSearch {
         this.searchQueryDisplay = $('#search-query-display');
         this.clearSearchButton = $('#clear-search');
         this.pluginsList = $('#plugins-list');
+        this.pluginsGrid = $('#plugins-list .grid');
         this.pluginFilters = $('#plugin-filters');
         this.filtersContainer = $('#filters-container');
         this.clearFiltersButton = $('#clear-filters');
+        this.pluginPreferencesPanel = $('#plugin-preferences-panel');
+        this.pluginPreferencesSummary = $('#plugin-preferences-summary');
+        this.pluginPreferencesFilters = $('#plugin-preferences-filters');
+        this.pluginPreferencesList = $('#plugin-preferences-list');
 
         this.currentSearch = null;
         this.fetchHelper = new AbortableFetch();
-        this.plugins = window.availablePlugins || [];
+        this.allPlugins = Array.isArray(window.availablePlugins) ? [...window.availablePlugins] : [];
+        this.providerUrl = this.getProviderUrl();
+        this.pluginPreferenceScope = this.getPluginPreferenceScope();
+        this.pluginPreferenceStorageKey = `${PLUGIN_PREFERENCES_STORAGE_KEY}:${this.pluginPreferenceScope}`;
+        this.disabledPlugins = this.loadDisabledPlugins();
+        this.activePluginLanguageFilter = 'ALL';
+        this.plugins = [];
 
         // Filter state
         this.searchResultsByPlugin = new Map(); // { pluginName: [results] }
         this.activeFilters = new Set();
         this.pendingPlugins = new Set();
 
-        // Provider URL (from cookie or URL)
-        this.providerUrl = this.getProviderUrl();
     }
 
     getProviderUrl() {
@@ -52,6 +62,8 @@ export class GlobalSearch {
     init() {
         if (!this.searchInput) return;
 
+        this.syncPluginPreferences();
+
         // Event listeners
         this.searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -65,6 +77,297 @@ export class GlobalSearch {
         if (this.clearFiltersButton) {
             this.clearFiltersButton.addEventListener('click', () => this.clearFilters());
         }
+
+        this.pluginPreferencesList?.addEventListener('click', (event) => {
+            const button = event.target.closest('.js-plugin-preference-toggle');
+            if (!button) return;
+
+            const pluginName = button.dataset.pluginName || '';
+            this.togglePluginPreference(pluginName);
+        });
+
+        this.pluginPreferencesFilters?.addEventListener('click', (event) => {
+            const button = event.target.closest('.js-plugin-language-filter');
+            if (button) {
+                this.activePluginLanguageFilter = button.dataset.languageFilter || 'ALL';
+                this.renderPluginPreferences();
+                return;
+            }
+
+            const showButton = event.target.closest('.js-plugin-show-visible');
+            if (showButton && !showButton.disabled) {
+                this.showVisiblePlugins();
+                return;
+            }
+
+            const bulkButton = event.target.closest('.js-plugin-hide-visible');
+            if (!bulkButton || bulkButton.disabled) return;
+
+            this.hideVisiblePlugins();
+        });
+    }
+
+    getPluginPreferenceScope() {
+        return this.providerUrl || window.location.origin || 'local';
+    }
+
+    loadDisabledPlugins() {
+        try {
+            const raw = localStorage.getItem(this.pluginPreferenceStorageKey);
+            const parsed = raw ? JSON.parse(raw) : [];
+            if (!Array.isArray(parsed)) return new Set();
+            return new Set(parsed.map((value) => String(value || '').trim()).filter(Boolean));
+        } catch (_) {
+            return new Set();
+        }
+    }
+
+    saveDisabledPlugins() {
+        try {
+            localStorage.setItem(this.pluginPreferenceStorageKey, JSON.stringify([...this.disabledPlugins]));
+        } catch (_) {
+            // storage hatasi sessiz gecilir
+        }
+    }
+
+    isPluginEnabled(pluginName = '') {
+        return !this.disabledPlugins.has(String(pluginName || '').trim());
+    }
+
+    getEnabledPlugins() {
+        return this.allPlugins.filter((plugin) => this.isPluginEnabled(plugin.name));
+    }
+
+    getPluginLanguageKey(plugin = {}) {
+        return String(plugin.language || '').trim().toUpperCase() || 'OTHER';
+    }
+
+    getPluginLanguageLabel(languageKey = 'ALL') {
+        if (languageKey === 'ALL') return t('plugin_language_filter_all');
+        if (['TR', 'EN', 'FR', 'RU', 'UK'].includes(languageKey)) return languageKey;
+        return languageKey;
+    }
+
+    syncPluginPreferences() {
+        this.plugins = this.getEnabledPlugins();
+        window.availablePlugins = [...this.plugins];
+        this.renderPluginPreferences();
+        this.syncPluginCardVisibility();
+    }
+
+    getVisiblePreferencePlugins() {
+        return this.allPlugins.filter((plugin) => (
+            this.activePluginLanguageFilter === 'ALL'
+                || this.getPluginLanguageKey(plugin) === this.activePluginLanguageFilter
+        ));
+    }
+
+    syncPluginCardVisibility() {
+        const cards = $$('#plugins-list .card[data-plugin-name]');
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+            const pluginName = card.dataset.pluginName || '';
+            const isEnabled = this.isPluginEnabled(pluginName);
+            card.classList.toggle('is-plugin-hidden', !isEnabled);
+            card.setAttribute('aria-hidden', String(!isEnabled));
+            if (isEnabled) visibleCount += 1;
+        });
+
+        if (!this.pluginsGrid) return;
+
+        let emptyState = this.pluginsGrid.querySelector('.plugin-grid-empty');
+        if (visibleCount === 0) {
+            if (!emptyState) {
+                emptyState = document.createElement('div');
+                emptyState.className = 'empty-state plugin-grid-empty';
+                this.pluginsGrid.appendChild(emptyState);
+            }
+            emptyState.innerHTML = `
+                <i class="fas fa-plug-circle-xmark" aria-hidden="true"></i>
+                <h3>${t('plugin_no_enabled_title')}</h3>
+                <p>${t('plugin_no_enabled_message')}</p>
+            `;
+        } else if (emptyState) {
+            emptyState.remove();
+        }
+    }
+
+    renderPluginPreferences() {
+        if (!this.pluginPreferencesPanel || !this.pluginPreferencesList || !this.pluginPreferencesSummary) return;
+
+        if (!this.allPlugins.length) {
+            this.pluginPreferencesPanel.classList.add('is-hidden');
+            return;
+        }
+
+        this.pluginPreferencesPanel.classList.remove('is-hidden');
+
+        const enabledCount = this.plugins.length;
+        const hiddenCount = this.allPlugins.length - enabledCount;
+        this.pluginPreferencesSummary.textContent = t('plugin_preferences_summary', {
+            active: enabledCount,
+            hidden: hiddenCount
+        });
+
+        const languageKeys = [...new Set(this.allPlugins.map((plugin) => this.getPluginLanguageKey(plugin)))].sort();
+        const filters = ['ALL', ...languageKeys];
+        if (!filters.includes(this.activePluginLanguageFilter)) {
+            this.activePluginLanguageFilter = 'ALL';
+        }
+
+        const visiblePlugins = this.getVisiblePreferencePlugins();
+        const visibleEnabledCount = visiblePlugins.filter((plugin) => this.isPluginEnabled(plugin.name)).length;
+        const visibleHiddenCount = visiblePlugins.length - visibleEnabledCount;
+        const disableVisibleBlocked = visibleEnabledCount === 0 || visibleEnabledCount >= enabledCount;
+        const showVisibleBlocked = visibleHiddenCount === 0;
+
+        if (this.pluginPreferencesFilters) {
+            this.pluginPreferencesFilters.innerHTML = `
+                <div class="plugin-language-filter-strip">
+                    <span class="plugin-language-filter-label">${escapeHtml(t('plugin_language_filter_label'))}</span>
+                    <div class="plugin-language-filter-row">
+                        ${filters.map((languageKey) => `
+                            <button
+                                type="button"
+                                class="plugin-language-filter js-plugin-language-filter ${this.activePluginLanguageFilter === languageKey ? 'active' : ''}"
+                                data-language-filter="${escapeHtml(languageKey)}">
+                                ${escapeHtml(this.getPluginLanguageLabel(languageKey))}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="plugin-language-bulk-actions">
+                    <button
+                        type="button"
+                        class="button button-secondary button-small plugin-language-bulk-action js-plugin-show-visible"
+                        ${showVisibleBlocked ? 'disabled' : ''}>
+                        <i class="fas fa-eye"></i>
+                        <span>${escapeHtml(t('plugin_show_visible'))}</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="button button-secondary button-small plugin-language-bulk-action js-plugin-hide-visible"
+                        ${disableVisibleBlocked ? 'disabled' : ''}>
+                        <i class="fas fa-eye-slash"></i>
+                        <span>${escapeHtml(t('plugin_hide_visible'))}</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        if (!visiblePlugins.length) {
+            this.pluginPreferencesList.innerHTML = `<div class="empty-state">${escapeHtml(t('plugin_preferences_filtered_empty'))}</div>`;
+            return;
+        }
+
+        this.pluginPreferencesList.innerHTML = visiblePlugins.map((plugin) => {
+            const isEnabled = this.isPluginEnabled(plugin.name);
+            const language = this.getPluginLanguageKey(plugin);
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(plugin.name)}&background=1f1d1a&color=ef7f1a`;
+
+            return `
+                <article class="plugin-preference-item ${isEnabled ? 'is-enabled' : 'is-disabled'}">
+                    <div class="plugin-preference-main">
+                        <span class="plugin-preference-icon">
+                            ${plugin.favicon
+                                ? `<img src="${escapeHtml(plugin.favicon)}" alt="${escapeHtml(plugin.name)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackAvatar}'">`
+                                : `<img src="${fallbackAvatar}" alt="${escapeHtml(plugin.name)}" loading="lazy">`}
+                        </span>
+                        <span class="plugin-preference-copy">
+                            <strong>${escapeHtml(plugin.name)}</strong>
+                            <span class="plugin-preference-meta">
+                                <span class="plugin-meta-pill">
+                                    <i class="fas fa-language" aria-hidden="true"></i>
+                                    <span>${escapeHtml(this.getPluginLanguageLabel(language))}</span>
+                                </span>
+                                ${isEnabled ? '' : `
+                                    <span class="plugin-preference-state is-hidden">
+                                        ${escapeHtml(t('plugin_state_hidden'))}
+                                    </span>
+                                `}
+                            </span>
+                        </span>
+                    </div>
+                    <button
+                        type="button"
+                        class="button button-secondary button-small plugin-preference-toggle js-plugin-preference-toggle ${isEnabled ? '' : 'is-reveal'}"
+                        data-plugin-name="${escapeHtml(plugin.name)}"
+                        aria-pressed="${String(!isEnabled)}">
+                        <i class="fas ${isEnabled ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                        <span>${escapeHtml(isEnabled ? t('plugin_hide') : t('plugin_show'))}</span>
+                    </button>
+                </article>
+            `;
+        }).join('');
+    }
+
+    togglePluginPreference(pluginName) {
+        const normalizedName = String(pluginName || '').trim();
+        if (!normalizedName) return;
+
+        const currentlyEnabled = this.isPluginEnabled(normalizedName);
+        const enabledCount = this.getEnabledPlugins().length;
+        if (currentlyEnabled && enabledCount <= 1) {
+            this.showStatus(t('plugin_keep_one_enabled'), 'error');
+            return;
+        }
+
+        if (currentlyEnabled) {
+            this.disabledPlugins.add(normalizedName);
+        } else {
+            this.disabledPlugins.delete(normalizedName);
+        }
+
+        this.saveDisabledPlugins();
+        this.syncPluginPreferences();
+
+        if (!this.currentSearch) return;
+        if (this.searchResults.classList.contains('is-hidden')) return;
+
+        this.performSearch();
+    }
+
+    hideVisiblePlugins() {
+        const visiblePlugins = this.getVisiblePreferencePlugins();
+        const visibleEnabled = visiblePlugins.filter((plugin) => this.isPluginEnabled(plugin.name));
+        if (!visibleEnabled.length) return;
+
+        const enabledCount = this.getEnabledPlugins().length;
+        if (visibleEnabled.length >= enabledCount) {
+            this.showStatus(t('plugin_keep_one_enabled'), 'error');
+            return;
+        }
+
+        visibleEnabled.forEach((plugin) => {
+            this.disabledPlugins.add(String(plugin.name || '').trim());
+        });
+
+        this.saveDisabledPlugins();
+        this.syncPluginPreferences();
+
+        if (!this.currentSearch) return;
+        if (this.searchResults.classList.contains('is-hidden')) return;
+
+        this.performSearch();
+    }
+
+    showVisiblePlugins() {
+        const visiblePlugins = this.getVisiblePreferencePlugins();
+        const visibleHidden = visiblePlugins.filter((plugin) => !this.isPluginEnabled(plugin.name));
+        if (!visibleHidden.length) return;
+
+        visibleHidden.forEach((plugin) => {
+            this.disabledPlugins.delete(String(plugin.name || '').trim());
+        });
+
+        this.saveDisabledPlugins();
+        this.syncPluginPreferences();
+
+        if (!this.currentSearch) return;
+        if (this.searchResults.classList.contains('is-hidden')) return;
+
+        this.performSearch();
     }
 
     async performSearch() {
@@ -101,6 +404,18 @@ export class GlobalSearch {
         let totalResults = 0;
 
         this.showStatus(t('searching_plugins', { count: this.plugins.length }), 'searching');
+
+        if (!this.plugins.length) {
+            this.resultsGrid.innerHTML = `
+                <div class="no-results no-results-wide">
+                    <i class="fas fa-plug-circle-xmark"></i>
+                    <h3>${t('plugin_no_enabled_title')}</h3>
+                    <p>${t('plugin_no_enabled_message')}</p>
+                </div>
+            `;
+            this.showStatus(t('plugin_no_enabled_status'), 'error');
+            return;
+        }
 
         // Add loading cards (pending plugins)
         this.plugins.forEach(plugin => this.pendingPlugins.add(plugin.name));
@@ -378,7 +693,7 @@ export class GlobalSearch {
         let cardContent = `<div class="plugin-badge">${escapeHtml(pluginName)}</div>`;
 
         if (result.poster) {
-            cardContent += `<img src="${result.poster}" alt="${escapeHtml(result.title)}" class="card-image">`;
+            cardContent += `<img src="${result.poster}" alt="${escapeHtml(result.title)}" class="card-image" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`;
         }
 
         cardContent += `<div class="card-content">`;

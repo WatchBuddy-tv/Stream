@@ -6,7 +6,7 @@ from CLI        import konsol
 from contextlib import suppress
 import asyncio
 
-_availability_checked = False
+_availability_checked = True
 _availability_lock    = asyncio.Lock()
 
 async def _check_plugin(name: str, plugin, sem: asyncio.Semaphore) -> tuple[str, bool, int | None]:

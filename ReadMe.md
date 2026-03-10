@@ -70,6 +70,14 @@ python basla.py
 
 👉 [Add http://localhost:3310 to WatchBuddy](https://keyiflerolsun.tr/http-protocol-redirector/?r=watchbuddy://provider?url=http://localhost:3310)
 
+### 📱 Explore the Ecosystem
+
+WatchBuddy is available on **Android** and **iOS**.
+
+For more ways to discover titles and quickly send them into a room, you can also use one of these services:
+- 🌐 **Stream Web:** https://stream.watchbuddy.tv
+- 🤖 **Telegram Bot:** https://t.me/WatchBuddyRobot
+
 ---
 
 ## 🔌 API Endpoints (Summary)

@@ -66,11 +66,18 @@
 .hero-title {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3.4rem);
-  font-family: var(--font-family-display);
-  font-weight: 800;
   line-height: 0.98;
-  letter-spacing: -0.04em;
   text-wrap: balance;
+}
+
+.hero-title-wordmark {
+  font-family: "Space Grotesk", var(--font-family-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-optical-sizing: auto;
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
 }
 
 .hero-subtitle {
@@ -90,10 +97,10 @@
 .detail-section-shell {
   margin-top: var(--spacing-xl);
   padding: var(--spacing-lg);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--glass-edge);
   border-radius: var(--border-radius-xl);
-  background: var(--surface-glass);
-  box-shadow: var(--shadow-soft);
+  background: var(--glass-panel-soft);
+  box-shadow: var(--shadow-soft), var(--glass-inset);
 }
 
 .empty-state-full {
@@ -116,6 +123,7 @@
   padding-bottom: var(--spacing-sm);
   margin-bottom: var(--spacing-lg);
   font-size: clamp(1.35rem, 2vw, var(--font-size-xl));
+  font-family: var(--font-family-display);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);

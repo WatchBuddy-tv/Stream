@@ -72,6 +72,16 @@ python basla.py
 
 ---
 
+## 📱 Explorer l'écosystème
+
+WatchBuddy est disponible sur **Android** et **iOS**.
+
+Pour découvrir davantage de contenus et envoyer rapidement un film ou une série dans une room, vous pouvez aussi utiliser l'un de ces services:
+- 🌐 **Stream Web:** https://stream.watchbuddy.tv
+- 🤖 **Bot Telegram:** https://t.me/WatchBuddyRobot
+
+---
+
 ## 🔌 Endpoints API (resume)
 
 | Endpoint                     | Description                                |
