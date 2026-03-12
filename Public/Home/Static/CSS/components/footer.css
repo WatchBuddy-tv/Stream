@@ -67,3 +67,38 @@
   transform: translateY(-3px) scale(1.1);
   box-shadow: 0 5px 15px rgba(239, 127, 26, 0.3);
 }
+
+/* ==================== RESPONSIVE ==================== */
+
+/* Tablet ve Mobil */
+@media (max-width: 768px) {
+  .footer .container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-copy {
+    text-align: center;
+  }
+
+  .social-links {
+    margin-top: var(--spacing-lg);
+  }
+}
+
+/* Mobil */
+@media (max-width: 576px) {
+  .footer {
+    padding: var(--spacing-lg) 0;
+    margin-top: var(--spacing-xl);
+  }
+
+  .footer p {
+    font-size: var(--font-size-xs);
+  }
+
+  .social-links {
+    gap: var(--spacing-sm);
+  }
+}
