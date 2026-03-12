@@ -140,6 +140,21 @@
     transform: none;
   }
 
+  .footer {
+    padding: var(--spacing-lg) 0;
+    margin-top: var(--spacing-xl);
+  }
+
+  .footer p {
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .social-links {
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+  }
+
   .nav {
     flex-direction: column;
     align-items: center;
