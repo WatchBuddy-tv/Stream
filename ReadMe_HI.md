@@ -115,4 +115,4 @@ WatchBuddy Android और iOS पर उपलब्ध है।
 
 ## 🌐 लाइसेंस
 
-WatchBuddy repository की license policy लागू होती है।
+WatchBuddy रिपॉज़िटरी की लाइसेंस नीति लागू होती है।
