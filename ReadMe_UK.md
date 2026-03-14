@@ -5,7 +5,7 @@
 WatchBuddy потребує надійного та чистого streaming-шару. Цей репозиторій надає саме його.
 Це **не** sandbox для розробки — це **production-ready інтеграційний форк**, який використовує WatchBuddy.
 
-[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇷🇺 Русский](./ReadMe_RU.md) • [🇮🇳 हिन्दी](./ReadMe_HI.md)
+[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇷🇺 Русский](./ReadMe_RU.md) • [🇮🇳 हिन्दी](./ReadMe_HI.md) • [🇨🇳 简体中文](./ReadMe_ZH.md)
 
 ---
 

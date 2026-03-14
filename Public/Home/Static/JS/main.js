@@ -53,7 +53,9 @@ const applyTranslations = () => {
                 en: 'en_US',
                 fr: 'fr_FR',
                 ru: 'ru_RU',
-                uk: 'uk_UA'
+                uk: 'uk_UA',
+                hi: 'hi_IN',
+                zh: 'zh_CN'
             };
             og.setAttribute('content', ogMap[window.LANG] || 'en_US');
         }
