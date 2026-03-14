@@ -5,7 +5,7 @@
 WatchBuddy a besoin d'une couche de streaming fiable et propre. Ce depot fournit cette couche.
 Ce n'est **pas** un bac a sable de developpement: c'est le **fork d'integration pret pour la production** utilise par WatchBuddy.
 
-[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇷🇺 Русский](./ReadMe_RU.md) • [🇺🇦 Українська](./ReadMe_UK.md)
+[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇷🇺 Русский](./ReadMe_RU.md) • [🇺🇦 Українська](./ReadMe_UK.md) • [🇮🇳 हिन्दी](./ReadMe_HI.md)
 
 ---
 

@@ -144,7 +144,7 @@ export class GlobalSearch {
 
     getPluginLanguageLabel(languageKey = 'ALL') {
         if (languageKey === 'ALL') return t('plugin_language_filter_all');
-        if (['TR', 'EN', 'FR', 'RU', 'UK'].includes(languageKey)) return languageKey;
+        if (['TR', 'EN', 'FR', 'RU', 'UK', 'HI'].includes(languageKey)) return languageKey;
         return languageKey;
     }
 

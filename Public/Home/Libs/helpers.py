@@ -10,7 +10,7 @@ from Settings         import PROVIDER_NAME, PRODUCTION
 from .provider_client import RemoteProviderClient
 
 _TRANSLATIONS    = {}
-_SUPPORTED_LANGS = ("tr", "en", "fr", "ru", "uk")
+_SUPPORTED_LANGS = ("tr", "en", "fr", "ru", "uk", "hi")
 _DEFAULT_LANG    = "en"
 
 def _load_translations():
@@ -129,6 +129,7 @@ async def build_context(request: Request, **extra):
             "fr"                 : "fr_FR",
             "ru"                 : "ru_RU",
             "uk"                 : "uk_UA",
+            "hi"                 : "hi_IN",
         }.get(lang, "en_US"),
         "provider_url"  : provider_url,
         "provider_name" : provider_name,

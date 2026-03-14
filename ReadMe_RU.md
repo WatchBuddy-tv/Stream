@@ -5,7 +5,7 @@
 WatchBuddy нужен надежный и чистый streaming-слой. Этот репозиторий дает именно его.
 Это **не** песочница для разработки — это **production-ready интеграционный форк**, используемый WatchBuddy.
 
-[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇺🇦 Українська](./ReadMe_UK.md)
+[🇺🇸 English](./ReadMe.md) • [🇹🇷 Türkçe](./ReadMe_TR.md) • [🇫🇷 Français](./ReadMe_FR.md) • [🇺🇦 Українська](./ReadMe_UK.md) • [🇮🇳 हिन्दी](./ReadMe_HI.md)
 
 ---
 
