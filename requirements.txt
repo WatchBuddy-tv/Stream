@@ -1,6 +1,6 @@
 Kekik
 httpx[http2]
-fastapi==0.133.1
+fastapi
 uvicorn
 uvloop; platform_system != "Windows"
 httptools

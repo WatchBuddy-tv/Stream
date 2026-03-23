@@ -44,7 +44,7 @@ async def kategori(request: Request, eklenti_adi: str, kategori_url: str, katego
             "sayfa"        : sayfa
         })
 
-        return home_template.TemplateResponse("pages/category.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/category.html.j2", context=context)
     except Exception as hata:
         context = await build_context(
             request     = request,
@@ -58,4 +58,4 @@ async def kategori(request: Request, eklenti_adi: str, kategori_url: str, katego
         )
         context["title"]       = f"{context['tr']('error_title')} - {eklenti_adi} - {kategori_adi}"
         context["description"] = context["tr"]("error_desc")
-        return home_template.TemplateResponse("pages/error.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/error.html.j2", context=context)

@@ -41,7 +41,7 @@ async def ana_sayfa(request: Request):
             "plugins"     : plugins
         })
 
-        response = home_template.TemplateResponse("pages/home.html.j2", context)
+        response = home_template.TemplateResponse(request=request, name="pages/home.html.j2", context=context)
 
         # Query'den gelen provider varsa cookie'ye kaydet (Normalleştirilmiş URL'i kaydet)
         if provider_url and request.query_params.get("provider"):
@@ -61,4 +61,4 @@ async def ana_sayfa(request: Request):
         )
         context["title"]       = f"{context['tr']('error_title')} - {context['provider_name']}"
         context["description"] = context["tr"]("error_desc")
-        return home_template.TemplateResponse("pages/error.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/error.html.j2", context=context)

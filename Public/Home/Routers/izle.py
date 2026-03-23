@@ -120,7 +120,7 @@ async def izle(
             }
         )
 
-        return home_template.TemplateResponse("pages/player.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/player.html.j2", context=context)
     except Exception as hata:
         context = await build_context(
             request     = request,
@@ -134,4 +134,4 @@ async def izle(
         )
         context["title"] = f"{context['tr']('error_title')} - {eklenti_adi} - {baslik}"
         context["description"] = context["tr"]("error_desc")
-        return home_template.TemplateResponse("pages/error.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/error.html.j2", context=context)

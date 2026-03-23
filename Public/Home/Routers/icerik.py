@@ -76,7 +76,7 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
             }
         )
 
-        return home_template.TemplateResponse("pages/content.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/content.html.j2", context=context)
     except Exception as hata:
         context = await build_context(
             request     = request,
@@ -90,4 +90,4 @@ async def icerik(request: Request, eklenti_adi: str, url: str):
         )
         context["title"] = f"{context['tr']('error_title')} - {eklenti_adi}"
         context["description"] = context["tr"]("error_desc")
-        return home_template.TemplateResponse("pages/error.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/error.html.j2", context=context)

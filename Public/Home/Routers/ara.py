@@ -39,7 +39,7 @@ async def ara(request: Request, eklenti_adi: str, sorgu: str):
             "results"     : results
         })
 
-        return home_template.TemplateResponse("pages/search_results.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/search_results.html.j2", context=context)
     except Exception as hata:
         context = await build_context(
             request     = request,
@@ -53,4 +53,4 @@ async def ara(request: Request, eklenti_adi: str, sorgu: str):
         )
         context["title"]       = f"{context['tr']('error_title')} - {eklenti_adi} - {sorgu}"
         context["description"] = context["tr"]("error_desc")
-        return home_template.TemplateResponse("pages/error.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/error.html.j2", context=context)

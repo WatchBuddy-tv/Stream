@@ -43,7 +43,7 @@ async def eklenti(request: Request, eklenti_adi: str):
             "plugin"      : plugin
         })
 
-        return home_template.TemplateResponse("pages/plugin_detail.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/plugin_detail.html.j2", context=context)
     except Exception as hata:
         context = await build_context(
             request     = request,
@@ -57,4 +57,4 @@ async def eklenti(request: Request, eklenti_adi: str):
         )
         context["title"]       = f"{context['tr']('error_title')} - {plugin.get('name') if plugin else eklenti_adi}"
         context["description"] = context["tr"]("error_desc")
-        return home_template.TemplateResponse("pages/error.html.j2", context)
+        return home_template.TemplateResponse(request=request, name="pages/error.html.j2", context=context)
