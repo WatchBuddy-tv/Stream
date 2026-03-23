@@ -1,6 +1,6 @@
 Kekik
 httpx[http2]
-fastapi
+fastapi==0.133.1
 uvicorn
 uvloop; platform_system != "Windows"
 httptools
@@ -12,5 +12,5 @@ python-multipart
 python-dotenv
 csscompressor
 rjsmin
-KekikStream>=3.0.1
+KekikStream>=3.0.2
 yt-dlp[default,curl-cffi]
