@@ -6,7 +6,7 @@ _ip_cache: dict[str, dict[str, str]] = {}
 
 async def _ip_api_com(oturum: AsyncClient, hedef_ip: str) -> dict[str, str] | None:
     response = await oturum.get(f"http://ip-api.com/json/{hedef_ip}?fields=status,country,regionName,city,isp,org,as", timeout=5)
-    veri = response.json()
+    veri     = response.json()
     if veri.get("status") == "fail":
         return None
     return {
@@ -20,7 +20,7 @@ async def _ip_api_com(oturum: AsyncClient, hedef_ip: str) -> dict[str, str] | No
 
 async def _ipapi_co(oturum: AsyncClient, hedef_ip: str) -> dict[str, str] | None:
     response = await oturum.get(f"https://ipapi.co/{hedef_ip}/json/", timeout=5)
-    veri = response.json()
+    veri     = response.json()
     if veri.get("error"):
         return None
     return {
@@ -34,7 +34,7 @@ async def _ipapi_co(oturum: AsyncClient, hedef_ip: str) -> dict[str, str] | None
 
 async def _ipinfo_io(oturum: AsyncClient, hedef_ip: str) -> dict[str, str] | None:
     response = await oturum.get(f"https://ipinfo.io/{hedef_ip}/json", timeout=5)
-    veri = response.json()
+    veri     = response.json()
     if "bogon" in veri or not veri.get("country"):
         return None
     return {
