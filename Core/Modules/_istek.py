@@ -23,7 +23,7 @@ async def istekten_once_sonra(request: Request, call_next):
 
     try:
         ua_header = request.headers.get("User-Agent")
-        cihaz = ua_header if str(parse(ua_header)).split("/")[2].strip() == "Other" else parse(ua_header)
+        cihaz     = ua_header if str(parse(ua_header)).split("/")[2].strip() == "Other" else parse(ua_header)
     except Exception:
         cihaz = request.headers.get("User-Agent")
 

@@ -36,7 +36,7 @@ async def izle(
         if provider_url:
             async with RemoteProviderClient(provider_url) as client:
                 load_links_data = await client.load_links(eklenti_adi, url)
-                proxy_urls = await client.get_proxy_urls()
+                proxy_urls      = await client.get_proxy_urls()
         else:
             # Local provider için Settings'den proxy bilgilerini al
             proxy_urls = {
