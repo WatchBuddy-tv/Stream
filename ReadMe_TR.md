@@ -62,7 +62,7 @@ Fork temeli: [KekikStreamAPI](https://github.com/keyiflerolsun/KekikStreamAPI)
 > Gereksinimler: Python 3.11+, `yt-dlp` ve tarayıcı.
 
 ```bash
-pip install -r requirements.txt
+pip install .
 python basla.py
 ```
 

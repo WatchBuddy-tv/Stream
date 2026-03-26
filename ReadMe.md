@@ -62,7 +62,7 @@ Fork base: [KekikStreamAPI](https://github.com/keyiflerolsun/KekikStreamAPI)
 > Requirements: Python 3.11+, `yt-dlp`, and a browser.
 
 ```bash
-pip install -r requirements.txt
+pip install .
 python basla.py
 ```
 

@@ -62,7 +62,7 @@ Upstream-рушій: [KekikStream](https://github.com/keyiflerolsun/KekikStream)
 > Вимоги: Python 3.11+, `yt-dlp` і браузер.
 
 ```bash
-pip install -r requirements.txt
+pip install .
 python basla.py
 ```
 
