@@ -1,96 +1,89 @@
+{#- Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. -#}
 {% extends "_html_taban.html.j2" %}
 {% block breadcrumbs %}{% endblock %}
 
 {% block icerik %}
 
+{# Hero — compact, centered #}
 <section class="page-hero page-hero-home">
-    <div class="search-container home-search-shell">
-        <div class="hero-copy">
-            <span class="hero-kicker">{{ provider_name }}</span>
-            <h1 class="hero-title"><span class="hero-title-wordmark">{{ tr('site_name') }}</span></h1>
-            <p class="hero-subtitle" data-i18n="site_tagline">{{ tr('site_tagline') }}</p>
-        </div>
-        <div class="search-form">
-        <input
-            type="text"
-            id="global-search-input"
-            class="search-input"
-            placeholder="{{ tr('search_all_placeholder') }}"
-            data-i18n="search_all_placeholder"
-            data-i18n-attr="placeholder"
-            autocomplete="off"
-        >
-        <button type="button" id="global-search-button" class="search-button">
-            <i class="fas fa-search"></i>
-        </button>
+    <div class="home-hero-inner">
+        <span class="hero-kicker">{{ provider_name }}</span>
+        <h1 class="hero-title"><span class="hero-title-wordmark">{{ tr('site_name') }}</span></h1>
+        <p class="hero-subtitle" data-i18n="site_tagline">{{ tr('site_tagline') }}</p>
+
+        <div class="home-search-row">
+            <div class="search-form" id="global-search-form">
+                <input type="text" id="global-search-input" class="search-input"
+                    placeholder="{{ tr('search_all_placeholder') }}"
+                    data-i18n="search_all_placeholder" data-i18n-attr="placeholder"
+                    autocomplete="off">
+                <button type="button" id="global-search-button" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
         </div>
 
         <div class="hero-settings-actions">
-            <button type="button" id="toggle-provider-settings" class="button button-secondary button-small hero-settings-toggle" aria-expanded="false" aria-controls="provider-settings-panel">
+            <button type="button" id="toggle-provider-settings" class="button button-secondary button-small hero-settings-toggle"
+                aria-expanded="false" aria-controls="provider-settings-panel">
                 <i class="fas fa-server"></i>
-                <span data-i18n="provider_settings">Sağlayıcı Ayarları</span>
-                <i class="fas fa-chevron-down" id="provider-settings-chevron"></i>
+                <span data-i18n="provider_settings">{{ tr('provider_settings') }}</span>
+                <i class="fas fa-chevron-down toggle-chevron"></i>
             </button>
-            <button type="button" id="toggle-plugin-settings" class="button button-secondary button-small hero-settings-toggle" aria-expanded="false" aria-controls="plugin-settings-panel">
+            <button type="button" id="toggle-plugin-settings" class="button button-secondary button-small hero-settings-toggle"
+                aria-expanded="false" aria-controls="plugin-settings-panel">
                 <i class="fas fa-puzzle-piece"></i>
-                <span data-i18n="plugin_management">Eklenti Yönetimi</span>
-                <i class="fas fa-chevron-down" id="plugin-settings-chevron"></i>
+                <span data-i18n="plugin_management">{{ tr('plugin_management') }}</span>
+                <i class="fas fa-chevron-down toggle-chevron"></i>
             </button>
         </div>
     </div>
 </section>
 
-<!-- Provider Settings Panel (Collapsible) -->
-<section id="provider-settings-panel" class="provider-settings-panel is-hidden">
-    <div class="provider-settings-shell">
-        <div class="provider-settings-head">
-            <div class="provider-settings-copy">
-                <span class="provider-settings-kicker" data-i18n="provider_kicker">{{ tr('provider_kicker') }}</span>
-                <h2 class="provider-settings-title" data-i18n="provider_settings">{{ tr('provider_settings') }}</h2>
-                <p class="provider-settings-subtitle" data-i18n="provider_help_text">{{ tr('provider_help_text') }}</p>
+{# Provider Settings Panel (Collapsible) #}
+<section id="provider-settings-panel" class="settings-panel is-hidden">
+    <div class="settings-panel-shell">
+        <div class="settings-panel-head">
+            <div class="settings-panel-copy">
+                <span class="settings-panel-kicker" data-i18n="provider_kicker">{{ tr('provider_kicker') }}</span>
+                <h2 class="settings-panel-title" data-i18n="provider_settings">{{ tr('provider_settings') }}</h2>
+                <p class="settings-panel-subtitle" data-i18n="provider_help_text">{{ tr('provider_help_text') }}</p>
             </div>
 
             {% if is_remote %}
-            <div class="status-badge success provider-status-card">
+            <div class="status-badge status-badge-success provider-status-card">
                 <i class="fas fa-link"></i>
                 <div class="status-badge-copy">
                     <strong>{{ provider_name }}</strong>
-                    <div class="status-url">{{ provider_url }}</div>
+                    <small class="status-url">{{ provider_url }}</small>
                 </div>
             </div>
             {% else %}
-            <div class="status-badge info provider-status-card">
+            <div class="status-badge status-badge-info provider-status-card">
                 <i class="fas fa-home"></i>
                 <div class="status-badge-copy">
-                    <strong><span data-i18n="local_provider">Yerel sağlayıcı kullanılıyor</span></strong>
-                    <div class="status-url" data-i18n="local_provider_meta">{{ tr('local_provider_meta') }}</div>
+                    <strong data-i18n="local_provider">{{ tr('local_provider') }}</strong>
+                    <small class="status-url" data-i18n="local_provider_meta">{{ tr('local_provider_meta') }}</small>
                 </div>
             </div>
             {% endif %}
         </div>
 
-        <div class="provider-settings-stack">
+        <div class="settings-panel-body">
             <div class="provider-input-group">
                 <div class="provider-input-wrapper">
-                    <input
-                        type="url"
-                        id="provider-url-input"
-                        class="search-input"
-                        placeholder="{{ tr('provider_url_placeholder') }}"
-                        data-i18n="provider_url_placeholder"
-                        data-i18n-attr="placeholder"
-                        value="{{ provider_url or '' }}"
-                    >
                     <i class="fas fa-server"></i>
+                    <input type="url" id="provider-url-input" class="search-input"
+                        placeholder="{{ tr('provider_url_placeholder') }}"
+                        data-i18n="provider_url_placeholder" data-i18n-attr="placeholder"
+                        value="{{ provider_url or '' }}">
                 </div>
-                <button type="button" id="set-provider-button" class="button">
-                    <i class="fas fa-check"></i>
-                    <span data-i18n="apply">Uygula</span>
+                <button type="button" id="set-provider-button" class="button button-primary">
+                    <i class="fas fa-check"></i> <span data-i18n="apply">{{ tr('apply') }}</span>
                 </button>
                 {% if is_remote %}
                 <button type="button" id="reset-provider-button" class="button button-secondary">
-                    <i class="fas fa-undo"></i>
-                    <span data-i18n="reset">Sıfırla</span>
+                    <i class="fas fa-undo"></i> <span data-i18n="reset">{{ tr('reset') }}</span>
                 </button>
                 {% endif %}
             </div>
@@ -106,109 +99,72 @@
                         </a>
                     </div>
                 </div>
-
                 {% if not is_remote %}
-                <div class="provider-example-action">
-                    <button type="button" id="try-example-button" class="button button-secondary button-small">
-                        <i class="fas fa-magic"></i>
-                        <span data-i18n="try_example">{{ tr('try_example') }}</span>
-                    </button>
-                </div>
+                <button type="button" id="try-example-button" class="button button-secondary button-small">
+                    <i class="fas fa-magic"></i> <span data-i18n="try_example">{{ tr('try_example') }}</span>
+                </button>
                 {% endif %}
             </div>
         </div>
     </div>
 </section>
 
-<section id="plugin-settings-panel" class="provider-settings-panel plugin-settings-panel is-hidden">
-    <div id="plugin-preferences-panel" class="provider-settings-shell plugin-preferences-panel">
-        <div class="plugin-preferences-head">
-            <div class="plugin-preferences-copy">
-                <span class="provider-settings-kicker" data-i18n="plugin_management">{{ tr('plugin_management') }}</span>
-                <h3 class="plugin-preferences-title" data-i18n="all_plugins">{{ tr('all_plugins') }}</h3>
-                <p class="plugin-preferences-subtitle" data-i18n="plugin_management_subtitle">{{ tr('plugin_management_subtitle') }}</p>
+{# Plugin Management Panel (Collapsible) #}
+<section id="plugin-settings-panel" class="settings-panel is-hidden">
+    <div class="settings-panel-shell">
+        <div class="settings-panel-head">
+            <div class="settings-panel-copy">
+                <span class="settings-panel-kicker" data-i18n="plugin_management">{{ tr('plugin_management') }}</span>
+                <h2 class="settings-panel-title" data-i18n="all_plugins">{{ tr('all_plugins') }}</h2>
+                <p class="settings-panel-subtitle" data-i18n="plugin_management_subtitle">{{ tr('plugin_management_subtitle') }}</p>
             </div>
-            <span id="plugin-preferences-summary" class="plugin-preferences-summary"></span>
         </div>
-        <div id="plugin-preferences-filters" class="plugin-preferences-filters"></div>
         <div id="plugin-preferences-list" class="plugin-preferences-list"></div>
     </div>
 </section>
 
-<!-- Arama Sonuçları -->
+{# Search Results (hidden, filled by search.js) #}
 <section id="search-results" class="search-results is-hidden">
-    <div class="detail-container">
-        <div class="detail-header search-results-head">
-            <h2 class="detail-title">
-                <i class="fas fa-search"></i> <span data-i18n="search_results_title">{{ tr('search_results_title') }}</span>: <span id="search-query-display"></span>
-            </h2>
-            <button id="clear-search" class="button button-secondary">
-                <i class="fas fa-times"></i> <span data-i18n="search_clear">{{ tr('search_clear') }}</span>
+    <div class="search-results-head">
+        <h2><i class="fas fa-search"></i> <span data-i18n="search_results_title">{{ tr('search_results_title') }}</span>: <span id="search-query-display"></span></h2>
+        <button id="clear-search" class="button button-secondary button-small">
+            <i class="fas fa-times"></i> <span data-i18n="search_clear">{{ tr('search_clear') }}</span>
+        </button>
+    </div>
+    <div id="plugin-filters" class="plugin-filters is-hidden">
+        <div class="filters-header">
+            <h3><i class="fas fa-filter"></i> <span data-i18n="plugins_filter_title">{{ tr('plugins_filter_title') }}</span></h3>
+            <button id="clear-filters" class="button button-small button-secondary">
+                <i class="fas fa-times"></i> <span data-i18n="filters_clear">{{ tr('filters_clear') }}</span>
             </button>
         </div>
-
-        <!-- Plugin Filtreleri -->
-        <div id="plugin-filters" class="plugin-filters is-hidden">
-            <div class="filters-header">
-                <h3 class="filters-title">
-                    <i class="fas fa-filter"></i> <span data-i18n="plugins_filter_title">{{ tr('plugins_filter_title') }}</span>
-                </h3>
-                <button id="clear-filters" class="button button-small button-secondary" aria-label="{{ tr('filters_clear') }}" data-i18n="filters_clear" data-i18n-attr="aria-label">
-                    <i class="fas fa-times"></i> <span data-i18n="filters_clear">{{ tr('filters_clear') }}</span>
-                </button>
-            </div>
-            <div id="filters-container" class="filters-container"></div>
-        </div>
-
-        <div id="search-status" class="search-status"></div>
-        <div id="results-grid" class="grid"></div>
+        <div id="filters-container" class="filters-container"></div>
     </div>
+    <div id="search-status" class="search-status"></div>
+    <div id="results-grid" class="grid"></div>
 </section>
 
-<!-- Eklenti Listesi -->
+{# Plugin List #}
 <section id="plugins-list">
     <div class="section-heading">
-        <h2 class="section-title">
-            <i class="fas fa-plug"></i> <span data-i18n="all_plugins">{{ tr('all_plugins') }}</span>
-        </h2>
+        <h2 class="section-title"><i class="fas fa-plug"></i> <span data-i18n="all_plugins">{{ tr('all_plugins') }}</span> <span class="section-count">{{ plugins | length }}</span></h2>
     </div>
-
-    <div class="grid">
+    <div class="grid grid-plugins">
         {% for plugin in plugins %}
-            <div class="card" data-plugin-name="{{ plugin.name }}">
-                <div class="card-content">
-
-                    <div class="card-header">
-                        {% if plugin.favicon %}
-                            <img src="{{ plugin.favicon }}" alt="{{ plugin.name }}" class="plugin-favicon">
-                        {% else %}
-                            <i class="fas fa-film plugin-icon"></i>
-                        {% endif %}
-
-                        <div class="plugin-card-copy">
-                            <h3 class="card-title">{{ plugin.name }}</h3>
-                            <div class="plugin-card-meta">
-                                <span class="plugin-meta-pill">
-                                    <i class="fas fa-language" aria-hidden="true"></i>
-                                    <span>{{ plugin.language | upper }}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="card-text">{{ plugin.description }}</p>
-
-                    <div class="card-actions">
-                        <a href="{{ plugin.main_url }}" target="_blank" class="button button-secondary">
-                            <i class="fas fa-external-link-alt"></i> <span data-i18n="site_button">{{ tr('site_button') }}</span>
-                        </a>
-                        <a href="/eklenti/{{ plugin.name }}{{ provider_query }}" class="button">
-                            <i class="fas fa-eye"></i> <span data-i18n="details_button">{{ tr('details_button') }}</span>
-                        </a>
-                    </div>
-
-                </div>
+        <a href="/eklenti/{{ plugin.name }}{{ provider_query }}" class="card plugin-card" data-plugin-name="{{ plugin.name }}" style="--card-index:{{ loop.index0 }}">
+            <div class="card-icon">
+                {% if plugin.favicon %}
+                <img src="{{ plugin.favicon }}" alt="{{ plugin.name }}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling&&(this.nextElementSibling.style.display='');var i=document.createElement('i');i.className='fas fa-film';this.parentElement.appendChild(i);this.remove()">
+                {% else %}
+                <i class="fas fa-film"></i>
+                {% endif %}
             </div>
+            <div class="card-body">
+                <h3 class="card-title">{{ plugin.name }}</h3>
+                <span class="badge badge-lang badge-lang-{{ plugin.language | lower }}">{{ plugin.language | upper }}</span>
+            </div>
+            <p class="card-desc">{{ plugin.description }}</p>
+        </a>
         {% endfor %}
     </div>
 </section>
@@ -216,88 +172,7 @@
 {% endblock %}
 
 {% block js %}
-    <script>
-        window.availablePlugins = {{ plugins | tojson | safe }};
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const setBtn = document.getElementById('set-provider-button');
-            const resetBtn = document.getElementById('reset-provider-button');
-            const tryExampleBtn = document.getElementById('try-example-button');
-            const input = document.getElementById('provider-url-input');
-            const toggleBtn = document.getElementById('toggle-provider-settings');
-            const settingsPanel = document.getElementById('provider-settings-panel');
-            const pluginSettingsPanel = document.getElementById('plugin-settings-panel');
-            const providerChevron = document.getElementById('provider-settings-chevron');
-            const pluginToggleBtn = document.getElementById('toggle-plugin-settings');
-            const pluginChevron = document.getElementById('plugin-settings-chevron');
-            const isRemote = {{ 'true' if is_remote else 'false' }};
-
-            const EXAMPLE_PROVIDER_URL = 'https://example.watchbuddy.tv';
-
-            // Toggle Settings Panel
-            const syncPanel = (button, panel, icon, isVisible) => {
-                if (!button || !panel || !icon) return;
-                panel.classList.toggle('is-hidden', !isVisible);
-                icon.className = isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-                button.setAttribute('aria-expanded', String(isVisible));
-            };
-
-            if (toggleBtn && settingsPanel) {
-                toggleBtn.onclick = () => {
-                    const nextState = settingsPanel.classList.contains('is-hidden');
-                    syncPanel(toggleBtn, settingsPanel, providerChevron, nextState);
-                    if (nextState) syncPanel(pluginToggleBtn, pluginSettingsPanel, pluginChevron, false);
-                };
-            }
-
-            if (pluginToggleBtn && pluginSettingsPanel) {
-                pluginToggleBtn.onclick = () => {
-                    const nextState = pluginSettingsPanel.classList.contains('is-hidden');
-                    syncPanel(pluginToggleBtn, pluginSettingsPanel, pluginChevron, nextState);
-                    if (nextState) syncPanel(toggleBtn, settingsPanel, providerChevron, false);
-                };
-            }
-
-            // 1. Check localStorage on load
-            const savedProvider = localStorage.getItem('watchbuddy_provider');
-            const currentProvider = new URLSearchParams(window.location.search).get('provider');
-
-            // If not remote and no specific provider in URL, but we have a saved one -> Redirect to use it
-            if (!isRemote && savedProvider && !currentProvider) {
-                window.location.href = `/?provider=${encodeURIComponent(savedProvider)}`;
-                return;
-            }
-
-            if (setBtn) {
-                setBtn.onclick = () => {
-                    const url = input.value.trim();
-                    if (url) {
-                        // 2. Save to localStorage when Apply is clicked
-                        localStorage.setItem('watchbuddy_provider', url);
-                        window.location.href = `/?provider=${encodeURIComponent(url)}`;
-                    }
-                };
-            }
-
-            if (resetBtn) {
-                resetBtn.onclick = () => {
-                    // 3. Clear localStorage when Reset is clicked
-                    localStorage.removeItem('watchbuddy_provider');
-                    document.cookie = "provider_url=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    window.location.href = "/";
-                };
-            }
-
-            if (tryExampleBtn) {
-                tryExampleBtn.onclick = () => {
-                    input.value = EXAMPLE_PROVIDER_URL;
-                };
-            }
-
-            input.onkeydown = (e) => {
-                if (e.key === 'Enter') setBtn.click();
-            };
-        });
-    </script>
-    <script type="module" src="{{ url_for('static_home', path='JS/global-search.min.js') }}" defer crossorigin="anonymous"></script>
+<script id="plugins-data" type="application/json">{{ plugins | tojson }}</script>
+<script type="module" src="{{ url_for('static_home', path='JS/global-search.min.js') }}" defer></script>
+<script type="module" src="{{ url_for('static_home', path='JS/components/settings-drawer.min.js') }}" defer></script>
 {% endblock %}

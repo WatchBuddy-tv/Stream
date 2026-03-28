@@ -1,77 +1,52 @@
+{#- Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. -#}
 {% extends "_html_taban.html.j2" %}
-
 
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
-    <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
-    </div>
-    <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ provider_name }} - {{ eklenti_adi }}</a>
-    </div>
-    <div class="breadcrumbs-item">
-        <span class="breadcrumbs-current unquote">{{ kategori_adi }}</span>
-    </div>
+    <a href="/{{ provider_query if provider_query else '' }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span class="sr-only" data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
+    <span class="breadcrumbs-sep">/</span>
+    <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+    <span class="breadcrumbs-sep">/</span>
+    <span class="breadcrumbs-current unquote">{{ kategori_adi }}</span>
 </nav>
 {% endblock %}
 
-
 {% block icerik %}
-
-<div class="detail-container">
-    <div class="detail-header">
-        <div class="header-top">
-            <div class="header-content">
-                <h1 class="detail-title">{{ baslik }}</h1>
-                <p class="detail-subtitle" data-i18n="page_label_with_number" data-i18n-vars='{"page": "{{ sayfa }}"}'>{{ tr('page_label_with_number', page=sayfa) }}</p>
-            </div>
-            <div class="header-actions">
-                <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button button-secondary">
-                    <i class="fas fa-arrow-left"></i> <span data-i18n="back_to_plugin">{{ tr('back_to_plugin') }}</span>
-                </a>
-            </div>
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-header-title unquote">{{ kategori_adi }}</h1>
+        <div class="page-header-meta">
+            <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="badge badge-link"><i class="fas fa-puzzle-piece"></i> {{ eklenti_adi }}</a>
         </div>
     </div>
-
-    <div class="grid">
-        {% if items %}
-            {% for item in items %}
-                <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ provider_query_amp }}" class="card">
-                    {% if item.poster %}
-                        <img src="{{ item.poster }}" alt="{{ item.title }}" class="card-image">
-                    {% endif %}
-
-                    <div class="card-content">
-                        <h3 class="card-title">{{ item.title }}</h3>
-                    </div>
-                </a>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state-full">
-                <p data-i18n="category_empty">{{ tr('category_empty') }}</p>
-            </div>
-            <a href="/eklenti/{{ eklenti_adi }}" class="button button-secondary">
-                <i class="fas fa-arrow-left"></i> <span data-i18n="back_to_plugin_page">{{ tr('back_to_plugin_page') }}</span>
-            </a>
-        {% endif %}
-    </div>
-
-    {% if items %}
-        <div class="pagination-row">
-            {% if sayfa > 1 %}
-                <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa - 1 }}{{ provider_query_amp }}" class="button button-secondary">
-                    <i class="fas fa-arrow-left"></i> <span data-i18n="prev_page">{{ tr('prev_page') }}</span>
-                </a>
-            {% else %}
-               <div></div>
-            {% endif %}
-
-            <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa + 1 }}{{ provider_query_amp }}" class="button">
-                <span data-i18n="next_page">{{ tr('next_page') }}</span> <i class="fas fa-arrow-right"></i>
-            </a>
-
-        </div>
-    {% endif %}
 </div>
 
+<div class="grid grid-results">
+    {% for item in items %}
+    <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ provider_query_amp }}" class="poster-card card-fade-in" style="animation-delay: {{ loop.index0 * 40 }}ms" aria-label="{{ item.title }}">
+        <div class="poster-card-img{% if not item.poster %} has-error{% endif %}">
+            {% if item.poster %}<img src="{{ item.poster }}" alt="{{ item.title }}" loading="lazy" onerror="this.parentElement.classList.add('has-error');this.remove()">{% endif %}
+        </div>
+        <div class="poster-card-overlay"><span class="poster-card-title">{{ item.title }}</span></div>
+    </a>
+    {% endfor %}
+</div>
+
+{% if items %}
+<div class="pagination-row">
+    {% if sayfa > 1 %}
+    <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa - 1 }}{{ provider_query_amp }}" class="button button-secondary pagination-btn">
+        <i class="fas fa-chevron-left"></i> <span data-i18n="prev_page">{{ tr('prev_page') }}</span>
+    </a>
+    {% endif %}
+    <span class="pagination-current" data-i18n="page_label_with_number" data-i18n-vars='{"page": "{{ sayfa }}"}'>{{ tr('page_label_with_number', page=sayfa) }}</span>
+    {% if items | length >= 20 %}
+    <a href="/kategori/{{ eklenti_adi }}?kategori_url={{ kategori_url }}&kategori_adi={{ kategori_adi }}&sayfa={{ sayfa + 1 }}{{ provider_query_amp }}" class="button button-secondary pagination-btn">
+        <span data-i18n="next_page">{{ tr('next_page') }}</span> <i class="fas fa-chevron-right"></i>
+    </a>
+    {% endif %}
+</div>
+{% else %}
+<div class="empty-state-full"><i class="fas fa-folder-open"></i><p data-i18n="category_empty">{{ tr('category_empty') }}</p></div>
+{% endif %}
 {% endblock %}

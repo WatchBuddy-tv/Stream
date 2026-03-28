@@ -1,56 +1,63 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== CSS DEĞİŞKENLER ==================== */
-@import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mulish:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap";
-
 :root {
-  /* Ana renkler */
+  /* Brand */
   --primary-color: #ef7f1a;
   --primary-light: #ff9a3c;
   --primary-dark: #d16500;
   --secondary-color: #0087a3;
   --secondary-light: #00a0c2;
-  --secondary-dark: #006e85;
+  --secondary-dark: #005f73;
   --primary-soft: rgba(239, 127, 26, 0.15);
   --secondary-soft: rgba(0, 135, 163, 0.15);
   --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
 
-  /* Arka plan ve metin renkleri */
+  /* Surfaces */
   --background-color: #2B2A29;
   --background-alt: #252423;
   --card-bg-color: #333333;
   --card-bg-hover: #3D3D3D;
   --surface-variant: #2A2928;
-  --surface-emphasis: #404040;
-  --overlay-dark: #1E1E23;
+  --surface-lighter: #444444;
+
+  /* Text */
   --text-color: #f5f5f5;
   --text-muted: #b0b0b0;
   --text-dim: #888888;
-  --hover-color: #444444;
 
-  /* Kenar ve gölge renkleri */
+  /* Borders & Shadows */
   --border-color: #444444;
   --border-light: rgba(255, 255, 255, 0.1);
   --shadow-color: rgba(0, 0, 0, 0.2);
   --shadow-color-hover: rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.3);
+  --shadow-primary-glow: 0 4px 16px rgba(239, 127, 26, 0.3);
+  --shadow-primary-glow-strong: 0 8px 24px rgba(239, 127, 26, 0.35);
+  --shadow-primary-glow-subtle: 0 2px 8px rgba(239, 127, 26, 0.2);
+  --shadow-inset: inset 0 0 20px rgba(255, 255, 255, 0.1);
+  --shadow-search-form: 0 16px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(239, 127, 26, 0.15), 0 0 24px rgba(239, 127, 26, 0.08);
 
-  /* Surface ve durum renkleri */
-  --surface-dark: #1E1E1E;
-  --success-color: #10B981; /* Mobil app ile uyumlu */
-  --success-bg: rgba(16, 185, 129, 0.1);
+  /* Status */
+  --success-color: #10B981;
   --info-color: #3498db;
-  --info-bg: rgba(52, 152, 219, 0.1);
-  --warning-color: #ffc107;
-  --warning-bg: rgba(255, 193, 7, 0.1);
-  --error-color: #EF4444; /* Mobil app ile uyumlu */
-  --error-bg: rgba(239, 68, 68, 0.1);
+  --warning-color: #f59e0b;
+  --error-color: #EF4444;
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --info-bg: rgba(52, 152, 219, 0.15);
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --error-bg: rgba(239, 68, 68, 0.15);
 
-  /* Boyutlar ve boşluklar */
+  /* Spacing */
+  --border-radius-xxs: 2px;
+  --border-radius-xs: 6px;
   --border-radius-sm: 8px;
   --border-radius: 12px;
   --border-radius-lg: 16px;
   --border-radius-xl: 20px;
-  --border-radius-2xl: 24px;
+  --border-radius-xxl: 24px;
+  --border-radius-pill: 999px;
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 0.75rem;
@@ -58,9 +65,10 @@
   --spacing-xl: 1.5rem;
   --spacing-xxl: 2rem;
 
-  /* Tipografi */
-  --font-family: "Inter", "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-  --font-family-display: "Space Grotesk", "Mulish", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Typography */
+  --font-family: "Inter", "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: "Space Grotesk", "Mulish", "Inter", sans-serif;
+  --font-size-2xs: 0.65rem;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -68,34 +76,55 @@
   --font-size-lg: 1.25rem;
   --font-size-xl: 1.5rem;
   --font-size-xxl: 2rem;
+  --font-size-3xl: 2.5rem;
   --line-height-tight: 1.2;
   --line-height-base: 1.5;
   --line-height-loose: 1.75;
 
-  /* Animasyonlar */
+  /* Effects */
+  --blur: 12px;
+
+  /* Animation */
+  --transition-speed-fast: 0.15s;
   --transition-speed: 0.2s;
+  --transition-speed-slow: 0.35s;
   --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Izgara sistemi */
-  --container-max-width: 1200px;
-  --grid-gap: var(--spacing-lg);
-
-  /* Z-indeksleri */
+  /* Layout */
+  --container-max-width: 1400px;
   --z-index-dropdown: 1000;
   --z-index-modal: 2000;
-  --z-index-overlay: 10;
 
+  /* Glass */
   --surface-glass: rgba(255, 255, 255, 0.04);
-  --surface-glass-strong: rgba(255, 255, 255, 0.07);
   --glass-edge: rgba(255, 255, 255, 0.12);
-  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  --glass-panel:
-    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.14), rgba(239, 127, 26, 0) 50%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.016)),
-    rgba(43, 42, 41, 0.9);
-  --glass-panel-soft:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.016)),
-    rgba(37, 36, 35, 0.86);
+  --glass-panel: radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.14), rgba(239, 127, 26, 0) 50%),
+                 linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.016)),
+                 rgba(43, 42, 41, 0.9);
   --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
   --shadow-strong: 0 28px 60px rgba(0, 0, 0, 0.36);
+  --shadow-card-hover: 0 8px 32px rgba(239, 127, 26, 0.15);
+  --glass-panel-soft: rgba(43, 42, 41, 0.65);
+
+  /* Apple-style inner shadow & vibrancy */
+  --inner-shadow-highlight: rgba(255, 255, 255, 0.08);
+  --inner-shadow-depth: rgba(0, 0, 0, 0.10);
+  --vibrancy-tint: rgba(239, 127, 26, 0.02);
+  --vibrancy-highlight: rgba(255, 255, 255, 0.06);
+  --inner-shadow: inset 0 0.5px 0 var(--inner-shadow-highlight), inset 0 -0.5px 0 var(--inner-shadow-depth);
+
+  /* Plugin Card */
+  --plugin-icon-size: 56px;
+  --plugin-icon-radius: 16px;
+  --plugin-card-glow: 0 0 0 1px rgba(239, 127, 26, 0.3), 0 16px 48px rgba(239, 127, 26, 0.12);
+  --plugin-stagger-delay: 40ms;
+
+  /* Player */
+  --subtitle-color: #ffff00;
+  --player-bg: #000;
+  --progress-handle: var(--primary-color);
+  --log-info-color: var(--info-color);
+  --log-warn-color: var(--warning-color);
+  --log-error-color: var(--error-color);
+  --log-debug-color: var(--secondary-light);
 }

@@ -3,15 +3,11 @@
 
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
-    <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
-    </div>
-    <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ provider_name }} - {{ eklenti_adi }}</a>
-    </div>
-    <div class="breadcrumbs-item">
-        <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ baslik }}</span>
-    </div>
+    <a href="/{{ provider_query if provider_query else '' }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
+    <span class="breadcrumbs-sep">/</span>
+    <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ provider_name }} - {{ eklenti_adi }}</a>
+    <span class="breadcrumbs-sep">/</span>
+    <span class="breadcrumbs-current"><i class="fas fa-play"></i> {{ baslik }}</span>
 </nav>
 {% endblock %}
 
@@ -87,7 +83,7 @@
                                 <button class="ctrl-btn" id="custom-mute" title="{{ tr('tooltip_mute') }}" data-i18n="tooltip_mute" data-i18n-attr="title">
                                     <i class="fas fa-volume-up"></i>
                                 </button>
-                                <input type="range" id="custom-volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                                <input type="range" id="custom-volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="1" aria-label="{{ tr('tooltip_volume') }}">
                             </div>
 
                             <!-- Time -->
@@ -169,7 +165,7 @@
     </div>
 
     <!-- Seçim Dropdown (Altyazı / Ses) -->
-    <div id="selection-modal" class="selection-dropdown is-hidden">
+    <div id="selection-modal" class="selection-dropdown is-hidden" role="dialog" aria-modal="true">
         <div class="selection-dropdown-header">
             <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span data-i18n="selection_prompt">{{ tr('selection_prompt') }}</span></h3>
         </div>

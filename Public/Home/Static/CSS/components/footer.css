@@ -1,69 +1,107 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== FOOTER ==================== */
-
 .footer {
-  text-align: center;
+  flex-shrink: 0;
   padding: var(--spacing-xl) 0;
-  margin-top: var(--spacing-xxl);
-  background: rgba(37, 36, 35, 0.72);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.14);
-  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-light);
+  background: var(--background-alt);
 }
 
 .footer .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-lg);
   flex-wrap: wrap;
+  gap: var(--spacing-lg);
 }
 
 .footer-copy {
-  text-align: left;
-}
-
-.footer p {
-  margin-bottom: var(--spacing-sm);
-  color: var(--text-muted);
   font-size: var(--font-size-sm);
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
-.footer a {
-  color: var(--text-color);
-  transition: color var(--transition-speed) ease-out;
+.footer-copy p {
+  margin: 0;
 }
 
-.footer a:hover {
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  transition: color var(--transition-speed) var(--transition-timing);
+}
+
+.footer-links a:hover {
   color: var(--primary-color);
 }
 
 .social-links {
   display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .social-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
+  color: var(--text-dim);
+  background: var(--surface-glass);
   border: 1px solid var(--border-light);
-  transition: all var(--transition-speed) ease-out;
-  color: var(--text-color);
-  background-color: var(--card-bg-color);
-  box-shadow: 0 2px 5px var(--shadow-color);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-speed) var(--transition-timing);
 }
 
 .social-link:hover {
-  background-color: var(--background-color);
-  border-color: var(--primary-color);
   color: var(--primary-color);
-  transform: translateY(-3px) scale(1.1);
-  box-shadow: 0 5px 15px rgba(239, 127, 26, 0.3);
+  background: var(--primary-soft);
+  border-color: rgba(239, 127, 26, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .footer .container {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+
+  .footer-copy {
+    align-items: center;
+  }
+
+  .footer-links {
+    justify-content: center;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .footer {
+    padding: var(--spacing-md) 0;
+  }
+
+  .footer-links {
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+
+  .social-link {
+    width: 30px;
+    height: 30px;
+    font-size: var(--font-size-xs);
+  }
 }

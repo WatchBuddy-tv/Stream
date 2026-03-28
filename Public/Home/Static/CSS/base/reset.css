@@ -1,109 +1,91 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== RESET VE BASE STİLLER ==================== */
-
-*, *::before, *::after {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
-  font-size: 16px;
+  box-sizing: border-box;
   scroll-behavior: smooth;
-  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
 }
 
 body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
-  background:
-    radial-gradient(circle at top right, rgba(239, 127, 26, 0.1) 0%, rgba(239, 127, 26, 0) 28%),
-    radial-gradient(circle at left top, rgba(0, 135, 163, 0.08) 0%, rgba(0, 135, 163, 0) 24%),
-    linear-gradient(180deg, var(--background-color) 0%, #1E1E1E 100%);
   color: var(--text-color);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(239, 127, 26, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(0, 135, 163, 0.04) 0%, transparent 60%),
+    var(--background-color);
+  line-height: 1.6;
   min-height: 100vh;
-  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
 }
 
-main {
-  flex: 1;
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
-/* Linkler */
 a {
   color: var(--primary-color);
   text-decoration: none;
   transition: color var(--transition-speed) var(--transition-timing);
-  position: relative;
 }
 
 a:hover {
   color: var(--primary-light);
 }
 
-a:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
 }
 
-/* Kaydırma Çubuğu */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+button {
+  cursor: pointer;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--card-bg-color);
-  border-radius: var(--border-radius-sm);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: var(--border-radius-sm);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-light);
-}
-
-/* Tipografi */
 h1, h2, h3, h4, h5, h6 {
-  margin-bottom: var(--spacing-md);
-  font-weight: 700;
   line-height: var(--line-height-tight);
+  font-weight: 700;
   color: var(--text-color);
 }
 
-h1 {
-  font-size: var(--font-size-xxl);
-}
-
-h2 {
-  font-size: var(--font-size-xl);
-}
-
-h3 {
-  font-size: var(--font-size-lg);
-}
-
-h4 {
-  font-size: var(--font-size-md);
-}
+h1 { font-size: var(--font-size-xxl); }
+h2 { font-size: var(--font-size-xl); }
+h3 { font-size: var(--font-size-lg); }
 
 p {
-  margin-bottom: var(--spacing-md);
-  line-height: var(--line-height-loose);
+  margin-bottom: var(--spacing-sm);
+  line-height: var(--line-height-base);
 }
 
-img {
-  max-width: 100%;
-  display: block;
+p:last-child {
+  margin-bottom: 0;
 }
 
 small {
@@ -111,7 +93,55 @@ small {
   color: var(--text-muted);
 }
 
-/* Yardımcı sınıflar */
-.unquote {
-  word-break: break-word;
+ul,
+ol {
+  list-style: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--border-light);
+  margin: var(--spacing-xl) 0;
+}
+
+::selection {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--border-radius-xxs);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--background-alt);
 }

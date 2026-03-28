@@ -1,315 +1,507 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== DETAY SAYFASI STİLLERİ ==================== */
+/* ==================== İÇERİK DETAY — SİNEMATİK HERO ==================== */
 
-.detail-container {
+.content-hero {
+  position: relative;
+  min-height: 60vh;
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  background:
-    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.12) 0%, rgba(239, 127, 26, 0) 34%),
-    rgba(51, 51, 51, 0.84);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: flex-end;
+  padding: var(--spacing-xxl);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  overflow-x: hidden;
 }
 
-.detail-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: var(--spacing-lg);
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--spacing-md);
-}
-
-.header-description {
-  color: var(--text-color);
-  line-height: var(--line-height-base);
-  font-size: var(--font-size-base);
-  opacity: 0.9;
-}
-
-.header-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  flex: 1;
-}
-
-.detail-title {
-  font-size: clamp(1.7rem, 3vw, 2.5rem);
-  color: var(--primary-color);
-  font-weight: 800;
-  line-height: 1.2;
-  margin: 0;
-  letter-spacing: -0.03em;
-}
-
-.detail-subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-  margin-top: var(--spacing-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.badge-secondary {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-light);
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: all var(--transition-speed);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 100%;
+.content-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.3px;
 }
 
-.badge-secondary:hover {
-  background-color: rgba(239, 127, 26, 0.1);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.badge-secondary i {
-  font-size: 0.9em;
-  opacity: 0.7;
-  transition: opacity var(--transition-speed);
-}
-
-.badge-secondary:hover i {
-  opacity: 1;
-}
-
-@media (max-width: 768px) {
-  .badge-secondary {
-    max-width: 200px;
-  }
-}
-
-.plugin-header-title {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.plugin-favicon-lg {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  border-radius: var(--border-radius-sm);
-  background-color: #fff;
-  padding: 2px;
-}
-
-.plugin-icon-lg {
-  font-size: 24px;
-  color: var(--primary-color);
-}
-
-.detail-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-lg);
-  align-items: flex-start;
-}
-
-.detail-poster {
+.content-hero-backdrop img {
   width: 100%;
-  max-width: 300px;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.35) blur(2px);
+  transform: scale(1.05);
+}
+
+.content-hero-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, var(--background-color) 0%, transparent 18%),
+    linear-gradient(to top, var(--background-color) 0%, rgba(43, 42, 41, 0.6) 50%, transparent 100%);
+}
+
+.content-hero-info {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--spacing-xl);
+  align-items: center;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.content-poster-wrap {
+  flex-shrink: 0;
+  width: 220px;
+  aspect-ratio: 2 / 3;
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  transition: all var(--transition-speed) ease-out;
+  overflow: hidden;
+  box-shadow: var(--inner-shadow), var(--shadow-strong);
   border: 1px solid var(--border-light);
+  position: relative;
 }
 
-.detail-poster:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  border-color: var(--primary-color);
+.content-poster-wrap.has-error {
+  aspect-ratio: 2/3;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(160deg, var(--card-bg-color) 0%, rgba(239, 127, 26, 0.08) 100%);
+  border-color: rgba(239, 127, 26, 0.12);
 }
 
-.detail-description {
+.content-poster-wrap.has-error::before {
+  content: "\f008";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  opacity: 0.2;
+  line-height: 1;
+}
+
+.content-poster-wrap.has-error::after {
+  content: var(--no-poster-text, "No Poster");
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.4;
+  text-align: center;
+  padding: 0 8px;
+}
+
+/* Vibrancy highlight on poster */
+.content-poster-wrap:not(.has-error)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--vibrancy-highlight) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.content-poster-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==================== META BİLGİLERİ ==================== */
+
+.content-meta {
   flex: 1;
-  min-width: 300px;
 }
 
-.detail-meta {
+.content-title {
+  font-family: var(--font-family-display);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 var(--spacing-sm);
+  color: var(--text-color);
+}
+
+.content-meta-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
-  margin-top: var(--spacing-lg);
-  margin-bottom: var(--spacing-sm);
-}
-
-.detail-meta-item {
-  background-color: rgba(255, 255, 255, 0.04);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: 999px;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-muted);
   font-size: var(--font-size-sm);
-  transition: all var(--transition-speed) ease-out;
-  border: 1px solid var(--border-light);
 }
 
-.detail-meta-item:hover {
-  background-color: var(--hover-color);
-  border-color: var(--primary-color);
-  transform: translateY(-2px);
+.content-meta-badge {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  box-shadow: var(--inner-shadow);
 }
 
 .content-description {
-  line-height: var(--line-height-loose);
-  color: var(--text-color);
-  padding: var(--spacing-md) 0;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-md);
 }
 
-.content-info {
-  margin: var(--spacing-md) 0;
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-lg);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.content-info-head {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
-}
-
-.content-tags-row {
+.content-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  width: 100%;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-md);
+  align-items: center;
 }
 
-.content-info-value {
-  color: var(--text-color);
-  line-height: var(--line-height-base);
-  opacity: 0.92;
-}
-
-.content-info p {
-  margin-bottom: 0;
-}
-
-.content-info strong {
-  color: var(--primary-color);
+.content-actors {
+  color: var(--text-dim);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-sm);
+  line-height: 1.5;
 }
 
 .content-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
 }
 
-.content-actions .button {
-  min-width: 170px;
+/* ==================== BÖLÜMLER ==================== */
+
+.episodes-section {
+  padding: var(--spacing-xxl) 0;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  width: min(100% - 32px, var(--container-max-width));
 }
 
-/* Bölümler Bölümü */
-.episodes-container {
-  margin-top: var(--spacing-xl);
-  padding-top: var(--spacing-lg);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.episodes-section .section-title {
+  margin-bottom: var(--spacing-xl);
 }
 
-.episodes-title {
-  color: var(--primary-color);
+.season-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
   margin-bottom: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: var(--spacing-sm);
-  font-size: var(--font-size-xl);
-  position: relative;
-  padding-left: var(--spacing-md);
-}
-
-.episodes-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background-color: var(--primary-color);
-  border-radius: var(--border-radius-sm);
-}
-
-.season-title {
-  color: var(--text-color);
-  margin-top: var(--spacing-xl);
-  margin-bottom: var(--spacing-md);
+  overflow-x: auto;
   padding-bottom: var(--spacing-xs);
-  font-size: var(--font-size-lg);
+  scrollbar-width: thin;
+}
+
+.season-tab {
+  padding: 8px 18px;
+  border-radius: var(--border-radius-sm);
+  background: var(--surface-glass);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-speed);
+  font-size: var(--font-size-sm);
   font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: inherit;
+  box-shadow: var(--inner-shadow);
 }
 
-.season-title:first-of-type {
-  margin-top: 0;
+.season-tab:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: var(--inner-shadow), 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.episodes-grid {
+.season-tab.active {
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  box-shadow: var(--inner-shadow), 0 4px 16px rgba(239, 127, 26, 0.2);
+}
+
+.episode-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.season-panel {
+  display: none;
+}
+
+.season-panel.active {
+  display: grid;
 }
 
 .episode-card {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--card-bg-color);
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-md);
-  transition: all var(--transition-speed) ease-out;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
-}
-
-.episode-card:hover {
-  background-color: var(--card-bg-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px var(--shadow-color-hover);
-  border-color: var(--primary-color);
-}
-
-.episode-title {
-  font-weight: 600;
-  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--inner-shadow);
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  text-decoration: none;
   color: var(--text-color);
 }
 
-.episode-info {
-  font-size: var(--font-size-sm);
+.episode-card:hover {
+  background: var(--card-bg-hover);
+  border-color: var(--primary-soft);
+  transform: translateY(-2px);
+  box-shadow: var(--inner-shadow), 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.episode-number {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  min-width: 40px;
+  text-align: center;
+}
+
+.episode-title {
+  font-weight: 500;
+}
+
+/* ==================== HATA SAYFASI ==================== */
+
+.error-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-xxl);
+  position: relative;
+  overflow: hidden;
+}
+
+.error-page::before {
+  content: attr(data-error-code);
+  position: absolute;
+  font-family: var(--font-family-display);
+  font-size: clamp(8rem, 25vw, 18rem);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.02);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.error-page-inner {
+  max-width: 520px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error-hero-icon {
+  font-size: var(--font-size-3xl);
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xl);
+  display: block;
+  animation: errorPulse 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 24px rgba(239, 127, 26, 0.3));
+}
+
+@keyframes errorPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.8; }
+}
+
+.error-page-title {
+  font-family: var(--font-family-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0 0 var(--spacing-lg);
+  line-height: 1.2;
+}
+
+.error-box {
+  background: var(--surface-glass);
+  border: 1px solid rgba(239, 127, 26, 0.15);
+  border-left: 4px solid var(--error-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
   color: var(--text-muted);
-  display: inline-block;
-  background-color: var(--background-alt);
-  padding: 2px 6px;
-  border-radius: var(--border-radius-sm);
-  margin-top: var(--spacing-xs);
+  line-height: 1.7;
+  text-align: left;
+  word-break: break-word;
+  font-size: var(--font-size-sm);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--inner-shadow);
+}
+
+.error-actions {
+  margin-top: var(--spacing-xxl);
+}
+
+.error-actions .button {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-base);
+}
+
+/* ==================== İÇERİK GERİ NAVİGASYON ==================== */
+
+.content-back-nav {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xl) 0 var(--spacing-xxl);
+}
+
+/* ==================== DUYARLI ==================== */
+
+@media (max-width: 1024px) {
+  .content-poster-wrap {
+    width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-hero {
+    min-height: 50vh;
+    padding: var(--spacing-lg);
+  }
+
+  .content-hero-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+
+  .content-poster-wrap {
+    width: 140px;
+  }
+
+  .content-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .content-meta-row {
+    justify-content: center;
+  }
+
+  .content-tags {
+    justify-content: center;
+  }
+
+  .content-actions {
+    justify-content: center;
+  }
+
+  .episodes-section {
+    padding: var(--spacing-xl) 0;
+    width: min(100% - 24px, var(--container-max-width));
+  }
+
+  .episode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .error-page {
+    min-height: 50vh;
+    padding: var(--spacing-xl);
+  }
+
+  .error-hero-icon {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-hero {
+    min-height: auto;
+    padding: var(--spacing-md);
+  }
+
+  .content-poster-wrap {
+    width: 130px;
+  }
+
+  .content-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .episodes-section {
+    width: min(100% - 16px, var(--container-max-width));
+  }
+
+  .season-tab {
+    padding: 6px 12px;
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 360px) {
+  .content-hero {
+    padding: var(--spacing-sm);
+  }
+
+  .content-poster-wrap {
+    width: 110px;
+  }
+
+  .content-title {
+    font-size: var(--font-size-base);
+  }
+
+  .content-meta-row {
+    gap: var(--spacing-xs);
+  }
+
+  .content-meta-badge {
+    font-size: 0.65rem;
+    padding: 2px var(--spacing-xs);
+  }
+
+  .content-description {
+    font-size: var(--font-size-xs);
+  }
+
+  .content-actions {
+    flex-direction: column;
+  }
+
+  .content-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .season-tab {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+
+  .episode-card {
+    padding: var(--spacing-sm);
+  }
+}
+
+@media (min-width: 1440px) {
+  .content-hero {
+    min-height: 65vh;
+  }
+
+  .content-poster-wrap {
+    width: 260px;
+  }
+
+  .content-title {
+    font-size: 3rem;
+  }
 }

@@ -1,77 +1,86 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== MODAL & BİLDİRİMLER ==================== */
-
-/* No Results */
-.no-results {
-  text-align: center;
-  padding: var(--spacing-xxl);
-  background:
-    radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.12) 0%, rgba(239, 127, 26, 0) 36%),
-    var(--card-bg-color);
-  border-radius: var(--border-radius-xl);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
-}
-
-.no-results i {
-  font-size: 3rem;
-  color: var(--text-muted);
-  margin-bottom: var(--spacing-md);
-}
-
-.no-results h3 {
-  color: var(--text-color);
-  margin-bottom: var(--spacing-sm);
-}
-
-.no-results p {
-  color: var(--text-muted);
-}
-
-.no-results-wide {
-  grid-column: 1 / -1;
-}
-
-/* Error Box */
-.error-box {
-  background:
-    radial-gradient(circle at 0% 0%, rgba(239, 127, 26, 0.14) 0%, rgba(239, 127, 26, 0) 45%),
-    rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(239, 127, 26, 0.2);
-  padding: var(--spacing-lg);
-  margin: var(--spacing-md) 0;
-  border-radius: var(--border-radius-xl);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
-  animation: fadeIn 0.5s ease;
-  text-align: center;
-}
-
-.error-box i {
-  margin-right: 0;
-  color: var(--primary-color);
-  font-size: var(--font-size-xl);
-}
-
-.error-hero-icon {
-  display: inline-flex;
-  margin-bottom: var(--spacing-md);
-  font-size: 3rem !important;
-  color: var(--primary-color);
-}
-
-.error-actions {
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-modal);
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-speed) var(--transition-timing),
+              visibility var(--transition-speed) var(--transition-timing);
 }
 
-/* Error Message */
-.error-message {
-  background-color: rgba(255, 0, 0, 0.1);
-  border-left: 3px solid red;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: var(--border-radius);
-  color: var(--text-color);
+.modal-overlay.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--glass-panel);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--border-radius-xxl);
+  padding: var(--spacing-xxl);
+  max-width: 480px;
+  width: 90%;
+  box-shadow: var(--inner-shadow), var(--shadow-strong);
+  transform: translateY(20px) scale(0.95);
+  transition: transform var(--transition-speed) var(--transition-timing);
+}
+
+.modal-overlay.is-active .modal-content {
+  transform: translateY(0) scale(1);
+}
+
+.modal-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-body {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-xl);
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: var(--spacing-lg);
+    width: 94%;
+  }
+
+  .modal-title {
+    font-size: var(--font-size-base);
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal-content {
+    padding: var(--spacing-md);
+    width: 96%;
+  }
 }

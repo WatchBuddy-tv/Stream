@@ -1,267 +1,200 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== RESPONSIVE TASARIM ==================== */
-
-/* Büyük ekranlar */
-@media (max-width: 992px) {
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+/* Tiny mobile - up to 360px (iPhone SE, small phones) */
+@media (max-width: 360px) {
+  .container {
+    padding: 0 var(--spacing-sm);
   }
 
-  .detail-info {
-    gap: var(--spacing-lg);
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+  }
+
+  .grid-plugins {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .hero-title {
+    font-size: var(--font-size-base);
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-xs);
+  }
+
+  .section-title {
+    font-size: var(--font-size-sm);
+  }
+
+  .badge {
+    font-size: 0.6rem;
+    padding: 2px var(--spacing-xs);
+  }
+
+  .button {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: var(--spacing-lg);
+  }
+
+  .modal-title {
+    font-size: var(--font-size-base);
   }
 }
 
-/* Orta ekranlar (Tablet) */
-@media (max-width: 768px) {
-  :root {
-    --spacing-xxl: 2rem;
+/* Mobile - up to 480px */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--spacing-md);
   }
 
   .grid {
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .grid-plugins {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .hero-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-sm);
+  }
+
+  .page-hero-home {
+    padding-top: clamp(48px, 8vw, 80px);
+    padding-bottom: clamp(28px, 4vw, 48px);
+  }
+
+  .section-title {
+    font-size: var(--font-size-base);
+  }
+
+  .pagination-row {
+    gap: var(--spacing-xs);
+  }
+
+  .badge {
+    font-size: var(--font-size-2xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}
+
+/* Mobile content-shell adjustment for fixed header */
+@media (max-width: 768px) {
+  .content-shell {
+    padding-top: calc(52px + var(--spacing-lg));
+    padding-bottom: var(--spacing-xxl);
+  }
+}
+
+/* Tablet - 481px to 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .grid-plugins {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--spacing-md);
   }
 
-  .detail-info {
-    flex-direction: column;
-  }
-
-  .detail-poster {
-    max-width: 250px;
-    margin: 0 auto var(--spacing-lg);
-  }
-
-  .header .container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .footer .container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .footer-copy {
-    text-align: center;
-  }
-
-  .lang-switch {
-    align-self: nchor-center;
-    justify-content: center;
-  }
-
-  .pagination-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .episodes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
-
-  .card-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .button {
-    width: 100%;
-  }
-
-  .detail-title {
+  .hero-title {
     font-size: var(--font-size-xl);
   }
 
-  .breadcrumbs {
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: var(--spacing-sm);
-    scrollbar-width: thin;
-  }
-
-  /* Player page responsive */
-  #video-links-ui .button {
-    flex-basis: calc(50% - 12px);
-  }
-
-  .control-buttons .button {
-    min-width: 120px;
+  .hero-subtitle {
+    font-size: var(--font-size-base);
   }
 }
 
-/* Küçük ekranlar (Mobil) */
-@media (max-width: 576px) {
-  :root {
-    --font-size-base: 0.95rem;
-    --spacing-lg: 1rem;
+/* Small desktop - 769px to 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 
+  .grid-plugins {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* Large desktop - 1025px to 1200px */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .grid-plugins {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* Full desktop - 1201px+ */
+@media (min-width: 1201px) {
   .container {
-    width: 95%;
-    padding: 0;
-  }
-
-  .detail-container {
-    padding: var(--spacing-md);
-  }
-
-  .card-content {
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+    padding-inline: var(--spacing-xxl);
   }
 
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: var(--spacing-lg);
-    margin: var(--spacing-md) 0;
   }
 
-  .home-search-shell,
-  .plugin-search-shell,
-  .detail-section-shell {
-    padding: var(--spacing-md);
+  .grid-plugins {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+/* Extra large desktop - 1440px+ */
+@media (min-width: 1440px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
-  .hero-copy {
-    text-align: left;
+  .grid-plugins {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
+}
 
-  .hero-kicker {
-    align-self: flex-start;
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .button {
+    min-height: 44px;
+    min-width: 44px;
   }
+}
 
+/* Disable hover effects on touch devices */
+@media (hover: none) {
+  .poster-card:hover .poster-card-img img {
+    transform: none;
+  }
+  .poster-card:hover {
+    transform: none;
+  }
   .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px var(--shadow-color-hover);
-  }
-
-  .detail-meta-item:hover,
-  .social-link:hover {
     transform: none;
+    box-shadow: none;
   }
 
-  .footer {
-    padding: var(--spacing-lg) 0;
-    margin-top: var(--spacing-xl);
+  /* Always show title overlay on touch devices */
+  .carousel-track .poster-card-overlay {
+    opacity: 1;
   }
-
-  .footer p {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  .social-links {
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-md);
-  }
-
-  .nav {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .nav-link {
-    margin: var(--spacing-xs) 0;
-    width: 100%;
-    text-align: center;
-  }
-
-  .search-form {
-    flex-direction: row;
-  }
-
-  .detail-title {
-    font-size: var(--font-size-lg);
-    padding-left: var(--spacing-sm);
-  }
-
-  .detail-meta {
-    gap: 4px;
-    flex-wrap: wrap;
-  }
-
-  .detail-meta-item {
-    margin-bottom: 4px;
-    font-size: var(--font-size-xs);
-    padding: 2px 6px;
-  }
-
-  .episodes-title {
-    font-size: var(--font-size-lg);
-  }
-
-  .social-link {
-    width: 36px;
-    height: 36px;
-  }
-
-  .detail-poster {
-    max-width: 180px;
-  }
-
-  .button {
-    padding: 8px 16px;
-    font-size: var(--font-size-sm);
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-/* Çok küçük ekranlar */
-@media (max-width: 480px) {
-  .detail-poster {
-    max-width: 160px;
-  }
-
-  .social-link {
-    width: 32px;
-    height: 32px;
-  }
-
-  .button {
-    min-height: 40px;
-    padding: 8px 12px;
-  }
-
-  .card-actions {
-    gap: var(--spacing-md);
-  }
-
-  .card:hover,
-  .button:hover,
-  .nav-link:hover,
-  .episode-card:hover,
-  .detail-meta-item:hover {
-    transform: none;
-  }
-
-  .button i {
-    font-size: 1em;
-  }
-
-  .card-image {
-    aspect-ratio: 1.5/2;
-  }
-
-  /* Player page mobile */
-  #video-links-ui .button {
-    flex-basis: 100%;
-  }
-
-  .control-buttons .button {
-    flex-basis: 100%;
-    min-width: unset;
-  }
-}
-
-/* Erişilebilirlik - Azaltılmış hareket */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  .carousel-track .poster-card:hover .poster-card-overlay {
+    opacity: 1;
   }
 }

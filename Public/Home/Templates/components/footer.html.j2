@@ -2,32 +2,21 @@
 
 {#- Footer Component -#}
 <footer class="footer">
-    <div class="container">
-        <div class="footer-copy">
-            <p>© 2026</p>
-            <p>
-            <a href="https://github.com/WatchBuddy-tv/Stream" target="_blank" data-i18n="footer_source">{{ tr('footer_source') }}</a> |
-            <a href="https://t.me/KekikAkademi" target="_blank" data-i18n="footer_community">{{ tr('footer_community') }}</a> |
-            <a href="https://t.me/WatchBuddyRobot" target="_blank" data-i18n="footer_telegram_app">{{ tr('footer_telegram_app') }}</a>
-            </p>
-        </div>
-
-        <div class="social-links">
-            <a href="https://github.com/WatchBuddy-tv" target="_blank" class="social-link">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://linkedin.com/in/keyiflerolsun" target="_blank" class="social-link">
-                <i class="fab fa-linkedin"></i>
-            </a>
-            <a href="https://t.me/keyiflerolsun" target="_blank" class="social-link">
-                <i class="fab fa-telegram"></i>
-            </a>
-            <a href="https://wa.me/908503093493" target="_blank" class="social-link">
-                <i class="fab fa-whatsapp"></i>
-            </a>
-            <a href="https://buymeacoffee.com/keyiflerolsun" target="_blank" class="social-link">
-                <i class="fas fa-coffee"></i>
-            </a>
-        </div>
+  <div class="container">
+    <div class="footer-copy">
+      <p>&copy; <span id="footer-year"></span><script>document.getElementById('footer-year').textContent=new Date().getFullYear()</script></p>
+      <div class="footer-links">
+        <a href="https://github.com/WatchBuddy-tv/Stream" target="_blank" rel="noopener noreferrer" data-i18n="footer_source">{{ tr('footer_source') }}</a>
+        <a href="https://t.me/KekikAkademi" target="_blank" rel="noopener noreferrer" data-i18n="footer_community">{{ tr('footer_community') }}</a>
+        <a href="https://t.me/WatchBuddyRobot" target="_blank" rel="noopener noreferrer" data-i18n="footer_telegram_app">{{ tr('footer_telegram_app') }}</a>
+      </div>
     </div>
+    <div class="social-links">
+      <a href="https://github.com/WatchBuddy-tv" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub"><i class="fab fa-github"></i></a>
+      <a href="https://linkedin.com/in/keyiflerolsun" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="https://t.me/keyiflerolsun" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+      <a href="https://wa.me/908503093493" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://buymeacoffee.com/keyiflerolsun" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Buy Me a Coffee"><i class="fas fa-coffee"></i></a>
+    </div>
+  </div>
 </footer>

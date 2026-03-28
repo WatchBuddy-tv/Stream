@@ -1,35 +1,27 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== BREADCRUMBS ==================== */
-
 .breadcrumbs {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-  padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--border-radius-lg);
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-sm);
   font-size: var(--font-size-sm);
+  color: var(--text-dim);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
 
-.breadcrumbs-item {
-  display: flex;
-  align-items: center;
-}
-
-.breadcrumbs-item:not(:last-child)::after {
-  content: "›";
-  margin: 0 0.5rem;
-  color: var(--text-muted);
-  font-size: 1.2em;
+.breadcrumbs-sep {
+  color: var(--border-color);
+  user-select: none;
 }
 
 .breadcrumbs-link {
-  color: var(--text-color);
-  transition: color var(--transition-speed) ease-out;
+  color: var(--text-muted);
+  transition: color var(--transition-speed) var(--transition-timing);
 }
 
 .breadcrumbs-link:hover {
@@ -37,11 +29,36 @@
 }
 
 .breadcrumbs-current {
-  color: var(--primary-color);
-  font-weight: 600;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 40ch;
 }
 
-.breadcrumbs i {
-  margin-right: 4px;
-  font-size: 0.9em;
+/* ── Responsive: Mobile (≤ 768px) ── */
+@media (max-width: 768px) {
+  .breadcrumbs {
+    font-size: var(--font-size-xs);
+    margin-bottom: var(--spacing-md);
+  }
+  .breadcrumbs-current {
+    max-width: 24ch;
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumbs-current {
+    max-width: 18ch;
+  }
+}
+
+@media (max-width: 360px) {
+  .breadcrumbs {
+    font-size: 0.65rem;
+    gap: 2px;
+  }
+  .breadcrumbs-current {
+    max-width: 14ch;
+  }
 }

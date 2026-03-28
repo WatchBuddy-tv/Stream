@@ -1,67 +1,64 @@
+{#- Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. -#}
 {% extends "_html_taban.html.j2" %}
-
 
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
-    <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
-    </div>
-    <div class="breadcrumbs-item">
-        <span class="breadcrumbs-current">{{ provider_name }} - {{ plugin.name }}</span>
-    </div>
+    <a href="/{{ provider_query if provider_query else '' }}" class="breadcrumbs-link">
+        <i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span>
+    </a>
+    <span class="breadcrumbs-sep">/</span>
+    <span class="breadcrumbs-current">{{ plugin.name }}</span>
 </nav>
 {% endblock %}
 
-
 {% block icerik %}
 
-<div class="detail-container">
-    <div class="detail-header">
-        <div class="header-top">
-            <div class="header-content">
-                <div class="plugin-header-title">
-                    {% if plugin.favicon %}
-                        <img src="{{ plugin.favicon }}" alt="{{ plugin.name }}" class="plugin-favicon-lg">
-                    {% else %}
-                        <i class="fas fa-film plugin-icon-lg"></i>
-                    {% endif %}
-                    <h1 class="detail-title">{{ plugin.name }}</h1>
-                </div>
-                <div class="detail-subtitle">
-                    <span class="badge"><span data-i18n="language_label">{{ tr('language_label') }}</span>: {{ plugin.language }}</span>
-                    <a href="{{ plugin.main_url }}" target="_blank" class="badge badge-secondary" title="{{ plugin.main_url }}">
-                        {{ plugin.main_url }} <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="header-description">
-            <p>{{ plugin.description }}</p>
+{# Plugin Header — compact info bar #}
+<div class="plugin-header">
+    <div class="plugin-header-info">
+        {% if plugin.favicon %}
+        <img src="{{ plugin.favicon }}" alt="{{ plugin.name }}" class="plugin-header-icon" onerror="this.style.display='none'">
+        {% endif %}
+        <div>
+            <h1 class="plugin-header-name">{{ plugin.name }}</h1>
+            <p class="plugin-header-desc">{{ plugin.description }}</p>
         </div>
     </div>
-
-    <div class="search-container plugin-search-shell">
-        <form method="GET" action="/ara/{{ plugin.name }}" class="search-form">
+    <div class="plugin-header-actions">
+        <form method="GET" action="/ara/{{ plugin.name }}" class="search-form plugin-search-form">
             <input type="hidden" name="lang" value="{{ lang }}">
+            {% if provider_url %}<input type="hidden" name="provider" value="{{ provider_url }}">{% endif %}
             <input type="text" name="sorgu" class="search-input" placeholder="{{ tr('search_plugin_placeholder') }}" data-i18n="search_plugin_placeholder" data-i18n-attr="placeholder" required>
-            <button type="submit" class="search-button">
-                <i class="fas fa-search"></i>
-            </button>
+            <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
         </form>
+        <a href="{{ plugin.main_url }}" target="_blank" class="button button-secondary button-small">
+            <i class="fas fa-external-link-alt"></i> <span data-i18n="site_button">{{ tr('site_button') }}</span>
+        </a>
     </div>
-
-    <section class="detail-section-shell">
-        <h2 class="section-title" data-i18n="categories_title">{{ tr('categories_title') }}</h2>
-        <div class="grid grid-compact">
-            {% for url, category in plugin.main_page.items() %}
-                <a href="/kategori/{{ plugin.name }}?kategori_url={{ url }}&kategori_adi={{ category }}{{ provider_query_amp }}" class="card">
-                    <div class="card-content">
-                        <h3 class="card-title unquote">{{ category }}</h3>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-    </section>
 </div>
 
+{# Dynamic Content Area — content-browser.js fills this #}
+<section id="dynamic-content">
+    <noscript>
+        {% if plugin.main_page %}
+        {% for category_name, category_url in plugin.main_page.items() %}
+        <div class="noscript-category">
+            <h2 class="section-title">{{ category_name }}</h2>
+            <p class="text-muted">{{ tr('enable_js_message') }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </noscript>
+</section>
+
+{# Plugin data for JS (NOT inline JS — it's a data element) #}
+<script id="plugin-data" type="application/json">{{ plugin | tojson }}</script>
+{% if provider_url %}
+<script>window.PROVIDER_URL = {{ provider_url | tojson }};</script>
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+<script type="module" src="{{ url_for('static_home', path='JS/components/content-browser.min.js') }}" defer></script>
 {% endblock %}

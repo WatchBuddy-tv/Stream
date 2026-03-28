@@ -2,6 +2,9 @@
 
 export { escapeHtml } from '../dom-utils.min.js';
 
+
+export const t = (key, vars = {}) => (window.t ? window.t(key, vars) : key);
+
 export const $ = (selector, context = document) => context.querySelector(selector);
 
 export const $$ = (selector, context = document) => context.querySelectorAll(selector);

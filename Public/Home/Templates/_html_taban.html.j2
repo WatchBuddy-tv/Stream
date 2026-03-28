@@ -1,3 +1,4 @@
+{#- Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. -#}
 <!doctype html>
 <html lang="{{ lang }}">
 
@@ -25,7 +26,6 @@
     <!-- ? Basic SEO Meta Tags -->
     <meta name="description" content="{{ description }}" id="meta-description">
     <meta name="author" content="keyiflerolsun">
-    <meta name="publisher" content="keyiflerolsun">
 
     <!-- ? Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -34,7 +34,6 @@
     <meta property="og:description" content="{{ description }}">
     <meta property="og:url" content="{{ base_url }}/">
     <meta property="og:image" content="{{ base_url }}/logo.png">
-    <meta property="og:image:alt" content="{{ site_name }} Logo">
     <meta property="og:locale" content="{{ og_locale }}" id="meta-og-locale">
 
     <!-- ? Twitter Card -->
@@ -60,7 +59,7 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mulish:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" crossorigin="anonymous">
 
     <!-- ? Statik CSS -->
     <link rel="stylesheet" href="{{ url_for('static_home', path='CSS/style.bundle.min.css') }}" fetchpriority="high">
@@ -90,20 +89,22 @@
     data-title-vars='{{ title_vars | default({}, true) | tojson }}'
     data-desc-key="{{ desc_key | default('', true) }}"
     data-desc-vars='{{ desc_vars | default({}, true) | tojson }}'
+    data-lang="{{ lang }}"
+    data-production='{{ production | tojson }}'
 >
 
-    {% include 'components/header.html.j2'%}
+    {% include 'components/header.html.j2' %}
 
     <main class="container content-shell">
         {% block breadcrumbs %}
-            {% include 'components/breadcrumbs.html.j2'%}
+            {% include 'components/breadcrumbs.html.j2' %}
         {% endblock %}
 
         {% block icerik %}
         {% endblock %}
     </main>
 
-    {% include 'components/footer.html.j2'%}
+    {% include 'components/footer.html.j2' %}
 
     <!-- ? I18n -->
     <script>
@@ -112,24 +113,15 @@
         window.TRANSLATIONS = {{ translations | tojson }};
         window.TRANSLATIONS_ALL = {{ translations_all | tojson }};
         window.t = window.t || function(key, vars) {
-            const dict = window.TRANSLATIONS || {};
-            let template = dict[key] || key;
+            var dict = window.TRANSLATIONS || {};
+            var template = dict[key] || key;
             if (vars && typeof vars === 'object') {
-                Object.keys(vars).forEach((k) => {
-                    const value = String(vars[k]);
-                    template = template.split(`{${k}}`).join(value);
+                Object.keys(vars).forEach(function(k) {
+                    template = template.split('{' + k + '}').join(String(vars[k]));
                 });
             }
             return template;
         };
-        // Persist language selection (no reload here)
-        try {
-            const url = new URL(window.location.href);
-            const urlLang = url.searchParams.get('lang');
-            if (urlLang) {
-                localStorage.setItem('lang', urlLang);
-            }
-        } catch (e) {}
     </script>
 
     <!-- ? Statik JS -->

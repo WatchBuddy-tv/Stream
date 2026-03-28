@@ -1,112 +1,103 @@
+{#- Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. -#}
 {% extends "_html_taban.html.j2" %}
-
 
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
-    <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
-    </div>
-    <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ provider_name }} - {{ eklenti_adi }}</a>
-    </div>
-    <div class="breadcrumbs-item">
-        <span class="breadcrumbs-current unquote">{{ content.title }}</span>
-    </div>
+    <a href="/{{ provider_query if provider_query else '' }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
+    <span class="breadcrumbs-sep">/</span>
+    <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+    <span class="breadcrumbs-sep">/</span>
+    <span class="breadcrumbs-current">{{ content.title }}</span>
 </nav>
 {% endblock %}
 
-
 {% block icerik %}
-
-<div class="detail-container">
-    <div class="detail-info">
-        {% if content.poster %}
-            <img src="{{ content.poster }}" alt="{{ content.title }}" class="detail-poster">
-        {% endif %}
-
-        <div class="detail-description">
-            <h1 class="detail-title">{{ content.title }}</h1>
-
-            <div class="detail-meta">
-                <span class="detail-meta-item">{{ eklenti_adi }}</span>
-
-                {% if content.year %}
-                    <span class="detail-meta-item">{{ content.year }}</span>
-                {% endif %}
-
-                {% if content.rating %}
-                    <span class="detail-meta-item">⭐ {{ content.rating }} / 10</span>
-                {% endif %}
-
-                {% if content.duration %}
-                    <span class="detail-meta-item">{{ content.duration }} <span data-i18n="minutes_suffix">{{ tr('minutes_suffix') }}</span></span>
-                {% endif %}
+<section class="content-hero">
+    <div class="content-hero-backdrop">
+        <img src="{{ content.poster }}" alt="" loading="lazy" onerror="this.style.opacity='0'">
+    </div>
+    <div class="content-hero-info">
+        <div class="content-poster-wrap{% if not content.poster %} has-error{% endif %}">
+            {% if content.poster %}<img src="{{ content.poster }}" alt="{{ content.title }}" onerror="this.parentElement.classList.add('has-error');this.remove()">{% endif %}
+        </div>
+        <div class="content-meta">
+            <h1 class="content-title">{{ content.title }}</h1>
+            <div class="content-meta-row">
+                {% if content.year %}<span class="content-meta-badge"><i class="fas fa-calendar-alt"></i> {{ content.year }}</span>{% endif %}
+                {% if content.rating %}<span class="content-meta-badge"><i class="fas fa-star"></i> {{ content.rating }}</span>{% endif %}
+                {% if content.duration %}<span class="content-meta-badge"><i class="fas fa-clock"></i> {{ content.duration }} {{ tr('minutes_suffix') }}</span>{% endif %}
+                <span class="content-meta-badge"><i class="fas fa-puzzle-piece"></i> {{ eklenti_adi }}</span>
             </div>
-
             {% if content.description %}
-                <div class="content-description">
-                    <p>{{ content.description }}</p>
-                </div>
+            <p class="content-description">{{ content.description }}</p>
             {% endif %}
-
             {% if content.tags %}
-                <div class="content-info">
-                    <div class="content-info-head">
-                        <strong><span data-i18n="tags_label">{{ tr('tags_label') }}</span></strong>
-                    </div>
-                    <div class="content-tags-row">
-                        {% for tag in content.tags.split(',') %}
-                            <span class="detail-meta-item">{{ tag | trim }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
+            <div class="content-tags">{% for tag in (content.tags.split(',') if content.tags is string else content.tags) %}<span class="badge">{{ tag | trim }}</span>{% endfor %}</div>
             {% endif %}
-
             {% if content.actors %}
-                <div class="content-info">
-                    <div class="content-info-head">
-                        <strong><span data-i18n="actors_label">{{ tr('actors_label') }}</span></strong>
-                    </div>
-                    <div class="content-info-value">{{ content.actors }}</div>
-                </div>
+            <p class="content-actors"><strong>{{ tr('actors_label') }}:</strong> {{ content.actors if content.actors is string else content.actors | join(', ') }}</p>
             {% endif %}
-
-
-            {% if not content.episodes %}
-                <div class="content-actions">
-                        <a href="/izle/{{ eklenti_adi }}?url={{ content.url }}&baslik={{ content.title }}&provider_id={{ provider_id|default('', true) }}&content_url={{ content.url }}&content_id={{ content.id|default('', true) }}&poster_url={{ content.poster|default('', true) }}&year={{ content.year|default('', true) }}&rating={{ content.rating|default('', true) }}{{ provider_query_amp }}" class="button">
-                            <i class="fas fa-play"></i> <span data-i18n="watch_button">{{ tr('watch_button') }}</span>
-                        </a>
-                        <a href="/api/v1/load_links?plugin={{ eklenti_adi }}&encoded_url={{ content.url }}" class="button button-secondary">
-                            <i class="fas fa-database"></i> <span data-i18n="api_button">{{ tr('api_button') }}</span>
-                        </a>
-                        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button button-secondary">
-                            <i class="fas fa-arrow-left"></i> <span data-i18n="back_to_plugin">{{ tr('back_to_plugin') }}</span>
-                        </a>
-                </div>
-            {% endif %}
+            <div class="content-actions">
+                {% if content.episodes and content.episodes|length > 0 %}
+                <a href="#episodes-section" class="button button-primary" id="scroll-to-episodes"><i class="fas fa-list"></i> <span data-i18n="browse_episodes">{{ tr('browse_episodes') }}</span></a>
+                {% else %}
+                <a href="/izle/{{ eklenti_adi }}?url={{ content.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}{{ provider_query_amp }}" class="button button-primary"><i class="fas fa-play"></i> <span data-i18n="watch_now">{{ tr('watch_now') }}</span></a>
+                {% endif %}
+                <a href="{{ provider_url if provider_url else '' }}/api/v1/load_item?plugin={{ eklenti_adi }}&encoded_url={{ content.url }}" target="_blank" class="button button-secondary"><i class="fas fa-code"></i> <span data-i18n="api_button">{{ tr('api_button') }}</span></a>
+            </div>
         </div>
     </div>
+</section>
 
-    {% if content.episodes %}
-        <div class="episodes-container">
-            <h2 class="episodes-title" data-i18n="episodes_title">{{ tr('episodes_title') }}</h2>
+{% if content.episodes and content.episodes|length > 0 %}
+<section class="episodes-section" id="episodes-section">
+    <h2 class="section-title" data-i18n="episodes_title">{{ tr('episodes_title') }}</h2>
 
-            {% for season, episodes in content.episodes | groupby('season') %}
-                <h3 class="season-title" data-i18n="season_title" data-i18n-vars='{"season": "{{ season }}"}'>{{ tr('season_title', season=season) }}</h3>
-                <div class="episodes-grid">
-                    {% for episode in episodes %}
-                        <a href="/izle/{{ eklenti_adi }}?url={{ episode.url }}&baslik={{ content.title }} - {{ episode.season }}x{{ episode.episode }}&provider_id={{ provider_id|default('', true) }}&content_url={{ content.url }}&content_id={{ content.id|default('', true) }}&poster_url={{ content.poster|default('', true) }}&year={{ content.year|default('', true) }}&rating={{ content.rating|default('', true) }}&season={{ episode.season|default('', true) }}&episode={{ episode.episode|default('', true) }}{{ provider_query_amp }}" class="episode-card">
-                            <div class="episode-title">{{ episode.title }}</div>
-                            {% if episode.season and episode.episode %}
-                                <div class="episode-info">{{ episode.season }}x{{ episode.episode }}</div>
-                            {% endif %}
-                        </a>
-                    {% endfor %}
-                </div>
+    {# Collect unique seasons from flat episode list #}
+    {% set seasons = content.episodes | map(attribute='season') | select('ne', none) | unique | sort | list %}
+
+    {% if seasons | length > 1 %}
+    <div class="season-tabs" id="season-tabs">
+        {% for s in seasons %}
+        <button class="season-tab{% if loop.first %} active{% endif %}" data-season="{{ s }}">
+            {{ tr('season_title').replace('{season}', s|string) }}
+        </button>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if seasons | length > 0 %}
+        {% for s in seasons %}
+        <div class="episode-grid season-panel{% if loop.first %} active{% endif %}" data-season="{{ s }}">
+            {% for ep in content.episodes | selectattr('season', 'equalto', s) | sort(attribute='episode') %}
+            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card">
+                <span class="episode-number">{{ ep.episode or loop.index }}</span>
+                <span class="episode-title">{{ ep.title or (tr('season_title').replace('{season}', s|string) ~ ' E' ~ (ep.episode or loop.index)|string) }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    {% else %}
+        {# No season info — list all episodes flat #}
+        <div class="episode-grid season-panel active" data-season="1">
+            {% for ep in content.episodes | sort(attribute='episode') %}
+            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card">
+                <span class="episode-number">{{ ep.episode or loop.index }}</span>
+                <span class="episode-title">{{ ep.title or ('E' ~ (ep.episode or loop.index)|string) }}</span>
+            </a>
             {% endfor %}
         </div>
     {% endif %}
-</div>
+</section>
+{% endif %}
 
+<div class="content-back-nav">
+    <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button button-secondary">
+        <i class="fas fa-arrow-left"></i> <span>{{ eklenti_adi }}</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="module" src="{{ url_for('static_home', path='JS/components/content-page.min.js') }}" defer></script>
 {% endblock %}

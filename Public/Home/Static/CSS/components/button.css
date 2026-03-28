@@ -1,75 +1,93 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== BUTONLAR ==================== */
-
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  border-radius: 999px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all var(--transition-speed) ease-out;
-  font-weight: 600;
+  padding: var(--spacing-sm) var(--spacing-lg);
   font-size: var(--font-size-sm);
-  text-align: center;
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: var(--border-radius-pill);
+  border: 2px solid transparent;
+  cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(239, 127, 26, 0.3);
+  transition: all 0.25s var(--transition-timing);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
   min-height: 44px;
-  min-width: 100px;
 }
 
+.button-primary,
+.button {
+  background: var(--primary-gradient);
+  color: #fff;
+  border-color: transparent;
+}
+
+.button-primary:hover,
 .button:hover {
-  background-color: var(--primary-light);
-  color: var(--background-color);
-  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.4);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-glow-strong);
+  filter: brightness(1.08);
+  color: #fff;
 }
 
+.button-primary:active,
 .button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 3px rgba(239, 127, 26, 0.4);
-}
-
-.button:focus-visible {
-  outline: 2px solid var(--primary-light);
-  outline-offset: 2px;
-}
-
-.button i {
-  margin-right: var(--spacing-sm);
-  font-size: 0.9em;
+  transform: scale(0.96);
+  box-shadow: var(--shadow-primary-glow-subtle);
 }
 
 .button-secondary {
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text-color);
-  box-shadow: none;
+  border-color: var(--border-light);
 }
 
 .button-secondary:hover {
-  background-color: rgba(239, 127, 26, 0.14);
   border-color: rgba(239, 127, 26, 0.35);
   color: var(--primary-light);
-  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.16);
+  background: var(--primary-soft);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.button-secondary:active {
+  transform: scale(0.96);
 }
 
 .button-small {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md);
   font-size: var(--font-size-xs);
+  border-radius: var(--border-radius-pill);
   min-height: 36px;
-  min-width: auto;
 }
 
-.button i {
-  font-size: 0.9em;
+.button-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  transition: all 0.25s var(--transition-timing);
 }
 
-.button-small i {
-  font-size: 0.85em;
+.button-icon:hover {
+  color: var(--primary-color);
+  background: var(--primary-soft);
+  border-color: rgba(239, 127, 26, 0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.button-icon:active {
+  transform: scale(0.93);
+  transition-duration: 0.1s;
 }

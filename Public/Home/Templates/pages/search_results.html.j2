@@ -1,56 +1,53 @@
+{#- Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. -#}
 {% extends "_html_taban.html.j2" %}
-
 
 {% block breadcrumbs %}
 <nav class="breadcrumbs">
-    <div class="breadcrumbs-item">
-        <a href="/" class="breadcrumbs-link"><i class="fas fa-home"></i> <span data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
-    </div>
-    <div class="breadcrumbs-item">
-        <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ provider_name }} - {{ eklenti_adi }}</a>
-    </div>
-    <div class="breadcrumbs-item">
-        <span class="breadcrumbs-current"><i class="fas fa-search"></i> "{{ sorgu }}"</span>
-    </div>
+    <a href="/{{ provider_query if provider_query else '' }}" class="breadcrumbs-link"><i class="fas fa-home"></i> <span class="sr-only" data-i18n="nav_home">{{ tr('nav_home') }}</span></a>
+    <span class="breadcrumbs-sep">/</span>
+    <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="breadcrumbs-link">{{ eklenti_adi }}</a>
+    <span class="breadcrumbs-sep">/</span>
+    <span class="breadcrumbs-current"><i class="fas fa-search"></i> "{{ sorgu }}"</span>
 </nav>
 {% endblock %}
 
-
 {% block icerik %}
-
-<div class="detail-container">
-    <div class="detail-header">
-        <h1 class="detail-title" data-i18n="search_results_for" data-i18n-vars='{"query": "{{ sorgu }}"}'>{{ tr('search_results_for', query=sorgu) }}</h1>
-        <p data-i18n="search_in_plugin" data-i18n-vars='{"plugin": "{{ eklenti_adi }}"}'>{{ tr('search_in_plugin', plugin=eklenti_adi) }}</p>
-    </div>
-
-    <div class="search-container plugin-search-shell">
-        <form method="GET" action="/ara/{{ eklenti_adi }}" class="search-form">
-            <input type="hidden" name="lang" value="{{ lang }}">
-            <input type="text" name="sorgu" value="{{ sorgu }}" class="search-input" placeholder="{{ tr('search_placeholder') }}" data-i18n="search_placeholder" data-i18n-attr="placeholder" required>
-            <button type="submit" class="search-button">
-                <i class="fas fa-search"></i>
-            </button>
-        </form>
-    </div>
-
-    <div class="grid">
-        {% for item in results %}
-            <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ provider_query_amp }}" class="card">
-                {% if item.poster %}
-                    <img src="{{ item.poster }}" alt="{{ item.title }}" class="card-image">
-                {% endif %}
-
-                <div class="card-content">
-                    <h3 class="card-title">{{ item.title }}</h3>
-                </div>
-            </a>
-        {% else %}
-            <div class="empty-state-full">
-                <p data-i18n="search_no_results">{{ tr('search_no_results') }}</p>
-            </div>
-        {% endfor %}
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-header-title" data-i18n="search_results_for" data-i18n-vars='{"query": "{{ sorgu }}"}'>{{ tr('search_results_for', query=sorgu) }}</h1>
+        <div class="page-header-meta">
+            <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="badge badge-link"><i class="fas fa-puzzle-piece"></i> {{ eklenti_adi }}</a>
+            {% if results %}<span class="badge badge-outline">{{ tr('search_results_count', count=results|length) }}</span>{% endif %}
+        </div>
     </div>
 </div>
 
+<div class="plugin-search-shell">
+    <form method="GET" action="/ara/{{ eklenti_adi }}" class="search-form">
+        <input type="hidden" name="lang" value="{{ lang }}">
+        {% if provider_url %}<input type="hidden" name="provider" value="{{ provider_url }}">{% endif %}
+        <input type="text" name="sorgu" value="{{ sorgu }}" class="search-input"
+            placeholder="{{ tr('search_placeholder') }}"
+            data-i18n="search_placeholder" data-i18n-attr="placeholder" required>
+        <button type="submit" class="search-button">
+            <i class="fas fa-search"></i>
+        </button>
+    </form>
+</div>
+
+<div class="grid grid-results">
+    {% for item in results %}
+    <a href="/icerik/{{ eklenti_adi }}?url={{ item.url }}{{ provider_query_amp }}" class="poster-card card-fade-in" style="animation-delay: {{ loop.index0 * 40 }}ms" aria-label="{{ item.title }}">
+        <div class="poster-card-img{% if not item.poster %} has-error{% endif %}">
+            {% if item.poster %}<img src="{{ item.poster }}" alt="{{ item.title }}" loading="lazy" onerror="this.parentElement.classList.add('has-error');this.remove()">{% endif %}
+        </div>
+        <div class="poster-card-overlay"><span class="poster-card-title">{{ item.title }}</span></div>
+    </a>
+    {% else %}
+    <div class="empty-state-full">
+        <i class="fas fa-search"></i>
+        <p data-i18n="search_no_results">{{ tr('search_no_results') }}</p>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

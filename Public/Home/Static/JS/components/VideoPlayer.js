@@ -3,8 +3,7 @@
 import { buildProxyUrl as buildServiceProxyUrl } from '../service-detector.min.js';
 import { detectFormat, parseRemoteUrl, createHlsConfig, suggestInitialMode, ProxyMode, buildProxyUrlWithMode } from '../video-utils.min.js';
 import BuddyLogger from '../utils/BuddyLogger.min.js';
-
-const t = (key, vars = {}) => (window.t ? window.t(key, vars) : key);
+import { t } from '../utils/dom.min.js';
 const PREVIEW_SEEK_THROTTLE_MS = 120;
 const PREVIEW_SEEK_TIMEOUT_MS = 1800;
 const PREVIEW_LOADING_DELAY_MS = 140;
@@ -1449,6 +1448,15 @@ export default class VideoPlayer {
     }
 
     renderVideoLinks() {
+        const sourcePanel = document.querySelector('.source-selection');
+
+        if (this.videoData.length <= 1) {
+            if (sourcePanel) sourcePanel.style.display = 'none';
+            return;
+        }
+
+        if (sourcePanel) sourcePanel.style.display = '';
+
         if (this.videoData.length > 4) {
             const sourceSelectBtn = document.createElement('button');
             sourceSelectBtn.id = 'source-select-btn';

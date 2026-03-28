@@ -20,6 +20,8 @@ export const isProxyAvailable = (baseUrl) => {
                 available,
                 lastChecked: Date.now()
             });
+        }).catch(() => {
+            state.knownProxies.set(cleanBaseUrl, { available: false, lastChecked: Date.now() });
         });
         return true;
     }
@@ -28,6 +30,9 @@ export const isProxyAvailable = (baseUrl) => {
     if (Date.now() - entry.lastChecked > 300000) {
         checkProxyHealth(cleanBaseUrl).then(available => {
             entry.available = available;
+            entry.lastChecked = Date.now();
+        }).catch(() => {
+            entry.available = false;
             entry.lastChecked = Date.now();
         });
     }

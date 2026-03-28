@@ -1,143 +1,72 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== DÜZEN VE GRID SİSTEMİ ==================== */
-
 .container {
-  width: min(100% - 32px, var(--container-max-width));
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0;
+  padding: 0 var(--spacing-xl);
+  width: 100%;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0 calc(-1 * var(--spacing-md));
-}
-
-.col {
-  flex: 1;
-  padding: 0 var(--spacing-md);
+.content-shell {
+  flex: 1 0 auto;
+  padding-top: calc(56px + var(--spacing-xxl));
+  padding-bottom: var(--spacing-lg);
+  width: 100%;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--grid-gap);
-  margin: var(--spacing-lg) 0;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--spacing-lg);
 }
 
-.grid-compact {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-}
-
-.content-shell {
-  padding: 20px 0 40px;
+.grid-plugins {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .is-hidden {
   display: none !important;
 }
 
-.page-hero {
-  margin-bottom: var(--spacing-xl);
-}
-
-.hero-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: center;
-}
-
-.hero-kicker {
+.section-title .section-count {
   display: inline-flex;
-  align-self: center;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(239, 127, 26, 0.12);
-  border: 1px solid rgba(239, 127, 26, 0.24);
-  color: var(--primary-light);
-  font-size: var(--font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-}
-
-.hero-title {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 0.98;
-  text-wrap: balance;
-}
-
-.hero-title-wordmark {
-  font-family: "Space Grotesk", var(--font-family-display);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  font-optical-sizing: auto;
-  font-synthesis-weight: none;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
-}
-
-.hero-subtitle {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: var(--font-size-md);
-}
-
-.section-heading {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.detail-section-shell {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-lg);
-  border: 1px solid var(--glass-edge);
-  border-radius: var(--border-radius-xl);
-  background: var(--glass-panel-soft);
-  box-shadow: var(--shadow-soft), var(--glass-inset);
+  justify-content: center;
+  min-width: 28px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-pill);
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  font-family: var(--font-family);
+  line-height: 1.6;
+  vertical-align: middle;
 }
 
 .empty-state-full {
-  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
   text-align: center;
+  color: var(--text-muted);
+  gap: var(--spacing-lg);
+}
+
+.empty-state-full i {
+  font-size: var(--font-size-3xl);
+  color: var(--text-dim);
 }
 
 .pagination-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  margin-top: 2rem;
-}
-
-/* Section Title */
-.section-title {
-  color: var(--primary-color);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
-  font-size: clamp(1.35rem, 2vw, var(--font-size-xl));
-  font-family: var(--font-family-display);
-  display: flex;
-  align-items: center;
+  justify-content: center;
   gap: var(--spacing-sm);
-  letter-spacing: -0.02em;
-}
-
-.section-title i {
-  font-size: 0.9em;
-}
-
-hr {
-  border: 0;
-  height: 1px;
-  background-image: linear-gradient(to right, transparent, var(--primary-color), transparent);
-  margin: var(--spacing-sm) 0;
-  opacity: 0.3;
+  padding: var(--spacing-xl) 0;
+  flex-wrap: wrap;
 }

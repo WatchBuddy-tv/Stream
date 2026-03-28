@@ -1,0 +1,218 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* Card hover glow */
+.card-glow {
+  position: relative;
+  transition: transform 0.3s var(--transition-timing),
+              box-shadow 0.3s var(--transition-timing);
+}
+
+.card-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(239, 127, 26, 0.15), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s var(--transition-timing);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card-glow:hover::after {
+  opacity: 1;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-sm);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 0;
+  border-radius: var(--border-radius-sm);
+}
+
+/* Fade animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.animate-fade-up {
+  animation: fadeSlideUp 0.5s var(--transition-timing) both;
+}
+
+.animate-fade-down {
+  animation: fadeSlideDown 0.4s var(--transition-timing) both;
+}
+
+/* Staggered children */
+.stagger-children > * {
+  animation: fadeSlideUp 0.4s var(--transition-timing) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 40ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 280ms; }
+.stagger-children > *:nth-child(n+9) { animation-delay: 320ms; }
+
+/* Hero title gradient wordmark */
+.hero-title-wordmark {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle pulse for live indicators */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 127, 26, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 127, 26, 0);
+  }
+}
+
+.pulse-live {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Text gradient utility */
+.text-gradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shimmer utility (standalone) */
+@keyframes shimmerEffect {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerEffect 2s ease-in-out infinite;
+}
+
+/* Apple-style inner shadow */
+.inner-shadow {
+  box-shadow: var(--inner-shadow);
+}
+
+.inner-shadow-card {
+  box-shadow: var(--inner-shadow), var(--shadow-soft);
+}
+
+/* Vibrancy glass overlay */
+.vibrancy-glass {
+  position: relative;
+}
+
+.vibrancy-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--vibrancy-highlight) 0%, var(--vibrancy-tint) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .card-glow:hover {
+    transform: none;
+  }
+
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-fade-down {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .stagger-children > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .shimmer {
+    animation: none !important;
+  }
+
+  .pulse-live {
+    animation: none !important;
+  }
+
+  .loading-spinner {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
+  }
+}

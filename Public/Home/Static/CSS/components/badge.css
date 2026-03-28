@@ -1,46 +1,115 @@
 /* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
 
-/* ==================== BADGE BİLEŞENLERİ ==================== */
-
-/* Plugin Badge */
-.plugin-badge {
-  position: absolute;
-  top: var(--spacing-sm);
-  left: var(--spacing-sm);
-  background-color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  color: var(--primary-color);
-  padding: 4px 10px;
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid rgba(239, 127, 26, 0.4);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  transition: all var(--transition-speed) ease-out;
-  z-index: 2;
-}
-
-.plugin-badge:hover {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  border-color: var(--primary-color);
-  transform: scale(1.05);
-}
-
-/* General Badge */
 .badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  background-color: var(--background-alt);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  line-height: 1.5;
+  border-radius: var(--border-radius-pill);
+  background: var(--surface-glass);
   border: 1px solid var(--border-light);
   color: var(--text-muted);
   white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: opacity var(--transition-speed) ease;
+  box-shadow: var(--inner-shadow);
+}
+
+.badge-primary {
+  background: var(--primary-soft);
+  border-color: rgba(239, 127, 26, 0.25);
+  color: var(--primary-light);
+}
+
+.badge-secondary {
+  background: var(--secondary-soft);
+  border-color: rgba(0, 135, 163, 0.25);
+  color: var(--secondary-light);
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: var(--success-color);
+}
+
+/* Language badges */
+.badge-lang {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-2xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-lang-tr {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #f87171;
+}
+
+.badge-lang-en {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.22);
+  color: #60a5fa;
+}
+
+.badge-lang-de {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.22);
+  color: #fbbf24;
+}
+
+.badge-lang-fr {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.22);
+  color: #818cf8;
+}
+
+.badge-lang-es,
+.badge-lang-mx {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+}
+
+.badge-lang-ja,
+.badge-lang-ko,
+.badge-lang-zh {
+  background: rgba(236, 72, 153, 0.12);
+  border-color: rgba(236, 72, 153, 0.22);
+  color: #f472b6;
+}
+
+.badge-lang-ar {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+}
+
+.badge-lang-ru {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.22);
+  color: #a78bfa;
+}
+
+.badge-lang-pt {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.22);
+  color: #4ade80;
+}
+
+.badge-lang-it {
+  background: rgba(20, 184, 166, 0.12);
+  border-color: rgba(20, 184, 166, 0.22);
+  color: #2dd4bf;
+}
+
+.badge-lang-hi {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.22);
+  color: #fb923c;
 }
