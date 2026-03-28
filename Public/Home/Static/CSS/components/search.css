@@ -984,7 +984,7 @@
 
 .plugin-preference-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
@@ -1006,13 +1006,6 @@
   border-left: 3px solid rgba(239, 127, 26, 0.35);
 }
 
-.plugin-preference-main {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  min-width: 0;
-}
-
 .plugin-preference-icon {
   width: 42px;
   height: 42px;
@@ -1032,14 +1025,14 @@
   object-fit: cover;
 }
 
-.plugin-preference-copy {
+.plugin-preference-body {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
 }
 
-.plugin-preference-copy strong {
+.plugin-preference-name {
   font-size: var(--font-size-sm);
   color: var(--text-color);
   line-height: 1.2;
@@ -1048,10 +1041,22 @@
   text-overflow: ellipsis;
 }
 
-.plugin-preference-toggle {
-  min-width: 112px;
-  justify-content: center;
+.plugin-preference-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Badge natural width — never stretches */
+.plugin-preference-foot .badge {
   flex-shrink: 0;
+  align-self: center;
+}
+
+.plugin-preference-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
+  justify-content: center;
   align-self: center;
 }
 
@@ -1091,7 +1096,7 @@
   .settings-panel-head {
     flex-direction: column;
     gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 
   .settings-panel-body {
@@ -1118,13 +1123,20 @@
   .plugin-preference-item {
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+  }
+
+  .plugin-preference-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .plugin-preference-name {
+    font-size: var(--font-size-xs);
   }
 
   .plugin-preference-toggle {
-    min-width: unset;
     font-size: var(--font-size-xs);
+    padding: 3px var(--spacing-sm);
   }
 
   .provider-status-card {
@@ -1159,44 +1171,55 @@
     align-items: flex-start;
   }
 
-  .plugin-preference-item {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-  }
-
-  .plugin-preference-toggle {
-    min-width: unset;
-  }
-
   .plugin-card {
     grid-template-columns: auto 1fr;
     animation-delay: 0ms !important;
   }
 
   .plugin-mgmt-toolbar {
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
   }
 
+  /* Bulk actions: auto-sized, not stretched full-width */
   .plugin-bulk-actions {
     flex-wrap: wrap;
-    width: 100%;
     gap: var(--spacing-xs);
+    width: auto;
   }
 
   .plugin-bulk-actions .button {
-    flex: 1;
+    flex: 0 1 auto;
     justify-content: center;
     font-size: var(--font-size-xs);
-    padding: 6px var(--spacing-sm);
+    padding: 5px var(--spacing-sm);
+    min-height: 28px;
   }
 
+  /* Summary pushed to right, no space-between void */
+  .plugin-toolbar-foot {
+    justify-content: flex-start;
+  }
+
+  .plugin-status-summary {
+    margin-left: auto;
+  }
+
+  /* Compact touch targets for inline plugin toggles */
+  .plugin-preference-toggle {
+    min-height: 30px;
+  }
+
+  /* Keep hero toggle buttons side-by-side — full-width stacked looks too large */
   .hero-settings-actions {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: var(--spacing-xs);
+    justify-content: center;
   }
 
   .hero-settings-toggle {
-    width: 100%;
+    flex: 1;
+    min-width: 130px;
     justify-content: center;
   }
 }
@@ -1224,7 +1247,6 @@
 
   .provider-help-card {
     padding: var(--spacing-sm);
-    flex-direction: column;
   }
 
   .filter-pill {
@@ -1232,17 +1254,30 @@
     font-size: 0.65rem;
   }
 
-  .plugin-preference-main {
-    gap: var(--spacing-sm);
+  /* Tighter items at small mobile */
+  .plugin-preference-item {
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 
   .plugin-preference-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
   }
 
-  .plugin-preference-copy strong {
+  .plugin-preference-name {
     font-size: var(--font-size-xs);
+  }
+
+  .plugin-toolbar-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .plugin-status-summary {
+    white-space: normal;
+    align-self: stretch;
+    text-align: center;
   }
 }
 
@@ -1267,12 +1302,12 @@
   }
 
   .plugin-preference-item {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs);
   }
 
-  .plugin-preference-toggle {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
+  .plugin-preference-icon {
+    width: 20px;
+    height: 20px;
   }
 }
 

@@ -113,3 +113,9 @@
   border-color: rgba(249, 115, 22, 0.22);
   color: #fb923c;
 }
+
+.badge-xs {
+  padding: 2px var(--spacing-xs);
+  font-size: var(--font-size-2xs);
+  line-height: 1.4;
+}

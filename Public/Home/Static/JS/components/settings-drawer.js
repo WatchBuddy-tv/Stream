@@ -213,9 +213,6 @@ class SettingsManager {
             article.dataset.pluginName = plugin.name;
             article.dataset.pluginLang = lang;
 
-            const main = document.createElement('div');
-            main.className = 'plugin-preference-main';
-
             const iconSpan = document.createElement('span');
             iconSpan.className = 'plugin-preference-icon';
             const img = document.createElement('img');
@@ -224,26 +221,33 @@ class SettingsManager {
             img.loading = 'lazy';
             img.onerror = function() { this.onerror = null; this.src = fallback; };
             iconSpan.appendChild(img);
-            main.appendChild(iconSpan);
+            article.appendChild(iconSpan);
 
-            const copySpan = document.createElement('span');
-            copySpan.className = 'plugin-preference-copy';
+            const body = document.createElement('div');
+            body.className = 'plugin-preference-body';
+
             const nameStrong = document.createElement('strong');
+            nameStrong.className = 'plugin-preference-name';
             nameStrong.textContent = plugin.name;
-            copySpan.appendChild(nameStrong);
+            body.appendChild(nameStrong);
+
+            const foot = document.createElement('div');
+            foot.className = 'plugin-preference-foot';
+
             const badge = document.createElement('span');
             badge.className = 'badge badge-xs';
             badge.textContent = lang;
-            copySpan.appendChild(badge);
-            main.appendChild(copySpan);
-            article.appendChild(main);
+            foot.appendChild(badge);
 
             const toggleBtn = document.createElement('button');
             toggleBtn.type = 'button';
             toggleBtn.className = 'button button-secondary button-small plugin-preference-toggle';
             toggleBtn.dataset.pluginName = plugin.name;
             this._setToggleState(toggleBtn, isEnabled);
-            article.appendChild(toggleBtn);
+            foot.appendChild(toggleBtn);
+
+            body.appendChild(foot);
+            article.appendChild(body);
 
             this._listEl.appendChild(article);
             this._pluginEls.push({ article, toggleBtn, name: plugin.name, lang });
