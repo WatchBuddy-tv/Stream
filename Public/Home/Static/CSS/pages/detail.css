@@ -341,8 +341,8 @@
   text-align: left;
   word-break: break-word;
   font-size: var(--font-size-sm);
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--inner-shadow);
 }
 

@@ -321,8 +321,8 @@ video::cue {
 /* Buffering State */
 #loading-overlay.is-buffering {
   background: rgba(0, 0, 0, 0.3) !important;
-  -webkit-backdrop-filter: blur(var(--blur-light));
-  backdrop-filter: blur(var(--blur-light));
+  -webkit-backdrop-filter: var(--glass-filter-light);
+  backdrop-filter: var(--glass-filter-light);
   z-index: 5; /* Kontrollerin altında */
 }
 
@@ -483,8 +483,8 @@ video::-webkit-media-text-track-container {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  -webkit-backdrop-filter: blur(var(--blur-light));
-  backdrop-filter: blur(var(--blur-light));
+  -webkit-backdrop-filter: var(--glass-filter-light);
+  backdrop-filter: var(--glass-filter-light);
 }
 
 /* Kontroller açıkken yukarı kaydır */
@@ -987,8 +987,8 @@ body.seeking-active {
   background:
     radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.16), rgba(239, 127, 26, 0) 38%),
     rgba(25, 24, 23, 0.96);
-  backdrop-filter: blur(var(--blur-hero));
-  -webkit-backdrop-filter: blur(var(--blur-hero));
+  backdrop-filter: var(--glass-filter-hero);
+  -webkit-backdrop-filter: var(--glass-filter-hero);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-xl);
   min-width: 240px;
