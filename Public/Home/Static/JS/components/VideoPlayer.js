@@ -3,7 +3,7 @@
 import { buildProxyUrl as buildServiceProxyUrl } from '../service-detector.min.js';
 import { detectFormat, parseRemoteUrl, createHlsConfig, suggestInitialMode, ProxyMode, buildProxyUrlWithMode } from '../video-utils.min.js';
 import BuddyLogger from '../utils/BuddyLogger.min.js';
-import { t } from '../utils/dom.min.js';
+import { t, escapeHtml } from '../utils/dom.min.js';
 const PREVIEW_SEEK_THROTTLE_MS = 120;
 const PREVIEW_SEEK_TIMEOUT_MS = 1800;
 const PREVIEW_LOADING_DELAY_MS = 140;
@@ -47,6 +47,9 @@ export default class VideoPlayer {
         this.userGestureUntil = 0; // Kısa süreli user gesture guard
         this.selectedSubtitleUrl = null; // Seçilen altyazı URL'i
         this.currentVideoIndex = null; // Şu anki video index'i
+
+        // Resume watching debounce timer
+        this._resumeSaveTimer = null;
 
         // Preview video for seekbar thumbnails
         this.previewVideo = null;
@@ -944,9 +947,43 @@ export default class VideoPlayer {
             }
         };
 
-        this.videoPlayer.addEventListener('timeupdate', updateTimeUI);
+        this.videoPlayer.addEventListener('timeupdate', () => {
+            updateTimeUI();
+
+            // Debounced resume position save (every 5s)
+            if (!this._resumeSaveTimer) {
+                this._resumeSaveTimer = setTimeout(() => {
+                    this._resumeSaveTimer = null;
+                    this._saveResumePosition();
+                }, 5000);
+            }
+
+            // Mark episode watched at 85%
+            if (this.videoPlayer.duration > 0 && this.videoPlayer.currentTime / this.videoPlayer.duration > 0.85) {
+                this._markEpisodeWatched();
+            }
+        });
         this.videoPlayer.addEventListener('loadedmetadata', updateTimeUI);
         this.videoPlayer.addEventListener('durationchange', updateTimeUI);
+
+        this.videoPlayer.addEventListener('ended', () => {
+            // Clear resume timer and remove entry (finished watching)
+            if (this._resumeSaveTimer) {
+                clearTimeout(this._resumeSaveTimer);
+                this._resumeSaveTimer = null;
+            }
+            try {
+                const metaContainer = document.getElementById('video-links-data');
+                const contentUrl = metaContainer?.dataset?.contentUrl || window.location.pathname;
+                const season  = metaContainer?.dataset?.season  || '';
+                const episode = metaContainer?.dataset?.episode || '';
+                const resumeKey = (season && episode) ? `${contentUrl}::s${season}::e${episode}` : contentUrl;
+                const resumeData = JSON.parse(localStorage.getItem('wb_resume_watching') || '{}');
+                delete resumeData[resumeKey];
+                localStorage.setItem('wb_resume_watching', JSON.stringify(resumeData));
+            } catch (e) { /* ignore */ }
+            this._markEpisodeWatched();
+        });
 
         // Backward / Forward
         const SEEK_STEP = 10;
@@ -1413,6 +1450,7 @@ export default class VideoPlayer {
 
         const pageMediaMeta = {
             provider_id: container?.dataset.providerId || '',
+            provider_base_url: container?.dataset.providerBaseUrl || '',
             plugin_name: container?.dataset.pluginName || '',
             content_id: container?.dataset.contentId || '',
             content_url: container?.dataset.contentUrl || '',
@@ -1554,6 +1592,29 @@ export default class VideoPlayer {
         }
     }
 
+    // ── "Farklı Kaynaklarda" CTA helper ──────────────────────────────
+    _buildOtherSourcesCta() {
+        const container    = document.getElementById('video-links-data');
+        const rawTitle     = container?.dataset.contentTitle || '';
+        const contentTitle = rawTitle ? decodeURIComponent(rawTitle) : document.title || '';
+        if (!contentTitle) return null;
+
+        const params   = new URLSearchParams(window.location.search);
+        const provider = params.get('provider') || '';
+        const q        = encodeURIComponent(contentTitle);
+        const href     = provider ? `/?q=${q}&provider=${encodeURIComponent(provider)}` : `/?q=${q}`;
+
+        const cta = document.createElement('div');
+        cta.className = 'other-sources-cta';
+        cta.innerHTML = `
+            <i class="fas fa-search"></i>
+            <span class="other-sources-cta-text">${escapeHtml(t('try_other_sources'))}</span>
+            <a href="${escapeHtml(href)}" class="button button-secondary">
+                <i class="fas fa-external-link-alt"></i> ${escapeHtml(t('search_other_sources'))}
+            </a>`;
+        return cta;
+    }
+
     onVideoError() {
         const error = this.videoPlayer.error;
         this.hideElement(this.loadingOverlay);
@@ -1590,6 +1651,9 @@ export default class VideoPlayer {
         const errorEl = document.createElement('div');
         errorEl.className = 'error-message';
         errorEl.innerHTML = `<strong>${errorMessage}</strong><br>${errorDetails}<br>${t('video_error_try_another')}`;
+
+        const cta = this._buildOtherSourcesCta();
+        if (cta) errorEl.appendChild(cta);
 
         // Önceki hata mesajlarını temizle
         document.querySelectorAll('.error-message').forEach(el => el.remove());
@@ -1630,6 +1694,8 @@ export default class VideoPlayer {
                 const errorEl = document.createElement('div');
                 errorEl.className = 'error-message';
                 errorEl.innerHTML = `<strong>${t('video_timeout_title')}</strong><br>${t('video_timeout_message')}`;
+                const timeoutCta = this._buildOtherSourcesCta();
+                if (timeoutCta) errorEl.appendChild(timeoutCta);
                 document.getElementById('video-player-container').insertAdjacentElement('afterend', errorEl);
 
                 this.isLoadingVideo = false;
@@ -1943,6 +2009,7 @@ export default class VideoPlayer {
         }
 
         appendMetaParam('provider_id', mediaMeta.provider_id);
+        appendMetaParam('provider_base_url', mediaMeta.provider_base_url);
         appendMetaParam('plugin_name', mediaMeta.plugin_name);
         appendMetaParam('content_id', mediaMeta.content_id);
         appendMetaParam('content_url', mediaMeta.content_url);
@@ -2155,6 +2222,8 @@ export default class VideoPlayer {
             const errorEl = document.createElement('div');
             errorEl.className = 'error-message';
             errorEl.innerHTML = `<strong>${t('hls_load_failed_title')}</strong><br>${t('hls_load_failed_message')}`;
+            const hlsCta = this._buildOtherSourcesCta();
+            if (hlsCta) errorEl.appendChild(hlsCta);
             document.getElementById('video-player-container').insertAdjacentElement('afterend', errorEl);
         };
         document.head.appendChild(hlsScript);
@@ -2364,5 +2433,70 @@ export default class VideoPlayer {
 
         this.updateWatchPartyButtons();
         this.hideSelectionModal();
+    }
+
+    _saveResumePosition() {
+        try {
+            const video = this.videoPlayer;
+            if (!video || !video.duration || video.duration < 60) return;
+            if (video.currentTime < 10) return;
+
+            const metaContainer = document.getElementById('video-links-data');
+            const contentUrl = metaContainer?.dataset?.contentUrl || window.location.pathname;
+            const season  = metaContainer?.dataset?.season  || '';
+            const episode = metaContainer?.dataset?.episode || '';
+            const resumeKey = (season && episode) ? `${contentUrl}::s${season}::e${episode}` : contentUrl;
+
+            const resumeData = JSON.parse(localStorage.getItem('wb_resume_watching') || '{}');
+
+            if (video.currentTime / video.duration > 0.9) {
+                delete resumeData[resumeKey];
+            } else {
+                resumeData[resumeKey] = {
+                    time:      Math.floor(video.currentTime),
+                    duration:  Math.floor(video.duration),
+                    title:     metaContainer?.dataset?.contentTitle ? decodeURIComponent(metaContainer.dataset.contentTitle) : document.title,
+                    poster:    metaContainer?.dataset?.posterUrl || '',
+                    plugin:    metaContainer?.dataset?.pluginName || '',
+                    season,
+                    episode,
+                    timestamp: Date.now()
+                };
+            }
+
+            const entries = Object.entries(resumeData);
+            if (entries.length > 50) {
+                entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
+                localStorage.setItem('wb_resume_watching', JSON.stringify(Object.fromEntries(entries.slice(0, 50))));
+            } else {
+                localStorage.setItem('wb_resume_watching', JSON.stringify(resumeData));
+            }
+        } catch (e) {
+            console.warn('Resume save failed:', e);
+        }
+    }
+
+    _markEpisodeWatched() {
+        try {
+            const meta = document.getElementById('video-links-data');
+            const contentUrl = meta?.dataset?.contentUrl;
+            const season     = meta?.dataset?.season;
+            const episode    = meta?.dataset?.episode;
+            if (!contentUrl || !season || !episode) return;
+
+            const key = `${season}x${episode}`;
+            const watchedData = JSON.parse(localStorage.getItem('wb_watched_episodes') || '{}');
+            if (!watchedData[contentUrl]) watchedData[contentUrl] = [];
+            if (!watchedData[contentUrl].includes(key)) {
+                watchedData[contentUrl].push(key);
+                localStorage.setItem('wb_watched_episodes', JSON.stringify(watchedData));
+            }
+
+            document.querySelectorAll(`.episode-card[data-season="${season}"][data-episode="${episode}"]`).forEach(el => {
+                el.classList.add('is-watched');
+            });
+        } catch (e) {
+            console.warn('Episode watched mark failed:', e);
+        }
     }
 }

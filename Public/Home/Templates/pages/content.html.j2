@@ -44,6 +44,9 @@
                 <a href="/izle/{{ eklenti_adi }}?url={{ content.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}{{ provider_query_amp }}" class="button button-primary"><i class="fas fa-play"></i> <span data-i18n="watch_now">{{ tr('watch_now') }}</span></a>
                 {% endif %}
                 <a href="{{ provider_url if provider_url else '' }}/api/v1/load_item?plugin={{ eklenti_adi }}&encoded_url={{ content.url }}" target="_blank" class="button button-secondary"><i class="fas fa-code"></i> <span data-i18n="api_button">{{ tr('api_button') }}</span></a>
+                <button class="button-icon" id="share-content-btn" title="{{ tr('share') }}" data-i18n="share" data-i18n-attr="title">
+                    <i class="fas fa-share-alt"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -70,7 +73,7 @@
         {% for s in seasons %}
         <div class="episode-grid season-panel{% if loop.first %} active{% endif %}" data-season="{{ s }}">
             {% for ep in content.episodes | selectattr('season', 'equalto', s) | sort(attribute='episode') %}
-            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card">
+            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card" data-season="{{ ep.season | default('', true) }}" data-episode="{{ ep.episode | default(loop.index, true) }}">
                 <span class="episode-number">{{ ep.episode or loop.index }}</span>
                 <span class="episode-title">{{ ep.title or (tr('season_title').replace('{season}', s|string) ~ ' E' ~ (ep.episode or loop.index)|string) }}</span>
             </a>
@@ -81,7 +84,7 @@
         {# No season info — list all episodes flat #}
         <div class="episode-grid season-panel active" data-season="1">
             {% for ep in content.episodes | sort(attribute='episode') %}
-            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card">
+            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card" data-season="{{ ep.season | default('1', true) }}" data-episode="{{ ep.episode | default(loop.index, true) }}">
                 <span class="episode-number">{{ ep.episode or loop.index }}</span>
                 <span class="episode-title">{{ ep.title or ('E' ~ (ep.episode or loop.index)|string) }}</span>
             </a>
@@ -90,6 +93,17 @@
     {% endif %}
 </section>
 {% endif %}
+
+<div id="similar-data"
+     class="is-hidden"
+     data-plugin="{{ eklenti_adi | default('') }}"
+     data-title="{{ content.title | default('') | urlencode }}"
+     data-tags="{{ (content.tags if content.tags is string else (content.tags | join(',') if content.tags else '')) | urlencode }}"
+     data-current-url="{{ content.url | default('') }}"
+     data-content-url="{{ content.url | default('') }}">
+</div>
+
+<section id="similar-section" class="similar-section"></section>
 
 <div class="content-back-nav">
     <a href="/eklenti/{{ eklenti_adi }}{{ provider_query }}" class="button button-secondary">

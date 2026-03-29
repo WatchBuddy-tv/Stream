@@ -151,5 +151,16 @@
     "download_app": "ऐप डाउनलोड करें",
     "tooltip_volume": "आवाज़",
     "enable_js_message": "इस पेज को देखने के लिए JavaScript आवश्यक है।",
-    "no_poster": "पोस्टर नहीं"
+    "no_poster": "पोस्टर नहीं",
+    "similar_content_title": "समान सामग्री",
+    "try_other_sources": "क्या आप इस सामग्री को अन्य स्रोतों पर खोजना चाहते हैं?",
+    "search_other_sources": "अन्य स्रोत खोजें",
+    "next_episode": "अगला एपिसोड",
+    "next_episode_auto": "अगले एपिसोड पर जा रहे हैं...",
+    "last_episode": "यह अंतिम एपिसोड है!",
+    "resume_watching": "जहाँ छोड़ा था वहाँ से जारी रखें ({time})",
+    "resume_yes": "जारी रखें",
+    "share": "साझा करें",
+    "link_copied": "लिंक कॉपी हो गया!",
+    "episode_watched": "देखा गया"
 }

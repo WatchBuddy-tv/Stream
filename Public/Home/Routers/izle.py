@@ -108,6 +108,7 @@ async def izle(
                 "proxy_fallback_url" : proxy_urls["proxy_fallback_url"],
                 "media_meta"         : {
                     "provider_id"        : resolved_provider_id,
+                    "provider_base_url"  : provider_base_url or "",
                     "plugin_name"        : eklenti_adi or "",
                     "content_id"         : content_id or "",
                     "content_url"        : content_url or url,

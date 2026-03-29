@@ -151,5 +151,16 @@
     "download_app": "Скачать приложение",
     "tooltip_volume": "Громкость",
     "enable_js_message": "Для просмотра этой страницы требуется JavaScript.",
-    "no_poster": "Нет постера"
+    "no_poster": "Нет постера",
+    "similar_content_title": "Похожий контент",
+    "try_other_sources": "Хотите найти этот контент в других источниках?",
+    "search_other_sources": "Искать в других источниках",
+    "next_episode": "Следующий эпизод",
+    "next_episode_auto": "Переход к следующему эпизоду...",
+    "last_episode": "Это последний эпизод!",
+    "resume_watching": "Продолжить просмотр с ({time})",
+    "resume_yes": "Продолжить",
+    "share": "Поделиться",
+    "link_copied": "Ссылка скопирована!",
+    "episode_watched": "Просмотрено"
 }

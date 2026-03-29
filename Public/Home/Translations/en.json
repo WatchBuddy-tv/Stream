@@ -151,5 +151,16 @@
     "download_app": "Download app",
     "tooltip_volume": "Volume",
     "enable_js_message": "JavaScript is required to view this page.",
-    "no_poster": "No Poster"
+    "no_poster": "No Poster",
+    "similar_content_title": "Similar Content",
+    "try_other_sources": "Would you like to search for this content on other sources?",
+    "search_other_sources": "Search Other Sources",
+    "next_episode": "Next Episode",
+    "next_episode_auto": "Moving to next episode...",
+    "last_episode": "This is the last episode!",
+    "resume_watching": "Resume from where you left off ({time})",
+    "resume_yes": "Resume",
+    "share": "Share",
+    "link_copied": "Link copied!",
+    "episode_watched": "Watched"
 }

@@ -125,10 +125,19 @@ video::cue {
 .player-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
   border-bottom: none;
   padding-top: var(--spacing-md);
   padding-bottom: var(--spacing-md);
   min-height: 88px;
+}
+
+.player-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
 }
 
 .player-title {
@@ -172,7 +181,7 @@ video::cue {
     linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
   color: var(--text-muted);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-card);
 }
 
 .source-list .button:hover {
@@ -188,7 +197,7 @@ video::cue {
   color: var(--background-color); /* Dark text on orange background for contrast */
   border-color: var(--primary-color);
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(239, 127, 26, 0.4); /* Matches button.css hover shadow */
+  box-shadow: var(--shadow-card-hover); /* Matches button.css hover shadow */
 }
 
 /* Control Buttons */
@@ -312,8 +321,8 @@ video::cue {
 /* Buffering State */
 #loading-overlay.is-buffering {
   background: rgba(0, 0, 0, 0.3) !important;
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(var(--blur-light));
+  backdrop-filter: blur(var(--blur-light));
   z-index: 5; /* Kontrollerin altında */
 }
 
@@ -474,8 +483,8 @@ video::-webkit-media-text-track-container {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  -webkit-backdrop-filter: blur(1px);
-  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(var(--blur-light));
+  backdrop-filter: blur(var(--blur-light));
 }
 
 /* Kontroller açıkken yukarı kaydır */
@@ -509,10 +518,20 @@ video::-webkit-media-text-track-container {
   .player-header {
     min-height: auto;
     padding: var(--spacing-sm);
+    flex-wrap: wrap;
   }
 
   .player-title {
     font-size: var(--font-size-sm);
+  }
+
+  .player-header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .player-header-actions .button-small span {
+    display: none;
   }
 
   .player-header-left h1 {
@@ -599,7 +618,7 @@ body.seeking-active {
     right: 0;
     height: 4px;
     background: rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
+    border-radius: var(--border-radius-xxs);
     transition: height var(--transition-speed-fast) var(--transition-timing);
 }
 
@@ -608,7 +627,7 @@ body.seeking-active {
     background: var(--primary-color);
     width: 0%;
     position: relative;
-    border-radius: 2px;
+    border-radius: var(--border-radius-xxs);
     z-index: 2;
     pointer-events: none;
     transition: width 0.1s linear, height var(--transition-speed-fast) var(--transition-timing);
@@ -639,7 +658,7 @@ body.seeking-active {
   background: var(--primary-color);
   border-radius: 50%;
   transition: transform var(--transition-speed-fast) cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 10px rgba(239, 127, 26, 0.5);
+  box-shadow: 0 0 10px rgba(239, 127, 26, 0.3);
   z-index: 3;
 }
 
@@ -718,7 +737,7 @@ body.seeking-active {
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
-  border-radius: 2px;
+  border-radius: var(--border-radius-xxs);
   background: rgba(255, 255, 255, 0.2);
   touch-action: none;
   cursor: pointer;
@@ -746,7 +765,7 @@ body.seeking-active {
   border-radius: 50%;
   background: #fff;
   cursor: pointer;
-  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 }
 
 .volume-slider::-moz-range-thumb {
@@ -756,7 +775,7 @@ body.seeking-active {
   background: #fff;
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 }
 
 /* Time Display */
@@ -968,8 +987,8 @@ body.seeking-active {
   background:
     radial-gradient(circle at 100% 0%, rgba(239, 127, 26, 0.16), rgba(239, 127, 26, 0) 38%),
     rgba(25, 24, 23, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(var(--blur-hero));
+  -webkit-backdrop-filter: blur(var(--blur-hero));
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-xl);
   min-width: 240px;
@@ -1165,8 +1184,8 @@ body.seeking-active {
     left: 50%;
     transform: translateX(-50%) translateY(6px) scale(0.96);
     background: rgba(13, 13, 20, 0.97);
-    backdrop-filter: blur(20px) saturate(1.8);
-    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    backdrop-filter: blur(var(--blur-hero)) saturate(1.8);
+    -webkit-backdrop-filter: blur(var(--blur-hero)) saturate(1.8);
     border: 1.5px solid rgba(239, 127, 26, 0.3);
     border-radius: var(--border-radius);
     padding: 0;

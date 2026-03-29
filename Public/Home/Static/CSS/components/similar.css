@@ -1,0 +1,265 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* ==================== BENZER İÇERİKLER — TAM SAYFA ==================== */
+
+/* /icerik sayfasında episodes-section ile aynı layout kuralları */
+.similar-section {
+    padding: var(--spacing-xxl) 0;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    width: min(100% - 32px, var(--container-max-width));
+}
+
+.similar-section .section-title {
+    margin-bottom: var(--spacing-xl);
+}
+
+/* /izle sayfasında detail-container içinde — centering gerekmez */
+.detail-container .similar-section {
+    padding: var(--spacing-lg) 0 0;
+    max-width: none;
+    margin: 0;
+    width: auto;
+    border-top: 1px solid var(--glass-edge);
+}
+
+.detail-container .similar-section .section-title {
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Loading skeleton — .grid ile aynı sütun yapısı */
+.similar-loading {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.similar-skeleton-card {
+    aspect-ratio: 2 / 3;
+    border-radius: var(--border-radius);
+    background: var(--surface-variant);
+    position: relative;
+    overflow: hidden;
+}
+
+.similar-skeleton-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: similarShimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes similarShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ==================== PREVIEW PANELİ ==================== */
+
+/* Desktopta 6 kart sığacak genişlik */
+@media (min-width: 769px) {
+    .preview-panel {
+        max-width: 900px;
+        width: 92%;
+    }
+}
+
+/* preview-body'yi kolon yönüne al; hero+info mainRow'da yan yana kalır */
+.preview-body {
+    flex-direction: column;
+}
+
+.preview-main-row {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+/* preview içindeki benzer bölüm — panel kendi genişliğini sınırlar */
+.preview-body .similar-section {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: var(--spacing-lg) 0 0;
+    border-top: 1px solid var(--glass-edge);
+}
+
+.preview-body .similar-section .section-title {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Desktop: 6 sabit sütun */
+.preview-body .similar-section .grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--spacing-md);
+}
+
+/* Mobil ≤480px: 3 sütun */
+@media (max-width: 480px) {
+    .preview-body .similar-section .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-sm);
+    }
+}
+
+/* ==================== KATEGORİ BADGE (benzer içerik kaynağı) ==================== */
+
+.poster-card-badge {
+    position: absolute;
+    top: var(--spacing-xs);
+    left: var(--spacing-xs);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--spacing-sm);
+    font-size: var(--font-size-2xs);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: var(--glass-filter-light);
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--border-radius-pill);
+    max-width: calc(100% - 12px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: var(--inner-shadow);
+}
+
+/* ==================== HATA MESAJI ==================== */
+
+.error-message {
+    margin: 0;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--glass-panel-soft);
+    border: 1px solid rgba(239, 127, 26, 0.30);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--inner-shadow), var(--shadow-soft);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+}
+
+.error-message strong {
+    display: block;
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+/* "Farklı Kaynaklar" CTA — hata kutusunun içinde */
+.other-sources-cta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--glass-edge);
+}
+
+.other-sources-cta i {
+    color: var(--primary-color);
+    font-size: 1.1em;
+    flex-shrink: 0;
+}
+
+.other-sources-cta-text {
+    flex: 1;
+    min-width: 160px;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+}
+
+/* ==================== SONRAKİ BÖLÜM PANELİ ==================== */
+
+#next-episode-panel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+    /* player-panel-shell padding override — daha kompakt */
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.next-ep-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--primary-color);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    padding-right: var(--spacing-lg);
+    border-right: 1px solid var(--glass-edge);
+}
+
+.next-ep-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-width: 0;
+}
+
+.next-ep-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.next-ep-countdown-bar {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--surface-variant);
+    border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
+}
+
+.next-ep-countdown-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--primary-color);
+}
+
+#next-episode-panel.is-counting .next-ep-countdown-bar {
+    display: block;
+}
+
+@media (max-width: 540px) {
+    #next-episode-panel {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .next-ep-label {
+        border-right: none;
+        border-bottom: 1px solid var(--glass-edge);
+        padding-right: 0;
+        padding-bottom: var(--spacing-sm);
+        width: 100%;
+    }
+
+    .next-ep-body {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}

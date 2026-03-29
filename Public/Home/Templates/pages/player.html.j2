@@ -17,6 +17,17 @@
 <div class="detail-container">
     <div class="player-header player-panel-shell">
         <h1 class="player-title"><i class="fas fa-play-circle"></i> {{ baslik }}</h1>
+        <div class="player-header-actions">
+            <button class="button-icon" id="share-player-btn" title="{{ tr('share') }}" data-i18n="share" data-i18n-attr="title">
+                <i class="fas fa-share-alt"></i>
+            </button>
+            <a href="#" target="_blank" id="watch-party-button" class="button button-primary button-small">
+                <i class="fas fa-users"></i> <span data-i18n="watchbuddy_web">{{ tr('watchbuddy_web') }}</span>
+            </a>
+            <a href="#" id="watch-party-app-button" class="button button-primary button-small is-hidden">
+                <i class="fas fa-mobile-alt"></i> <span data-i18n="watchbuddy_app">{{ tr('watchbuddy_app') }}</span>
+            </a>
+        </div>
     </div>
 
     <div class="source-selection player-panel-shell">
@@ -109,6 +120,9 @@
         </div>
     </div>
 
+    <div id="next-episode-panel" class="player-panel-shell is-hidden"></div>
+    <section id="similar-section" class="similar-section"></section>
+
     <div class="player-controls-section">
         <div class="control-buttons">
             {% if icerik_url %}
@@ -122,12 +136,6 @@
             <button id="toggle-diagnostics" class="button button-secondary" aria-expanded="false" aria-controls="diagnostics-panel">
                 <i class="fas fa-bug"></i> <span data-i18n="diagnostics_button">{{ tr('diagnostics_button') }}</span>
             </button>
-            <a href="#" target="_blank" id="watch-party-button" class="button button-secondary">
-                <i class="fas fa-users"></i> <span data-i18n="watchbuddy_web">{{ tr('watchbuddy_web') }}</span>
-            </a>
-            <a href="#" id="watch-party-app-button" class="button button-secondary is-hidden">
-                <i class="fas fa-mobile-alt"></i> <span data-i18n="watchbuddy_app">{{ tr('watchbuddy_app') }}</span>
-            </a>
         </div>
     </div>
 
@@ -147,9 +155,11 @@
          data-proxy-url="{{ proxy_url|default('', true) }}"
          data-proxy-fallback-url="{{ proxy_fallback_url|default('', true) }}"
          data-provider-id="{{ media_meta.provider_id|default('', true) }}"
+         data-provider-base-url="{{ media_meta.provider_base_url|default('', true) }}"
          data-plugin-name="{{ media_meta.plugin_name|default('', true) }}"
          data-content-id="{{ media_meta.content_id|default('', true) }}"
          data-content-url="{{ media_meta.content_url|default('', true) }}"
+         data-content-title="{{ baslik | urlencode }}"
          data-poster-url="{{ media_meta.poster_url|default('', true) }}"
          data-year="{{ media_meta.year|default('', true) }}"
          data-rating="{{ media_meta.rating|default('', true) }}"

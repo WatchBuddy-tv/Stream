@@ -1,0 +1,174 @@
+/* Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır. */
+
+/* ==================== RESUME WATCHING PROMPT ==================== */
+
+.resume-prompt {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: var(--glass-filter-light);
+  -webkit-backdrop-filter: var(--glass-filter-light);
+  padding: 10px 16px;
+  border-radius: var(--border-radius-lg, 10px);
+  border: 1px solid rgba(239, 127, 26, 0.3);
+  z-index: 100;
+  animation: featureFadeInUp 0.3s ease;
+  color: var(--text-color, #f5f5f5);
+  font-size: var(--font-size-sm, 14px);
+  white-space: nowrap;
+}
+
+.resume-btn {
+  background: var(--primary-gradient);
+  color: #fff;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-pill);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: var(--font-size-xs);
+  font-family: inherit;
+  transition: all 0.25s var(--transition-timing);
+}
+
+.resume-btn:hover {
+  filter: brightness(1.08);
+  box-shadow: var(--shadow-primary-glow-subtle);
+  transform: translateY(-1px);
+}
+
+.resume-btn:active {
+  transform: scale(0.96);
+}
+
+.resume-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  padding: var(--spacing-xs);
+  line-height: 1;
+  transition: color var(--transition-speed) ease;
+}
+
+.resume-dismiss:hover {
+  color: var(--text-color);
+}
+
+/* ==================== EPISODE WATCHED STATE ==================== */
+
+.episode-card.is-watched {
+  position: relative;
+  opacity: 0.75;
+}
+
+.episode-card.is-watched::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: var(--success-color, #10B981);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ==================== SHARE BUTTON ==================== */
+
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--surface-glass);
+  backdrop-filter: var(--glass-filter);
+  color: var(--text-color);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-pill);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.25s var(--transition-timing);
+  box-shadow: var(--inner-shadow);
+  min-height: 36px;
+}
+
+.btn-share:hover {
+  border-color: rgba(239, 127, 26, 0.35);
+  color: var(--primary-light);
+  background: var(--primary-soft);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.btn-share:active {
+  transform: scale(0.96);
+}
+
+/* ==================== SHARE TOAST ==================== */
+
+.share-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--success-color);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-family: inherit;
+  backdrop-filter: var(--glass-filter);
+  z-index: 9999;
+  animation: featureFadeInUp 0.3s ease, featureFadeOut 0.3s ease 1.7s forwards;
+  pointer-events: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+@keyframes featureFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes featureFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 480px) {
+  .resume-prompt {
+    bottom: 60px;
+    padding: 8px 12px;
+    gap: 8px;
+    font-size: var(--font-size-xs, 12px);
+  }
+
+  .resume-btn {
+    padding: 4px 10px;
+    font-size: var(--font-size-xs, 12px);
+  }
+
+  .btn-share {
+    padding: var(--spacing-xs, 6px) var(--spacing-sm, 10px);
+    font-size: var(--font-size-xs, 12px);
+  }
+}

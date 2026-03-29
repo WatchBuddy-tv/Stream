@@ -151,5 +151,16 @@
     "download_app": "下载应用",
     "tooltip_volume": "音量",
     "enable_js_message": "需要 JavaScript 才能查看此页面。",
-    "no_poster": "无海报"
+    "no_poster": "无海报",
+    "similar_content_title": "相似内容",
+    "try_other_sources": "您想在其他来源搜索此内容吗？",
+    "search_other_sources": "搜索其他来源",
+    "next_episode": "下一集",
+    "next_episode_auto": "正在进入下一集...",
+    "last_episode": "这是最后一集！",
+    "resume_watching": "从上次观看位置继续 ({time})",
+    "resume_yes": "继续播放",
+    "share": "分享",
+    "link_copied": "链接已复制！",
+    "episode_watched": "已看"
 }

@@ -395,8 +395,8 @@
   border-radius: 50%;
   border: 1px solid var(--border-light);
   background: var(--surface-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   color: var(--text-color);
   font-size: var(--font-size-base);
   cursor: pointer;
@@ -592,8 +592,8 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
 }
 
 .preview-panel {
@@ -628,8 +628,8 @@
   border-radius: 50%;
   border: none;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: var(--glass-filter-light);
+  -webkit-backdrop-filter: var(--glass-filter-light);
   color: var(--text-color);
   font-size: var(--font-size-base);
   cursor: pointer;
@@ -955,7 +955,7 @@
 
   .preview-panel {
     width: 95%;
-    max-height: 90vh;
+    max-height: 70vh;
     border-radius: var(--border-radius);
   }
 

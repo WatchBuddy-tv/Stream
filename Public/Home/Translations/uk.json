@@ -151,5 +151,16 @@
     "download_app": "Завантажити додаток",
     "tooltip_volume": "Гучність",
     "enable_js_message": "Для перегляду цієї сторінки потрібен JavaScript.",
-    "no_poster": "Немає постера"
+    "no_poster": "Немає постера",
+    "similar_content_title": "Схожий контент",
+    "try_other_sources": "Хочете знайти цей вміст в інших джерелах?",
+    "search_other_sources": "Шукати в інших джерелах",
+    "next_episode": "Наступний епізод",
+    "next_episode_auto": "Перехід до наступного епізоду...",
+    "last_episode": "Це останній епізод!",
+    "resume_watching": "Продовжити перегляд з ({time})",
+    "resume_yes": "Продовжити",
+    "share": "Поділитися",
+    "link_copied": "Посилання скопійовано!",
+    "episode_watched": "Переглянуто"
 }

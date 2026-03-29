@@ -151,5 +151,16 @@
     "download_app": "Uygulamayı indir",
     "tooltip_volume": "Ses seviyesi",
     "enable_js_message": "Bu sayfayı görüntülemek için JavaScript gereklidir.",
-    "no_poster": "Poster Yok"
+    "no_poster": "Poster Yok",
+    "similar_content_title": "Benzer İçerikler",
+    "try_other_sources": "Bu içeriği farklı kaynaklarda aramak ister misiniz?",
+    "search_other_sources": "Farklı Kaynaklarda Ara",
+    "next_episode": "Sonraki Bölüm",
+    "next_episode_auto": "Sonraki bölüme geçiliyor...",
+    "last_episode": "Bu son bölüm!",
+    "resume_watching": "Kaldığın yerden devam et ({time})",
+    "resume_yes": "Devam Et",
+    "share": "Paylaş",
+    "link_copied": "Link kopyalandı!",
+    "episode_watched": "İzlendi"
 }

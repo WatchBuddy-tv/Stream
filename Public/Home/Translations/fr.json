@@ -151,5 +151,16 @@
     "download_app": "Télécharger l'application",
     "tooltip_volume": "Volume",
     "enable_js_message": "JavaScript est nécessaire pour afficher cette page.",
-    "no_poster": "Pas d'affiche"
+    "no_poster": "Pas d'affiche",
+    "similar_content_title": "Contenu similaire",
+    "try_other_sources": "Voulez-vous rechercher ce contenu sur d'autres sources ?",
+    "search_other_sources": "Chercher d'autres sources",
+    "next_episode": "Épisode suivant",
+    "next_episode_auto": "Passage à l'épisode suivant...",
+    "last_episode": "C'est le dernier épisode !",
+    "resume_watching": "Reprendre là où vous vous êtes arrêté ({time})",
+    "resume_yes": "Reprendre",
+    "share": "Partager",
+    "link_copied": "Lien copié !",
+    "episode_watched": "Vu"
 }

@@ -78,6 +78,15 @@ class GlobalSearch {
         if (this.clearFiltersButton) {
             this.clearFiltersButton.addEventListener('click', () => this.clearFilters());
         }
+
+        // ?q= URL parametresiyle otomatik arama — "Farklı Kaynaklarda Ara" CTA'sından gelir
+        const urlParams  = new URLSearchParams(window.location.search);
+        const autoQuery  = urlParams.get('q');
+        if (autoQuery && autoQuery.trim().length >= 2) {
+            this.searchInput.value = autoQuery.trim();
+            // Plugins yüklendikten sonra aramayı başlat
+            setTimeout(() => this.performSearch(), 100);
+        }
     }
 
     // ──────────────────── Plugin Preferences ────────────────────

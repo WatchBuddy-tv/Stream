@@ -214,14 +214,14 @@
 .season-tab:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
-  box-shadow: var(--inner-shadow), 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--inner-shadow), var(--shadow-card);
 }
 
 .season-tab.active {
   background: var(--primary-soft);
   color: var(--primary-color);
   border-color: var(--primary-color);
-  box-shadow: var(--inner-shadow), 0 4px 16px rgba(239, 127, 26, 0.2);
+  box-shadow: var(--inner-shadow), var(--shadow-card-hover);
 }
 
 .episode-grid {
@@ -256,7 +256,7 @@
   background: var(--card-bg-hover);
   border-color: var(--primary-soft);
   transform: translateY(-2px);
-  box-shadow: var(--inner-shadow), 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--inner-shadow), var(--shadow-soft);
 }
 
 .episode-number {
@@ -341,8 +341,8 @@
   text-align: left;
   word-break: break-word;
   font-size: var(--font-size-sm);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
   box-shadow: var(--inner-shadow);
 }
 

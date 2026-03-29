@@ -3,6 +3,7 @@
 import { fetchJSON } from '../utils/fetch.min.js';
 import { $, createElement, ready, escapeHtml, t } from '../utils/dom.min.js';
 import BuddyLogger from '../utils/BuddyLogger.min.js';
+import { renderSimilarContent } from '../utils/similar.min.js';
 
 class ContentBrowser {
     constructor() {
@@ -586,6 +587,7 @@ class ContentBrowser {
         body.classList.add('preview-body');
 
         const poster = content.poster || originalItem.poster;
+        const mainRow = createElement('div', { className: 'preview-main-row' });
         if (poster) {
             const heroDiv = createElement('div', { className: 'preview-hero' });
             const img = createElement('img', {
@@ -595,7 +597,7 @@ class ContentBrowser {
             });
             img.onerror = () => { heroDiv.style.display = 'none'; };
             heroDiv.appendChild(img);
-            body.appendChild(heroDiv);
+            mainRow.appendChild(heroDiv);
         }
 
         const info = createElement('div', { className: 'preview-info' });
@@ -641,14 +643,21 @@ class ContentBrowser {
 
         // Only show watch button for movies (no episodes)
         const hasEpisodes = Array.isArray(content.episodes) && content.episodes.length > 0;
-        if (!hasEpisodes && (content.url || originalItem.url)) {
+        if (hasEpisodes) {
+            const browseLink = createElement('a', {
+                className: 'button button-primary',
+                href: `/icerik/${encodeURIComponent(this.plugin.name)}?url=${originalItem.url}${this.providerQueryAmp}`
+            });
+            browseLink.innerHTML = `<i class="fas fa-list"></i> ${t('browse_episodes')}`;
+            actions.appendChild(browseLink);
+        } else if (content.url || originalItem.url) {
             const watchUrl  = content.url || originalItem.url;
             const poster    = content.poster || originalItem.poster || '';
             const title     = content.title || originalItem.title || '';
             const metaParts = [
-                `url=${encodeURIComponent(watchUrl)}`,
+                `url=${watchUrl}`,
                 `baslik=${encodeURIComponent(title)}`,
-                `content_url=${encodeURIComponent(originalItem.url)}`,
+                `content_url=${originalItem.url}`,
                 poster ? `poster_url=${encodeURIComponent(poster)}` : '',
                 `year=${encodeURIComponent(content.year || '')}`,
                 `rating=${encodeURIComponent(content.rating || '')}`,
@@ -661,15 +670,30 @@ class ContentBrowser {
             actions.appendChild(watchLink);
         }
 
-        const detailLink = createElement('a', {
-            className: 'button button-secondary',
-            href: `/icerik/${encodeURIComponent(this.plugin.name)}?url=${originalItem.url}${this.providerQueryAmp}`
-        });
-        detailLink.innerHTML = `<i class="fas fa-info-circle"></i> ${t('details_button')}`;
-        actions.appendChild(detailLink);
+        if (!hasEpisodes) {
+            const detailLink = createElement('a', {
+                className: 'button button-secondary',
+                href: `/icerik/${encodeURIComponent(this.plugin.name)}?url=${originalItem.url}${this.providerQueryAmp}`
+            });
+            detailLink.innerHTML = `<i class="fas fa-info-circle"></i> ${t('details_button')}`;
+            actions.appendChild(detailLink);
+        }
 
         info.appendChild(actions);
-        body.appendChild(info);
+        mainRow.appendChild(info);
+        body.appendChild(mainRow);
+
+        // ── Benzer İçerikler ──────────────────────────────────────────
+        const similarSection = createElement('section', { className: 'similar-section' });
+        body.appendChild(similarSection);
+        renderSimilarContent(similarSection, {
+            apiBase          : this._apiBase,
+            plugin           : this.plugin.name,
+            queryTitle       : content.title || originalItem.title || '',
+            tags             : content.tags  || '',
+            currentUrl       : originalItem.url || '',
+            providerQueryAmp : this.providerQueryAmp,
+        });
     }
 
     _closePreview() {
