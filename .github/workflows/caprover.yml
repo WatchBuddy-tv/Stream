@@ -22,6 +22,14 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Node.js Kurulumu
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "22"
+
+      - name: CapRover CLI Kurulumu
+        run : npm i -g caprover
+
       - name: Değişiklik
         id  : degisiklik
         run : |
@@ -43,8 +51,8 @@ jobs:
 
       - name: Deploy
         if  : steps.degisiklik.outputs.stream == 'true'
-        uses: caprover/deploy-from-github@v1.1.2
-        with:
-          server: ${{ secrets.SERVER }}
-          app   : ${{ secrets.STREAM_APP }}
-          token : ${{ secrets.STREAM_TOKEN }}
+        run : |
+          caprover deploy --caproverUrl "${{ secrets.SERVER }}" \
+          --appToken "${{ secrets.STREAM_TOKEN }}" \
+          --appName " ${{ secrets.STREAM_APP }}" \
+          --tarFile ./deploy.tar
