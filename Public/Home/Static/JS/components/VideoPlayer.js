@@ -1660,16 +1660,16 @@ export default class VideoPlayer {
         };
 
         if (typeof data === 'object') {
-            if (data.source) addRow('Source URL', data.source);
-            if (data.url) addRow('Stream URL', data.url);
+            if (data.source) addRow('Source', data.source);
+            if (data.url) addRow('Stream', data.url);
+            if (data.userAgent) addRow('Browser', data.userAgent);
             if (data.error) {
                 const errStr = typeof data.error === 'object' ?
                     (data.error.code ? `${data.error.code}: ${data.error.message || 'Unknown'}` : data.error.message) :
                     data.error;
-                addRow(t('error_label') || 'Hata', errStr);
+                addRow('Error', errStr);
             }
             if (data.timestamp) addRow('Time', new Date(data.timestamp).toLocaleString());
-            if (data.userAgent) addRow('Browser', data.userAgent);
         } else {
             addRow('Info', data);
         }
@@ -1868,7 +1868,14 @@ export default class VideoPlayer {
 
         fetch(proxyUrl, { method: 'HEAD' })
             .then(response => {
-                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        this.logger.error('❌', 'FETCHER', 'Access Forbidden (403)');
+                        this.onVideoError('HTTP 403 - Forbidden');
+                        return;
+                    }
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
 
                 const contentType = response.headers.get('content-type') || '';
                 this.logger.info('📄', 'FETCHER', 'Content-Type Received', { 'Type': contentType });
@@ -2235,11 +2242,12 @@ export default class VideoPlayer {
 
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                // Parse hataları (HLS manifesti olmayan dosyalar) için tekrar deneme yapma
-                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR) {
-                                    this.logger.error('❌', 'HLS', 'Invalid Manifest - Aborting Retries');
+                                // Parse hataları (HLS manifesti olmayan dosyalar) veya 403 hataları için tekrar deneme yapma
+                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (data.response && data.response.code === 403)) {
+                                    const errLabel = data.response && data.response.code === 403 ? 'HTTP 403 - Forbidden' : 'Invalid Manifest - Aborting Retries';
+                                    this.logger.error('❌', 'HLS', errLabel);
                                     this.cleanup();
-                                    this.onVideoError('Invalid Manifest - Aborting Retries');
+                                    this.onVideoError(errLabel);
                                     break;
                                 }
 
