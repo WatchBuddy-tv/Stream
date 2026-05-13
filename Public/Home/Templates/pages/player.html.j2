@@ -117,6 +117,70 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Altyazı Ayarları Paneli -->
+            <div id="subtitle-settings-panel" class="subtitle-settings-panel is-hidden">
+                <div class="subtitle-settings-header">
+                    <h3><i class="fas fa-closed-captioning"></i> <span data-i18n="video_subtitle_settings">{{ tr('video_subtitle_settings') }}</span></h3>
+                    <button type="button" class="subtitle-settings-close" id="subtitle-settings-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="subtitle-settings-body">
+                    <div class="subtitle-setting-row">
+                        <span class="subtitle-setting-label" data-i18n="video_subtitle_show">{{ tr('video_subtitle_show') }}</span>
+                        <label class="wp-switch">
+                            <input type="checkbox" id="subtitle-enabled-toggle" checked>
+                            <span class="wp-switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="subtitle-settings-options">
+                        <div class="subtitle-setting-section">
+                            <span class="subtitle-setting-section-label" data-i18n="video_subtitle_color">{{ tr('video_subtitle_color') }}</span>
+                            <div class="subtitle-color-options" id="subtitle-color-options">
+                                <button class="subtitle-color-btn active" data-color="#FFFF00" style="background:#FFFF00" title="Sarı"></button>
+                                <button class="subtitle-color-btn" data-color="#FFFFFF" style="background:#FFFFFF" title="Beyaz"></button>
+                                <button class="subtitle-color-btn" data-color="#18FFFF" style="background:#18FFFF" title="Cyan"></button>
+                                <button class="subtitle-color-btn" data-color="#69F0AE" style="background:#69F0AE" title="Yeşil"></button>
+                            </div>
+                        </div>
+
+                        <div class="subtitle-setting-section">
+                            <span class="subtitle-setting-section-label" data-i18n="video_subtitle_size">{{ tr('video_subtitle_size') }}</span>
+                            <div class="subtitle-size-control">
+                                <span class="subtitle-size-label" id="subtitle-size-value">18</span>
+                                <input type="range" id="subtitle-size-slider" class="subtitle-slider" min="12" max="64" step="2" value="18">
+                            </div>
+                        </div>
+
+                        <div class="subtitle-setting-row">
+                            <span class="subtitle-setting-label" data-i18n="video_subtitle_background">{{ tr('video_subtitle_background') }}</span>
+                            <label class="wp-switch">
+                                <input type="checkbox" id="subtitle-bg-toggle" checked>
+                                <span class="wp-switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="subtitle-preview">
+                        <span id="subtitle-preview-text" data-i18n="video_subtitle_preview">{{ tr('video_subtitle_preview') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seçim Dropdown (Altyazı / Ses) -->
+            <div id="selection-modal" class="selection-dropdown is-hidden" role="dialog" aria-modal="true">
+                <div class="selection-dropdown-header">
+                    <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span data-i18n="selection_prompt">{{ tr('selection_prompt') }}</span></h3>
+                    <button type="button" class="selection-dropdown-close" id="selection-close-btn" aria-label="Kapat">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="selection-dropdown-body" id="selection-list">
+                    <!-- Seçenekler buraya dinamik olarak eklenecek -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -174,14 +238,6 @@
         {% endfor %}
     </div>
 
-    <!-- Seçim Dropdown (Altyazı / Ses) -->
-    <div id="selection-modal" class="selection-dropdown is-hidden" role="dialog" aria-modal="true">
-        <div class="selection-dropdown-header">
-            <h3 id="modal-title"><i id="modal-icon" class="fas fa-closed-captioning"></i> <span data-i18n="selection_prompt">{{ tr('selection_prompt') }}</span></h3>
-        </div>
-        <div class="selection-dropdown-body" id="selection-list">
-            <!-- Seçenekler buraya dinamik olarak eklenecek -->
-        </div>
     </div>
 </div>
 

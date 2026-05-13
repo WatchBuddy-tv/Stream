@@ -77,7 +77,8 @@
     "search_no_results_status": "No results found",
     "filter_aria_label": "{plugin} filter ({count} results)",
     "filter_results_status": "{visible}/{total} results shown ({filters} filters active)",
-    "video_error_message": "Something went wrong while loading the video.",
+    "video_error_title": "An error occurred while loading the video.",
+    "video_error_message": "The video cannot be played due to an unexpected issue.",
     "video_error_aborted": "Loading was canceled by the user.",
     "video_error_network": "Loading failed due to a network error.",
     "video_error_decode": "The video file is corrupted or unsupported.",
@@ -162,5 +163,15 @@
     "resume_yes": "Resume",
     "share": "Share",
     "link_copied": "Link copied!",
-    "episode_watched": "Watched"
+    "episode_watched": "Watched",
+    "video_subtitle_settings": "Subtitle Settings",
+    "video_subtitle_show": "Show Subtitles",
+    "video_subtitle_color": "Font Color",
+    "video_subtitle_size": "Font Size",
+    "video_subtitle_background": "Show Background",
+    "video_subtitle_preview": "Preview Text",
+    "error_details_label": "Error Details",
+    "video_no_sources_title": "No Video Source Found",
+    "video_no_sources_message": "No playable video source could be detected for this content.",
+    "video_error_contribution": "Want to help fix this error?"
 }

@@ -77,7 +77,8 @@
     "search_no_results_status": "Sonuç bulunamadı",
     "filter_aria_label": "{plugin} filtresi ({count} sonuç)",
     "filter_results_status": "{visible}/{total} sonuç gösteriliyor ({filters} filtre aktif)",
-    "video_error_message": "Video yüklenirken bir hata oluştu.",
+    "video_error_title": "Video yüklenirken bir hata oluştu.",
+    "video_error_message": "Beklenmeyen bir sorun nedeniyle video oynatılamıyor.",
     "video_error_aborted": "Yükleme kullanıcı tarafından iptal edildi.",
     "video_error_network": "Ağ hatası nedeniyle yükleme başarısız oldu.",
     "video_error_decode": "Video dosyası bozuk veya desteklenmeyen formatta.",
@@ -162,5 +163,15 @@
     "resume_yes": "Devam Et",
     "share": "Paylaş",
     "link_copied": "Link kopyalandı!",
-    "episode_watched": "İzlendi"
+    "episode_watched": "İzlendi",
+    "video_subtitle_settings": "Altyazı Ayarları",
+    "video_subtitle_show": "Altyazıyı Göster",
+    "video_subtitle_color": "Yazı Rengi",
+    "video_subtitle_size": "Yazı Boyutu",
+    "video_subtitle_background": "Arka Planı Göster",
+    "video_subtitle_preview": "Önizleme Metni",
+    "error_details_label": "Hata Detayları",
+    "video_no_sources_title": "Video kaynağı bulunamadı",
+    "video_no_sources_message": "Bu içerik için oynatılabilir bir video kaynağı tespit edilemedi.",
+    "video_error_contribution": "Bu hatayı düzeltmeye yardımcı olmak ister misiniz?"
 }

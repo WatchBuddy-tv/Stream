@@ -77,7 +77,8 @@
     "search_no_results_status": "Результаты не найдены",
     "filter_aria_label": "Фильтр {plugin} ({count} результатов)",
     "filter_results_status": "Показано {visible}/{total} результатов (активных фильтров: {filters})",
-    "video_error_message": "При загрузке видео произошла ошибка.",
+    "video_error_title": "Произошла ошибка при загрузке видео.",
+    "video_error_message": "Видео не может быть воспроизведено из-за непредвиденной ошибки.",
     "video_error_aborted": "Загрузка отменена пользователем.",
     "video_error_network": "Загрузка не удалась из-за сетевой ошибки.",
     "video_error_decode": "Видеофайл поврежден или не поддерживается.",
@@ -162,5 +163,15 @@
     "resume_yes": "Продолжить",
     "share": "Поделиться",
     "link_copied": "Ссылка скопирована!",
-    "episode_watched": "Просмотрено"
+    "episode_watched": "Просмотрено",
+    "video_subtitle_settings": "Настройки субтитров",
+    "video_subtitle_show": "Показать субтитры",
+    "video_subtitle_color": "Цвет шрифта",
+    "video_subtitle_size": "Размер шрифта",
+    "video_subtitle_background": "Показать фон",
+    "video_subtitle_preview": "Текст предпросмотра",
+    "error_details_label": "Детали ошибки",
+    "video_no_sources_title": "Источники видео не найдены",
+    "video_no_sources_message": "Для этого контента не удалось найти воспроизводимых источников видео.",
+    "video_error_contribution": "Хотите помочь исправить эту ошибку?"
 }

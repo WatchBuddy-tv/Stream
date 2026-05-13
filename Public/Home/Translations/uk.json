@@ -77,7 +77,8 @@
     "search_no_results_status": "Результати не знайдено",
     "filter_aria_label": "Фільтр {plugin} ({count} результатів)",
     "filter_results_status": "Показано {visible}/{total} результатів (активних фільтрів: {filters})",
-    "video_error_message": "Під час завантаження відео сталася помилка.",
+    "video_error_title": "Під час завантаження відео сталася помилка.",
+    "video_error_message": "Відео не вдалося відтворити через неочікувану помилку.",
     "video_error_aborted": "Завантаження скасовано користувачем.",
     "video_error_network": "Завантаження не вдалося через мережеву помилку.",
     "video_error_decode": "Відеофайл пошкоджений або не підтримується.",
@@ -162,5 +163,15 @@
     "resume_yes": "Продовжити",
     "share": "Поділитися",
     "link_copied": "Посилання скопійовано!",
-    "episode_watched": "Переглянуто"
+    "episode_watched": "Переглянуто",
+    "video_subtitle_settings": "Налаштування субтитрів",
+    "video_subtitle_show": "Показати субтитри",
+    "video_subtitle_color": "Колір шрифту",
+    "video_subtitle_size": "Розмір шрифту",
+    "video_subtitle_background": "Показати фон",
+    "video_subtitle_preview": "Текст передперегляду",
+    "error_details_label": "Деталі помилки",
+    "video_no_sources_title": "Джерела відео не знайдені",
+    "video_no_sources_message": "Для цього контенту не вдалося знайти відтворюваних джерел відео.",
+    "video_error_contribution": "Хочете допомогти виправити цю помилку?"
 }

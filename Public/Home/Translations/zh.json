@@ -77,7 +77,8 @@
     "search_no_results_status": "未找到结果",
     "filter_aria_label": "{plugin} 筛选器（{count} 个结果）",
     "filter_results_status": "显示 {visible}/{total} 个结果（{filters} 个筛选已启用）",
-    "video_error_message": "加载视频时出现问题。",
+    "video_error_title": "加载视频时出错。",
+    "video_error_message": "由于意外问题，无法播放视频。",
     "video_error_aborted": "加载已被用户取消。",
     "video_error_network": "因网络错误而加载失败。",
     "video_error_decode": "视频文件已损坏或不受支持。",
@@ -162,5 +163,15 @@
     "resume_yes": "继续播放",
     "share": "分享",
     "link_copied": "链接已复制！",
-    "episode_watched": "已看"
+    "episode_watched": "已观看",
+    "video_subtitle_settings": "字幕设置",
+    "video_subtitle_show": "显示字幕",
+    "video_subtitle_color": "字体颜色",
+    "video_subtitle_size": "字体大小",
+    "video_subtitle_background": "显示背景",
+    "video_subtitle_preview": "预览文本",
+    "error_details_label": "错误详情",
+    "video_no_sources_title": "未找到视频源",
+    "video_no_sources_message": "无法为此内容检测到可播放的视频源。",
+    "video_error_contribution": "想帮助修复这个错误吗？"
 }

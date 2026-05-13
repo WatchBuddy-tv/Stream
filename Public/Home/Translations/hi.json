@@ -77,7 +77,8 @@
     "search_no_results_status": "कोई परिणाम नहीं मिला",
     "filter_aria_label": "{plugin} फ़िल्टर ({count} परिणाम)",
     "filter_results_status": "{visible}/{total} परिणाम दिखाए जा रहे हैं ({filters} फ़िल्टर सक्रिय)",
-    "video_error_message": "वीडियो लोड करते समय कुछ गड़बड़ हुई।",
+    "video_error_title": "वीडियो लोड करते समय एक त्रुटि हुई।",
+    "video_error_message": "एक अप्रत्याशित समस्या के कारण वीडियो नहीं चलाया जा सकता।",
     "video_error_aborted": "लोडिंग उपयोगकर्ता द्वारा रद्द कर दी गई।",
     "video_error_network": "नेटवर्क त्रुटि के कारण लोडिंग विफल हुई।",
     "video_error_decode": "वीडियो फ़ाइल खराब है या समर्थित नहीं है।",
@@ -162,5 +163,15 @@
     "resume_yes": "जारी रखें",
     "share": "साझा करें",
     "link_copied": "लिंक कॉपी हो गया!",
-    "episode_watched": "देखा गया"
+    "episode_watched": "देखा गया",
+    "video_subtitle_settings": "उपशीर्षक सेटिंग्स",
+    "video_subtitle_show": "उपशीर्षक दिखाएं",
+    "video_subtitle_color": "फ़ॉन्ट रंग",
+    "video_subtitle_size": "फ़ॉन्ट आकार",
+    "video_subtitle_background": "पृष्ठभूमि दिखाएं",
+    "video_subtitle_preview": "पूर्वावलोकन पाठ",
+    "error_details_label": "त्रुटि विवरण",
+    "video_no_sources_title": "कोई वीडियो स्रोत नहीं मिला",
+    "video_no_sources_message": "इस सामग्री के लिए कोई खेलने योग्य वीडियो स्रोत नहीं पाया जा सका।",
+    "video_error_contribution": "क्या आप इस त्रुटि को ठीक करने में मदद करना चाहते हैं?"
 }

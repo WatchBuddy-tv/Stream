@@ -77,7 +77,8 @@
     "search_no_results_status": "Aucun résultat trouvé",
     "filter_aria_label": "Filtre {plugin} ({count} résultats)",
     "filter_results_status": "{visible}/{total} résultats affichés ({filters} filtres actifs)",
-    "video_error_message": "Une erreur est survenue lors du chargement de la vidéo.",
+    "video_error_title": "Une erreur est survenue lors du chargement de la vidéo.",
+    "video_error_message": "La vidéo ne peut pas être lue en raison d'un problème inattendu.",
     "video_error_aborted": "Le chargement a été annulé par l'utilisateur.",
     "video_error_network": "Le chargement a échoué à cause d'une erreur réseau.",
     "video_error_decode": "Le fichier vidéo est corrompu ou non pris en charge.",
@@ -162,5 +163,15 @@
     "resume_yes": "Reprendre",
     "share": "Partager",
     "link_copied": "Lien copié !",
-    "episode_watched": "Vu"
+    "episode_watched": "Vu",
+    "video_subtitle_settings": "Paramètres des sous-titres",
+    "video_subtitle_show": "Afficher les sous-titres",
+    "video_subtitle_color": "Couleur de la police",
+    "video_subtitle_size": "Taille de la police",
+    "video_subtitle_background": "Afficher l'arrière-plan",
+    "video_subtitle_preview": "Texte d'aperçu",
+    "error_details_label": "Détails de l'erreur",
+    "video_no_sources_title": "Aucune source vidéo trouvée",
+    "video_no_sources_message": "Aucune source vidéo lisible n'a pu être détectée pour ce contenu.",
+    "video_error_contribution": "Voulez-vous aider à corriger cette erreur ?"
 }
