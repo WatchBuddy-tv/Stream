@@ -1869,9 +1869,10 @@ export default class VideoPlayer {
         fetch(proxyUrl, { method: 'HEAD' })
             .then(response => {
                 if (!response.ok) {
-                    if (response.status === 403) {
-                        this.logger.error('❌', 'FETCHER', 'Access Forbidden (403)');
-                        this.onVideoError('HTTP 403 - Forbidden');
+                    if (response.status === 403 || response.status === 404) {
+                        const errLabel = `HTTP ${response.status} - ${response.status === 403 ? 'Forbidden' : 'Not Found'}`;
+                        this.logger.error('❌', 'FETCHER', errLabel);
+                        this.onVideoError(errLabel);
                         return;
                     }
                     throw new Error(`HTTP Error: ${response.status}`);
@@ -2242,9 +2243,13 @@ export default class VideoPlayer {
 
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                // Parse hataları (HLS manifesti olmayan dosyalar) veya 403 hataları için tekrar deneme yapma
-                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (data.response && data.response.code === 403)) {
-                                    const errLabel = data.response && data.response.code === 403 ? 'HTTP 403 - Forbidden' : 'Invalid Manifest - Aborting Retries';
+                                // Parse hataları (HLS manifesti olmayan dosyalar) veya 403/404 hataları için tekrar deneme yapma
+                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (data.response && (data.response.code === 403 || data.response.code === 404))) {
+                                    let errLabel = 'Invalid Manifest - Aborting Retries';
+                                    if (data.response) {
+                                        if (data.response.code === 403) errLabel = 'HTTP 403 - Forbidden';
+                                        else if (data.response.code === 404) errLabel = 'HTTP 404 - Not Found';
+                                    }
                                     this.logger.error('❌', 'HLS', errLabel);
                                     this.cleanup();
                                     this.onVideoError(errLabel);
