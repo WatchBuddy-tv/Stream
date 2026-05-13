@@ -1869,12 +1869,7 @@ export default class VideoPlayer {
         fetch(proxyUrl, { method: 'HEAD' })
             .then(response => {
                 if (!response.ok) {
-                    if (response.status === 403 || response.status === 404) {
-                        const errLabel = `HTTP ${response.status} - ${response.status === 403 ? 'Forbidden' : 'Not Found'}`;
-                        this.logger.error('❌', 'FETCHER', errLabel);
-                        this.onVideoError(errLabel);
-                        return;
-                    }
+                    this.logger.warn('⚠️', 'FETCHER', `HEAD Request Status Error: ${response.status}`);
                     throw new Error(`HTTP Error: ${response.status}`);
                 }
 
@@ -2243,12 +2238,11 @@ export default class VideoPlayer {
 
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                // Parse hataları (HLS manifesti olmayan dosyalar) veya 403/404 hataları için tekrar deneme yapma
-                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (data.response && (data.response.code === 403 || data.response.code === 404))) {
+                                // Parse hataları veya gelen HTTP 4xx/5xx hataları için anında dur
+                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (useProxy && data.response && data.response.code >= 400)) {
                                     let errLabel = 'Invalid Manifest - Aborting Retries';
-                                    if (data.response) {
-                                        if (data.response.code === 403) errLabel = 'HTTP 403 - Forbidden';
-                                        else if (data.response.code === 404) errLabel = 'HTTP 404 - Not Found';
+                                    if (data.response && data.response.code >= 400) {
+                                        errLabel = `HTTP ${data.response.code} - ${data.response.text || 'Error'}`;
                                     }
                                     this.logger.error('❌', 'HLS', errLabel);
                                     this.cleanup();
