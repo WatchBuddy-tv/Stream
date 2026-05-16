@@ -2210,8 +2210,8 @@ export default class VideoPlayer {
         }
     }
 
-    loadHLSVideo(originalUrl, referer, userAgent, useProxy = false) {
-        this.logger.info('🚀', 'HLS', 'Starting HLS.js', { 'Mode': useProxy ? 'Forced Proxy' : 'Smart' });
+    loadHLSVideo(originalUrl, referer, userAgent, forceMode = null) {
+        this.logger.info('🚀', 'HLS', 'Starting HLS.js', { 'Mode': forceMode ? `Forced ${forceMode}` : 'Smart' });
         this.retryCount = 0;
 
         // Uzak sunucunun origin'ini al (absolute path'leri çözümlemek için)
@@ -2223,7 +2223,12 @@ export default class VideoPlayer {
         if (Hls.isSupported()) {
             try {
                 // HLS.js yapılandırması
-                const initialMode = useProxy ? ProxyMode.FULL : (window.PROXY_ENABLED === false ? ProxyMode.NONE : suggestInitialMode(originalUrl));
+                let initialMode = forceMode;
+                if (forceMode === true) {
+                    initialMode = ProxyMode.FULL;
+                } else if (forceMode === false || forceMode === null) {
+                    initialMode = window.PROXY_ENABLED === false ? ProxyMode.NONE : suggestInitialMode(originalUrl);
+                }
                 this.currentProxyMode = initialMode; // video-utils xhrSetup bunu okuyacak
                 this.logger.info('⚙️', 'HLS', 'Initial Proxy Mode', { 'Mode': initialMode });
 
@@ -2238,8 +2243,16 @@ export default class VideoPlayer {
 
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                // Parse hataları veya gelen HTTP 4xx/5xx hataları için anında dur
-                                if (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (useProxy && data.response && data.response.code >= 400)) {
+                                const getNextMode = (current) => {
+                                    if (current === ProxyMode.NONE) return ProxyMode.MANIFEST_ONLY;
+                                    if (current === ProxyMode.MANIFEST_ONLY) return ProxyMode.FULL;
+                                    return null;
+                                };
+                                const currentMode = this.currentProxyMode;
+                                const nextMode = window.PROXY_ENABLED !== false ? getNextMode(currentMode) : null;
+
+                                // Parse veya HTTP 4xx/5xx hataları için eğer başka mod kalmadıysa (veya proxy kapalıysa) anında dur
+                                if (!nextMode && (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (data.response && data.response.code >= 400))) {
                                     let errLabel = 'Invalid Manifest - Aborting Retries';
                                     if (data.response && data.response.code >= 400) {
                                         errLabel = `HTTP ${data.response.code} - ${data.response.text || 'Error'}`;
@@ -2250,14 +2263,22 @@ export default class VideoPlayer {
                                     break;
                                 }
 
+                                // Eğer proxy henüz en üst seviyede değilse ve manifest parse/HTTP hatası aldıysak (örn: CORS/HTML engeli), direkt bir sonraki moda hemen geç
+                                if (nextMode && (data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR || (data.response && data.response.code >= 400))) {
+                                    this.logger.warn('🛡️', 'HLS', `Deterministic manifest error in ${currentMode} mode, escalating to ${nextMode} mode immediately...`);
+                                    this.cleanup();
+                                    this.loadHLSVideo(originalUrl, referer, userAgent, nextMode);
+                                    break;
+                                }
+
                                 this.retryCount++;
                                 if (this.retryCount <= 2) {
                                     this.logger.info('🔄', 'HLS', `Retrying Network Error (${this.retryCount}/2)`);
                                     hls.startLoad();
-                                } else if (!useProxy && window.PROXY_ENABLED !== false) {
-                                    this.logger.warn('🛡️', 'HLS', 'Network Issues, escalating to Proxy Mode...');
+                                } else if (nextMode) {
+                                    this.logger.warn('🛡️', 'HLS', `Network issues in ${currentMode} mode, escalating to ${nextMode} mode...`);
                                     this.cleanup();
-                                    this.loadHLSVideo(originalUrl, referer, userAgent, true);
+                                    this.loadHLSVideo(originalUrl, referer, userAgent, nextMode);
                                 } else {
                                     this.onVideoError(data.details);
                                 }
@@ -2288,9 +2309,9 @@ export default class VideoPlayer {
                 });
 
                 // Manifest kaynağını belirle
-                const loadUrl = useProxy ? buildServiceProxyUrl(originalUrl, userAgent, referer, 'video') : originalUrl;
+                const loadUrl = buildProxyUrlWithMode(originalUrl, userAgent, referer, initialMode, this);
                 this.currentLoadingUrl = loadUrl;
-                this.logger.info('🔑', 'HLS', 'Final Resource URL', { 'Origin': useProxy ? 'Proxy' : 'Direct', 'Url': loadUrl });
+                this.logger.info('🔑', 'HLS', 'Final Resource URL', { 'Origin': (initialMode === ProxyMode.NONE) ? 'Direct' : 'Proxy', 'Url': loadUrl });
 
                 hls.loadSource(loadUrl);
                 hls.attachMedia(this.videoPlayer);
