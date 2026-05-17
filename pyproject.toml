@@ -16,7 +16,7 @@ dependencies = [
     "python-dotenv",
     "csscompressor",
     "rjsmin",
-    "KekikStream>=3.5.2",
+    "KekikStream>=3.5.3",
     "yt-dlp[default,curl-cffi]",
 ]
 
