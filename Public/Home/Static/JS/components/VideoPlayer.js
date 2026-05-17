@@ -1774,11 +1774,11 @@ export default class VideoPlayer {
         // Loading overlay'i göster
         this.showElement(this.loadingOverlay);
 
-        // Yükleme zaman aşımı kontrolü ekle (45 saniye)
+        // Yükleme zaman aşımı kontrolü ekle (15 saniye)
         this.loadingTimeout = setTimeout(() => {
             if (this.loadingOverlay && !this.loadingOverlay.classList.contains('is-hidden')) {
                 this.hideElement(this.loadingOverlay);
-                this.logger.error('❌', 'PLAYER', 'Loading Timeout (45s)');
+                this.logger.error('❌', 'PLAYER', 'Loading Timeout (15s)');
 
                 const errorEl = document.createElement('div');
                 errorEl.className = 'error-message';
@@ -1788,7 +1788,7 @@ export default class VideoPlayer {
                 const logData = {
                     url: this.currentLoadingUrl || this.videoPlayer.src || 'N/A',
                     source: params.get('url') || 'N/A',
-                    error: 'Loading Timeout (45s)',
+                    error: 'Loading Timeout (15s)',
                     userAgent: navigator.userAgent,
                     timestamp: new Date().toISOString()
                 };
@@ -1805,7 +1805,7 @@ export default class VideoPlayer {
 
                 this.isLoadingVideo = false;
             }
-        }, 45000);
+        }, 15000);
 
         // Video ayarları
         this.videoPlayer.muted = false;
