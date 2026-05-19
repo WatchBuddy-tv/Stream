@@ -21,7 +21,7 @@ def basla():
         "Core:kekik_FastAPI",
         "--log-level", "error",
         "--bind", f"{HOST}:{PORT}",
-        "--workers", str(workers),
+        "--workers", "2",
         "--forwarded-allow-ips", "*",
         "--keep-alive", "5",
         "--worker-tmp-dir", "/dev/shm",
