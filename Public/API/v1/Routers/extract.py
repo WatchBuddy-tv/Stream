@@ -24,7 +24,7 @@ async def extract(request:Request):
 
     # Doğrudan medya dosyaları için bypass (m3u8, mp4 vb.)
     url_lower = _encoded_url.lower()
-    is_direct = any(ext in url_lower for ext in (".m3u8", ".mp4", ".mpd", ".webm", ".mkv", ".avi"))
+    is_direct = any(ext in url_lower for ext in (".m3u8", ".mp4", ".mpd", ".webm", ".mkv", ".avi", ".mov", ".flv", ".wmv"))
     if is_direct:
         return {
             **api_v1_global_message,
