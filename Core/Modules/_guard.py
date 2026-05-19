@@ -5,7 +5,7 @@ from ._IP_Log import ip_log
 
 # ! ----------------------------------------» Güvenlik Listeleri
 _BLOCKED_IPS  = []
-_BLOCKED_ISPS = ["contabo", "digitalocean", "hetzner", "ovh", "linode", "amazon", "facebook", "google", "azure", "vultr", "choopa", "m247", "data"]
+_BLOCKED_ISPS = ["contabo", "digitalocean", "hetzner", "ovh", "linode", "amazon", "facebook", "google", "azure", "vultr", "choopa", "m247", "data", "alexhost"]
 
 @kekik_FastAPI.middleware("http")
 async def guvenlik_duvari(request: Request, call_next):
