@@ -116,7 +116,12 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
             return None
 
         # JSON parse
-        info = json.loads(stdout.decode())
+        stdout_str = stdout.decode().strip()
+        if not stdout_str:
+            konsol.log(f"[yellow]yt-dlp returned empty output for URL:[/] {url}")
+            return None
+
+        info = json.loads(stdout_str)
 
         # Format belirleme
         ext       = info.get("ext", "mp4").lower()
