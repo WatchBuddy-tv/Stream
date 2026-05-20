@@ -47,7 +47,7 @@ async def load_item(request:Request):
                 plugin = plugin_manager.select_plugin(_plugin)
                 result = await asyncio.wait_for(
                     plugin.load_item(_encoded_url),
-                    timeout=20.0
+                    timeout=3.0
                 )
 
                 if not result:

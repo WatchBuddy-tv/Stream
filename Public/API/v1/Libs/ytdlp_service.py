@@ -99,7 +99,7 @@ async def _extract_with_ytdlp(url: str, user_agent: str | None = None, referer: 
             stderr = subprocess.PIPE
         )
 
-        timeout_s = float(os.getenv("YTDLP_TIMEOUT", "25") or "25")
+        timeout_s = float(os.getenv("YTDLP_TIMEOUT", "5") or "5")
         try:
             stdout, stderr = await asyncio.wait_for(
                 process.communicate(),

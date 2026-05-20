@@ -62,7 +62,7 @@ async def extract(request:Request):
                 # Add a reasonable timeout for the whole operation
                 result = await asyncio.wait_for(
                     extractor.extract(_encoded_url, _encoded_referer),
-                    timeout=20.0
+                    timeout=15.0
                 )
                 return {**api_v1_global_message, "result": result}
             except asyncio.TimeoutError:

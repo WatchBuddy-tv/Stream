@@ -8,6 +8,7 @@ from random       import choice
 from urllib.parse import quote_plus
 import re
 import unicodedata
+import asyncio
 
 _TR_CHAR_MAP = str.maketrans({
     "ı" : "i",
@@ -84,7 +85,11 @@ async def search(request:Request):
         return JSONResponse(status_code=410, content={"hata": f"{request.url.path}?plugin={_plugin or choice(plugin_names)}&query="})
 
     plugin = plugin_manager.select_plugin(_plugin)
-    result = await plugin.search(_query)
+    try:
+        result = await asyncio.wait_for(plugin.search(_query), timeout=3.0)
+    except asyncio.TimeoutError:
+        result = []
+
     result = sorted(
         result,
         key=lambda item: (

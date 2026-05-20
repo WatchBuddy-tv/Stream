@@ -4,6 +4,7 @@ from Core   import Request, JSONResponse
 from .      import api_v1_router, api_v1_global_message
 from ..Libs import plugin_manager
 from random import choice
+import asyncio
 
 @api_v1_router.get("/load_links")
 async def load_links(request:Request):
@@ -19,7 +20,10 @@ async def load_links(request:Request):
         return JSONResponse(status_code=410, content={"hata": f"{request.url.path}?plugin={_plugin or choice(plugin_names)}&encoded_url="})
 
     plugin = plugin_manager.select_plugin(_plugin)
-    links  = await plugin.load_links(_encoded_url)
+    try:
+        links = await asyncio.wait_for(plugin.load_links(_encoded_url), timeout=3.0)
+    except asyncio.TimeoutError:
+        links = []
 
     result = []
     for link in links:
