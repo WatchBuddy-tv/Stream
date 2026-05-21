@@ -1,8 +1,12 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-from KekikStream.Core import PluginManager, ExtractorManager, MediaManager, MovieInfo, SeriesInfo
-from Settings         import PROXIES
+from httpx import AsyncClient
+import os
 
-extractor_manager = ExtractorManager()
-plugin_manager    = PluginManager(ex_manager=extractor_manager, proxy=PROXIES)
-media_manager     = MediaManager()
+_client  = AsyncClient()
+_default = os.getenv("DEFAULT_PROVIDER_URL", "http://px-webservisler:8596")
+
+async def fuck_dmca(endpoint: str, params: dict | None = None):
+    req  = await _client.get(f"{_default}/api/v1{endpoint}", params=params)
+    resp = req.json()
+    return resp.get("result")

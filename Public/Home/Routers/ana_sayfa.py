@@ -1,7 +1,7 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core import Request, HTMLResponse, JSONResponse
-from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from .    import home_router, home_template, build_context, RemoteProviderClient, fuck_dmca
 
 @home_router.get("/health")
 @home_router.head("/health")
@@ -21,15 +21,7 @@ async def ana_sayfa(request: Request):
             async with RemoteProviderClient(provider_url) as client:
                 plugins = await client.get_plugins()
         else:
-            for name in plugin_manager.get_plugin_names():
-                plugin = plugin_manager.select_plugin(name)
-                plugins.append({
-                    "name"        : plugin.name,
-                    "description" : plugin.description,
-                    "language"    : plugin.language,
-                    "main_url"    : plugin.main_url,
-                    "favicon"     : plugin.favicon
-                })
+            plugins = await fuck_dmca("/get_all_plugins", request.state.veri)
 
         context.update({
             "title"       : context["tr"]("home_title", provider_name=context["provider_name"]),

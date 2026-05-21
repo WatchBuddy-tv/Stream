@@ -1,7 +1,7 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core         import Request, HTMLResponse
-from .            import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from .            import home_router, home_template, build_context, RemoteProviderClient, fuck_dmca
 from urllib.parse import quote_plus
 
 @home_router.get("/ara/{eklenti_adi}", response_class=HTMLResponse)
@@ -15,11 +15,10 @@ async def ara(request: Request, eklenti_adi: str, sorgu: str):
             async with RemoteProviderClient(provider_url) as client:
                 results = await client.search(eklenti_adi, sorgu)
         else:
-            if eklenti_adi not in plugin_manager.get_plugin_names():
-                raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
-
-            plugin  = plugin_manager.select_plugin(eklenti_adi)
-            results = await plugin.search(sorgu)
+            results = await fuck_dmca("/search", params={
+                "plugin" : eklenti_adi,
+                "query"  : sorgu
+            })
 
         for elem in results:
             if isinstance(elem, dict):

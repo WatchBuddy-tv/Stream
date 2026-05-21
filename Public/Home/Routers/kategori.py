@@ -1,8 +1,8 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core         import Request, HTMLResponse
-from .            import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
-from urllib.parse import quote_plus
+from .            import home_router, home_template, build_context, RemoteProviderClient, fuck_dmca
+from urllib.parse import quote_plus, unquote
 
 @home_router.get("/kategori/{eklenti_adi}", response_class=HTMLResponse)
 async def kategori(request: Request, eklenti_adi: str, kategori_url: str, kategori_adi: str, sayfa: int = 1):
@@ -15,11 +15,12 @@ async def kategori(request: Request, eklenti_adi: str, kategori_url: str, katego
             async with RemoteProviderClient(provider_url) as client:
                 items = await client.get_main_page(eklenti_adi, kategori_url, sayfa, kategori_adi)
         else:
-            if eklenti_adi not in plugin_manager.get_plugin_names():
-                raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
-
-            plugin = plugin_manager.select_plugin(eklenti_adi)
-            items  = await plugin.get_main_page(sayfa, kategori_url, kategori_adi)
+            items = await fuck_dmca("/get_main_page", params={
+                "plugin"           : eklenti_adi,
+                "page"             : str(sayfa),
+                "encoded_url"      : unquote(kategori_url),
+                "encoded_category" : unquote(kategori_adi)
+            })
 
         for icerik in items:
             # Remote response might already have url as string, but we need to quote it for templates

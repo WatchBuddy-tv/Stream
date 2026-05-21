@@ -2,11 +2,10 @@
 
 from Core import Request, HTMLResponse
 from uuid import NAMESPACE_URL, uuid5
-from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from .    import home_router, home_template, build_context, RemoteProviderClient, fuck_dmca
 
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 from Settings     import PROXY_URL, PROXY_FALLBACK_URL
-
 
 @home_router.get("/izle/{eklenti_adi}", response_class=HTMLResponse)
 async def izle(
@@ -44,11 +43,11 @@ async def izle(
                 "proxy_fallback_url" : PROXY_FALLBACK_URL,
             }
 
-            if eklenti_adi not in plugin_manager.get_plugin_names():
-                raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
+            load_links_data = await fuck_dmca("/load_links", params={
+                "plugin"      : eklenti_adi,
+                "encoded_url" : unquote(url)
+            })
 
-            plugin          = plugin_manager.select_plugin(eklenti_adi)
-            load_links_data = await plugin.load_links(url)
 
         links = []
         for link in load_links_data:

@@ -3,7 +3,7 @@
 from fastapi            import APIRouter
 from fastapi.templating import Jinja2Templates
 
-from ...API.v1.Libs         import plugin_manager
+from ...API.v1.Libs         import fuck_dmca
 from ..Libs.provider_client import RemoteProviderClient
 from ..Libs.helpers         import build_context, detect_lang, detect_provider
 
