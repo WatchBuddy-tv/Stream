@@ -58,6 +58,23 @@
   gap: var(--spacing-sm);
 }
 
+.provider-recovery-modal .modal-content {
+  text-align: center;
+  max-width: 420px;
+  padding: var(--spacing-xl);
+}
+
+.provider-recovery-modal .modal-title i {
+  color: var(--primary);
+  margin-right: var(--spacing-xs);
+}
+
+.provider-recovery-modal .modal-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: stretch;
+}
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .modal-content {
@@ -71,6 +88,10 @@
 
   .modal-actions {
     flex-direction: column;
+  }
+
+  .provider-recovery-modal .modal-actions {
+    display: flex;
   }
 
   .modal-actions .button {

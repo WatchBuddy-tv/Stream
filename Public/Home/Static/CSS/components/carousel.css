@@ -655,9 +655,8 @@
 /* Preview Skeleton Loading */
 .preview-skeleton .preview-hero {
   background: var(--surface-variant);
-  min-height: 200px;
-  overflow: hidden;
-  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  border-radius: var(--border-radius-lg);
+  aspect-ratio: 2 / 3;
 }
 
 .preview-skeleton .preview-hero-img {

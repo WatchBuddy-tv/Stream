@@ -1,8 +1,8 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core         import Request, HTMLResponse
-from .            import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
-from urllib.parse import quote_plus
+from .            import home_router, home_template, build_context, get_provider_client, fuck_dmca, get_client_headers
+from urllib.parse import quote_plus, unquote
 
 @home_router.get("/kategori/{eklenti_adi}", response_class=HTMLResponse)
 async def kategori(request: Request, eklenti_adi: str, kategori_url: str, kategori_adi: str, sayfa: int = 1):
@@ -12,22 +12,15 @@ async def kategori(request: Request, eklenti_adi: str, kategori_url: str, katego
     try:
         items = []
         if provider_url:
-            async with RemoteProviderClient(provider_url) as client:
-                items = await client.get_main_page(eklenti_adi, kategori_url, sayfa, kategori_adi)
+            client = await get_provider_client(provider_url)
+            items  = await client.get_main_page(eklenti_adi, kategori_url, sayfa, kategori_adi)
         else:
-            if eklenti_adi not in plugin_manager.get_plugin_names():
-                raise ValueError(f"'{eklenti_adi}' Bulunamadı!")
-
-            plugin = plugin_manager.select_plugin(eklenti_adi)
-            items  = await plugin.get_main_page(sayfa, kategori_url, kategori_adi)
-
-        for icerik in items:
-            # Remote response might already have url as string, but we need to quote it for templates
-            # Actually RemoteProviderClient returns data that might need quoting
-            if isinstance(icerik, dict):
-                icerik['url'] = quote_plus(icerik.get('url', ''))
-            else:
-                icerik.url = quote_plus(icerik.url)
+            items = await fuck_dmca("/get_main_page", params={
+                "plugin"           : eklenti_adi,
+                "page"             : str(sayfa),
+                "encoded_url"      : kategori_url,
+                "encoded_category" : kategori_adi
+            }, client_headers=get_client_headers(request))
 
         context.update({
             "title"        : context["tr"]("title_category", provider_name=context["provider_name"], provider=eklenti_adi, category=kategori_adi),
@@ -39,8 +32,8 @@ async def kategori(request: Request, eklenti_adi: str, kategori_url: str, katego
             "eklenti_adi"  : eklenti_adi,
             "baslik"       : kategori_adi,
             "items"        : items,
-            "kategori_url" : quote_plus(kategori_url),
-            "kategori_adi" : quote_plus(kategori_adi),
+            "kategori_url" : kategori_url,
+            "kategori_adi" : kategori_adi,
             "sayfa"        : sayfa
         })
 

@@ -60,3 +60,12 @@ async def lifespan(app: FastAPI):
                 konsol.log(f"[yellow][!] Eklenti erişim kontrolü atlandı: {hata}")
 
     yield
+
+    # Shutdown
+    with suppress(Exception):
+        from Public.Proxy.Libs.helpers import shared_client
+        await shared_client.aclose()
+
+    with suppress(Exception):
+        from Public.Home.Libs.provider_client import close_all_provider_clients
+        await close_all_provider_clients()

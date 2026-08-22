@@ -62,9 +62,21 @@ export const detectFormat = (url, format = null) => {
     return format || 'native';
 };
 
+// Extractor'ın Referer/extra header (Cookie/Origin/Auth vb.) verdiği kaynaklar —
+// tarayıcı JS'i outgoing isteklere custom header EKLEYEMEZ, NONE modunda istek
+// çıplak gider. URL deseni "korumasız" görünse bile header gerekiyorsa NONE
+// asla doğru olamaz.
+export const hasCustomHeaders = (referer, extraHeaders) =>
+    !!(referer || (extraHeaders && Object.keys(extraHeaders).length > 0));
+
 // Suggest initial proxy mode based on URL patterns
-export const suggestInitialMode = (url) => {
+export const suggestInitialMode = (url, requiresHeaders = false) => {
     const lower = url.toLowerCase();
+
+    if (requiresHeaders) {
+        BuddyLogger.info('🛡️', 'PROXY SYSTEM', 'Referer/extra header required. Starting in MANIFEST_ONLY.', { 'Mode': 'MANIFEST_ONLY' });
+        return ProxyMode.MANIFEST_ONLY;
+    }
 
     if (window.location.protocol === 'https:' && url.startsWith('http://')) {
         BuddyLogger.warn('🛡️', 'PROXY SYSTEM', 'Mixed Content Detected', { 'Mode': 'MANIFEST_ONLY' });
@@ -190,7 +202,7 @@ export const resolveProxyBase = (context) => {
 };
 
 // Build proxy URL with mode support
-export const buildProxyUrlWithMode = (url, userAgent, referer, mode, context = null) => {
+export const buildProxyUrlWithMode = (url, userAgent, referer, mode, context = null, extraHeaders = null) => {
     if (mode === ProxyMode.NONE) {
         return url;
     }
@@ -198,7 +210,7 @@ export const buildProxyUrlWithMode = (url, userAgent, referer, mode, context = n
     const proxyBase = resolveProxyBase(context || {});
     if (!proxyBase) return url;
 
-    let proxyUrl = buildProxyUrl(url, userAgent, referer, 'video', proxyBase);
+    let proxyUrl = buildProxyUrl(url, userAgent, referer, 'video', proxyBase, extraHeaders);
 
     // Add force_proxy for FULL mode
     if (mode === ProxyMode.FULL) {
@@ -208,7 +220,7 @@ export const buildProxyUrlWithMode = (url, userAgent, referer, mode, context = n
     return proxyUrl;
 };
 
-export const createHlsXhrSetup = (userAgent, referer, context, initialMode = ProxyMode.MANIFEST_ONLY) => {
+export const createHlsXhrSetup = (userAgent, referer, context, initialMode = ProxyMode.MANIFEST_ONLY, extraHeaders = null) => {
     return (xhr, requestUrl) => {
         const isManifest = requestUrl.includes('.m3u8') || requestUrl.includes('.m3u') || requestUrl.includes('master.txt');
         const isKey = requestUrl.includes('.key') || requestUrl.includes('key=') || requestUrl.includes('encryption');
@@ -232,7 +244,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
 
         // 3. FULL mode - proxy everything including segments
         if (currentMode === ProxyMode.FULL && isSegment) {
-            const finalUrl = buildProxyUrlWithMode(requestUrl, userAgent, referer, ProxyMode.FULL, context);
+            const finalUrl = buildProxyUrlWithMode(requestUrl, userAgent, referer, ProxyMode.FULL, context, extraHeaders);
             BuddyLogger.debug('🔌', 'HLS INTERCEPTOR', 'Segment Proxy (FULL)', { 'Original': requestUrl, 'Proxy': finalUrl });
             xhr.open('GET', finalUrl, true);
             return;
@@ -249,7 +261,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
             if (context.lastLoadedOrigin) {
                 const correctUrl = context.lastLoadedOrigin.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
                 BuddyLogger.debug('🔧', 'HLS INTERCEPTOR', 'Path Fix Applied', { 'Original': requestUrl, 'Corrected': correctUrl });
-                xhr.open('GET', buildProxyUrl(correctUrl, userAgent, referer, 'video', proxyBase), true);
+                xhr.open('GET', buildProxyUrl(correctUrl, userAgent, referer, 'video', proxyBase, extraHeaders), true);
                 return;
             }
         }
@@ -257,7 +269,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
         // 6. Manifests and Keys always through proxy
         try {
             if (isManifest || isKey) {
-                const finalUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video', proxyBase);
+                const finalUrl = buildProxyUrl(requestUrl, userAgent, referer, 'video', proxyBase, extraHeaders);
                 BuddyLogger.debug('🔑', 'HLS INTERCEPTOR', isManifest ? 'Manifest Intercepted' : 'Key Intercepted', { 'Url': requestUrl });
                 xhr.open('GET', finalUrl, true);
 
@@ -272,7 +284,7 @@ export const createHlsXhrSetup = (userAgent, referer, context, initialMode = Pro
     };
 };
 
-export const createHlsConfig = (userAgent, referer, context, mode = null) => {
+export const createHlsConfig = (userAgent, referer, context, mode = null, extraHeaders = null) => {
     // Determine initial mode
     const initialMode = mode ?? (window.PROXY_ENABLED !== false ? ProxyMode.MANIFEST_ONLY : ProxyMode.NONE);
 
@@ -503,7 +515,7 @@ export const createHlsConfig = (userAgent, referer, context, mode = null) => {
         maxBufferLength: isApple ? 15 : 30, // Apple cihazlarda daha düşük buffer
         maxMaxBufferLength: isApple ? 30 : 600,
         startLevel: -1,
-        xhrSetup: createHlsXhrSetup(userAgent, referer, context, context.currentProxyMode),
+        xhrSetup: createHlsXhrSetup(userAgent, referer, context, context.currentProxyMode, extraHeaders),
         pLoader: SmartFallbackLoader,  // Playlist (manifest) loader - CORS fallback
         fLoader: SmartFallbackLoader   // Fragment loader
     };

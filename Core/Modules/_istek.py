@@ -80,7 +80,7 @@ async def istekten_once_sonra(request: Request, call_next):
             return response
 
     log_veri["sure"] = round(time() - baslangic_zamani, 2)
-    await log_salla(log_veri, request)
+    asyncio.create_task(log_salla(log_veri, request))
 
     return response
 

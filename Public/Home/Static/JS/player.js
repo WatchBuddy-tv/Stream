@@ -4,14 +4,13 @@ import { t, escapeHtml } from './utils/dom.min.js';
 import { renderSimilarContent } from './utils/similar.min.js';
 
 // ── Next Episode ──────────────────────────────────────────────
-async function initNextEpisode(meta, providerQueryAmp, apiBase) {
+export async function initNextEpisode(meta, providerQueryAmp, apiBase) {
     const { pluginName, contentUrl, season, episode } = meta;
 
-    if (!pluginName || !contentUrl || !season || !episode) return;
+    if (!pluginName || !contentUrl) return;
 
-    const currentSeason  = parseInt(season,  10);
-    const currentEpisode = parseInt(episode, 10);
-    if (isNaN(currentSeason) || isNaN(currentEpisode)) return;
+    const currentSeason  = parseInt(season,  10) || 1;
+    const currentEpisode = parseInt(episode, 10) || 0;
 
     try {
         const apiUrl = `${apiBase}/api/v1/load_item?plugin=${encodeURIComponent(pluginName)}&encoded_url=${encodeURIComponent(contentUrl)}`;
@@ -28,10 +27,34 @@ async function initNextEpisode(meta, providerQueryAmp, apiBase) {
             return sa !== sb ? sa - sb : ea - eb;
         });
 
-        const idx = sorted.findIndex(ep =>
-            parseInt(ep.season  ?? 1, 10) === currentSeason &&
-            parseInt(ep.episode ?? 0, 10) === currentEpisode
-        );
+        // ── Enhanced Matching ─────────────────────────────────────
+        // 1. Try matching by season/episode (robust fallback)
+        let lastS = -1, epIdx = 0;
+        const normalized = sorted.map(ep => {
+            const s = parseInt(ep.season ?? 1, 10);
+            if (s !== lastS) { lastS = s; epIdx = 1; } else { epIdx++; }
+            return { ...ep, _s: s, _e: parseInt(ep.episode, 10) || epIdx };
+        });
+
+        let idx = -1;
+        if (!isNaN(parseInt(season, 10)) && !isNaN(parseInt(episode, 10))) {
+            idx = normalized.findIndex(ep => ep._s === currentSeason && ep._e === currentEpisode);
+        }
+
+        // 2. Fallback: match by URL if season/episode match failed or missing
+        if (idx < 0) {
+            const params = new URLSearchParams(window.location.search);
+            const curUrl = params.get('url');
+            if (curUrl) {
+                const norm = u => {
+                    try {
+                        return decodeURIComponent(u.replace(/\+/g, ' ')).replace(/\/$/, '');
+                    } catch (e) { return u.replace(/\/$/, ''); }
+                };
+                const target = norm(curUrl);
+                idx = sorted.findIndex(ep => norm(ep.url) === target);
+            }
+        }
 
         if (idx < 0 || idx >= sorted.length - 1) return; // last episode or not found
 
@@ -47,18 +70,22 @@ async function initNextEpisode(meta, providerQueryAmp, apiBase) {
         const year       = container?.dataset.year       || '';
         const rating     = container?.dataset.rating     || '';
 
+        const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
         const parts = [
             `url=${nextEp.url}`,
             `baslik=${encodeURIComponent(baslik)}`,
+            nextEp.title ? `bolum_adi=${encodeURIComponent(nextEp.title)}` : '',
             `content_url=${encodeURIComponent(contentUrl)}`,
             poster ? `poster_url=${encodeURIComponent(poster)}` : '',
             year   ? `year=${encodeURIComponent(year)}`         : '',
             rating ? `rating=${encodeURIComponent(rating)}`     : '',
             `season=${nextEp.season ?? currentSeason}`,
             `episode=${nextEp.episode ?? (idx + 2)}`,
+            isFS ? 'fs=1' : '',
         ].filter(Boolean).join('&');
 
         const href = `/izle/${encodeURIComponent(pluginName)}?${parts}${providerQueryAmp}`;
+        window.__nextEpisodeUrl = href; // Global share for VideoPlayer
 
         // Populate #next-episode-panel
         const panel = document.getElementById('next-episode-panel');
@@ -79,50 +106,51 @@ async function initNextEpisode(meta, providerQueryAmp, apiBase) {
                 <div id="next-ep-fill" class="next-ep-countdown-fill"></div>
             </div>`;
 
-        panel.classList.remove('is-hidden');
-
-        // Auto-advance on video ended (5s countdown)
-        const videoEl = document.getElementById('video-player');
-        if (videoEl) {
-            videoEl.addEventListener('ended', () => {
-                let secs = 5;
-                const fill    = document.getElementById('next-ep-fill');
-                const btnLabel = panel.querySelector('.next-ep-btn-label');
-                panel.classList.add('is-counting');
-
-                if (fill) {
-                    fill.style.transition = 'none';
-                    fill.style.transform  = 'scaleX(1)';
-                    requestAnimationFrame(() => {
-                        fill.style.transition  = `transform ${secs}s linear`;
-                        fill.style.transformOrigin = 'left';
-                        fill.style.transform   = 'scaleX(0)';
-                    });
-                }
-
-                const timer = setInterval(() => {
-                    secs--;
-                    if (btnLabel) btnLabel.textContent = `${t('next_episode_auto')} (${secs}s)`;
-                    if (secs <= 0) {
-                        clearInterval(timer);
-                        window.location.href = href;
-                    }
-                }, 1000);
-
-                // Cancel on click or any key
-                const cancel = () => {
-                    clearInterval(timer);
-                    panel.classList.remove('is-counting');
-                    if (fill) { fill.style.transition = 'none'; fill.style.transform = 'scaleX(1)'; }
-                    if (btnLabel) btnLabel.textContent = t('watch_now');
-                    document.removeEventListener('keydown', cancel);
-                };
-                panel.querySelector('#next-ep-watch')?.addEventListener('click', () => clearInterval(timer), { once: true });
-                document.addEventListener('keydown', cancel, { once: true });
-            }, { once: true });
-        }
+        // Note: Panel visibility and countdown are now managed by VideoPlayer's timeupdate logic
+        // for early trigger (60s before end).
 
     } catch (err) { console.warn('[NextEpisode]', err); }
+}
+
+export function triggerNextEpisodeCountdown(secs = 30) {
+    const panel = document.getElementById('next-episode-panel');
+    const href  = window.__nextEpisodeUrl;
+    if (!panel || !href || panel.classList.contains('is-counting')) return;
+
+    const fill     = document.getElementById('next-ep-fill');
+    const btnLabel = panel.querySelector('.next-ep-btn-label');
+    panel.classList.add('is-counting');
+    panel.classList.remove('is-hidden');
+
+    if (fill) {
+        fill.style.transition = 'none';
+        fill.style.transform  = 'scaleX(1)';
+        requestAnimationFrame(() => {
+            fill.style.transition  = `transform ${secs}s linear`;
+            fill.style.transformOrigin = 'left';
+            fill.style.transform   = 'scaleX(0)';
+        });
+    }
+
+    const timer = setInterval(() => {
+        secs--;
+        if (btnLabel) btnLabel.textContent = `${t('next_episode_auto')} (${secs}s)`;
+        if (secs <= 0) {
+            clearInterval(timer);
+            window.location.href = href;
+        }
+    }, 1000);
+
+    // Cancel on click or any key
+    const cancel = () => {
+        clearInterval(timer);
+        panel.classList.remove('is-counting');
+        if (fill) { fill.style.transition = 'none'; fill.style.transform = 'scaleX(1)'; }
+        if (btnLabel) btnLabel.textContent = t('watch_now');
+        document.removeEventListener('keydown', cancel);
+    };
+    panel.querySelector('#next-ep-watch')?.addEventListener('click', () => clearInterval(timer), { once: true });
+    document.addEventListener('keydown', cancel, { once: true });
 }
 
 // ── Similar Content ────────────────────────────────────────────
@@ -239,9 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initSimilarContent(meta, providerQA, apiBase);
 
     // Resume watching check
-    const contentUrl = container.dataset.contentUrl || window.location.pathname;
-    const season     = container.dataset.season  || '';
-    const episode    = container.dataset.episode || '';
+    const contentUrlRaw = container.dataset.contentUrl || window.location.pathname;
+    const contentUrl    = contentUrlRaw.includes('%') ? decodeURIComponent(contentUrlRaw) : contentUrlRaw;
+    const season        = container.dataset.season  || '';
+    const episode       = container.dataset.episode || '';
     const resumeKey  = (season && episode) ? `${contentUrl}::s${season}::e${episode}` : contentUrl;
     try {
         const resumeData = JSON.parse(localStorage.getItem('wb_resume_watching') || '{}');
@@ -257,4 +286,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     _initPlayerShare();
+
+    // Listen for next episode requests from VideoPlayer
+    window.addEventListener('player:requestNextEpisode', (e) => {
+        triggerNextEpisodeCountdown(e.detail?.secs ?? 30);
+    });
 });

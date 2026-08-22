@@ -1,6 +1,6 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
-import httpx
+import asyncio, httpx
 from typing       import Any
 from urllib.parse import unquote
 
@@ -60,8 +60,8 @@ class RemoteProviderClient:
         res = await self._get("/api/v1/get_main_page", params={
             "plugin"           : plugin_name,
             "page"             : str(page),
-            "encoded_url"      : unquote(url),
-            "encoded_category" : unquote(category)
+            "encoded_url"      : url,
+            "encoded_category" : category
         })
         return res if isinstance(res, list) else []
 
@@ -76,14 +76,14 @@ class RemoteProviderClient:
     async def load_item(self, plugin_name: str, url: str) -> dict[str, Any]:
         res = await self._get("/api/v1/load_item", params={
             "plugin"      : plugin_name,
-            "encoded_url" : unquote(url)
+            "encoded_url" : url
         })
         return res if isinstance(res, dict) else {}
 
     async def load_links(self, plugin_name: str, url: str) -> list[dict[str, Any]]:
         res = await self._get("/api/v1/load_links", params={
             "plugin"      : plugin_name,
-            "encoded_url" : unquote(url)
+            "encoded_url" : url
         })
         return res if isinstance(res, list) else []
 
@@ -92,3 +92,38 @@ class RemoteProviderClient:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.client.aclose()
+
+
+# --- Paylaşımlı, pooled client registry ---
+# provider_url her istekte değişebilir (kullanıcı bazlı seçim), bu yüzden tek bir global client
+# yeterli değil - ama aynı provider_url tekrar geldiğinde sıfırdan client açıp kapatmak yerine
+# (her sayfa görüntülemesinde TCP+TLS handshake + schema'yı yeniden çekme) aynı instance'ı,
+# connection pool'unu ve schema cache'ini yeniden kullanıyoruz.
+_client_registry      : dict[str, RemoteProviderClient] = {}
+_registry_lock                                          = asyncio.Lock()
+_MAX_REGISTRY_CLIENTS                                   = 16
+
+async def get_provider_client(base_url: str) -> RemoteProviderClient:
+    async with _registry_lock:
+        client = _client_registry.get(base_url)
+        if client is None:
+            if len(_client_registry) >= _MAX_REGISTRY_CLIENTS:
+                oldest_url = next(iter(_client_registry))
+                old_client = _client_registry.pop(oldest_url)
+                try:
+                    await old_client.client.aclose()
+                except Exception:
+                    pass
+
+            client                     = RemoteProviderClient(base_url)
+            _client_registry[base_url] = client
+        return client
+
+async def close_all_provider_clients():
+    async with _registry_lock:
+        for client in _client_registry.values():
+            try:
+                await client.client.aclose()
+            except Exception:
+                pass
+        _client_registry.clear()

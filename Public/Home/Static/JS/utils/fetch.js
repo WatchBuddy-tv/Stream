@@ -1,15 +1,50 @@
 // Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 import BuddyLogger from './BuddyLogger.min.js';
+import { t } from './dom.min.js';
+
+const APP_LINKS = {
+    android: 'https://play.google.com/store/apps/details?id=com.keyiflerolsun.watchbuddy',
+    ios: 'https://apps.apple.com/us/app/watchbuddy-watch-together/id6758553756'
+};
+
+export const showProviderRecoveryModal = (providerError) => {
+    const existing = document.getElementById('provider-recovery-modal');
+    if (existing) existing.remove();
+
+    const isRateLimit = providerError?.status_code === 429;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'provider-recovery-modal';
+    overlay.className = 'modal-overlay is-active provider-recovery-modal';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.innerHTML = `
+        <div class="modal-content">
+            <h2 class="modal-title"><i class="fas fa-mobile-screen-button"></i> ${t('provider_recovery_title')}</h2>
+            <p class="modal-body">${t(isRateLimit ? 'provider_recovery_rate_limit' : 'provider_recovery_message')}</p>
+            <div class="modal-actions">
+                <a class="button button-primary" href="${APP_LINKS.ios}" target="_blank" rel="noopener noreferrer"><i class="fab fa-apple"></i> ${t('download_apple')}</a>
+                <a class="button button-secondary" href="${APP_LINKS.android}" target="_blank" rel="noopener noreferrer"><i class="fab fa-google-play"></i> ${t('download_google')}</a>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+};
 
 export async function fetchJSON(url, options = {}) {
     try {
         const response = await fetch(url, options);
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const payload = await response.json();
+        if (payload?.provider_error) {
+            if ([403, 429].includes(payload.provider_error.status_code)) {
+                showProviderRecoveryModal(payload.provider_error);
+            }
+            const error = new Error(`Provider HTTP ${payload.provider_error.status_code}`);
+            error.providerError = payload.provider_error;
+            throw error;
         }
-
-        return await response.json();
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        return payload;
     } catch (error) {
         BuddyLogger.error('🌐', 'FETCHER', 'JSON Fetch Error', { 'Url': url, 'Details': error.message });
         throw error;
@@ -58,6 +93,15 @@ export class AbortableFetch {
             });
             // Remove controller on successful completion
             this.controllers.delete(controller);
+
+            // fetchJSON ile aynı sözleşme: provider_error varsa recovery modal göster (403 / 429).
+            // clone() kullanıyoruz çünkü orijinal response body'sini caller (ör. search.js) .json() ile okuyacak.
+            response.clone().json().then(payload => {
+                if (payload?.provider_error && [403, 429].includes(payload.provider_error.status_code)) {
+                    showProviderRecoveryModal(payload.provider_error);
+                }
+            }).catch(() => { /* JSON değilse veya boşsa yoksay */ });
+
             return response;
         } catch (error) {
             if (error.name === 'AbortError') {

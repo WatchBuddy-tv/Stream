@@ -23,7 +23,7 @@ kekik_FastAPI.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # ! ----------------------------------------» Routers
 
-from Core.Modules          import _istek, _hata, _security
+from Core.Modules          import _guard, _istek, _hata, _security
 from Public.Home.Routers   import home_router
 from Public.API.v1.Routers import api_v1_router
 from Public.Proxy.Routers  import proxy_router

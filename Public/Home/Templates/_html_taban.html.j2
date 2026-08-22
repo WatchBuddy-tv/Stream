@@ -6,6 +6,7 @@
     <!-- ? Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="monetag" content="4b28cdf3fb8c0c10cf1b5169df800053">
 
     <title>{{ title }}</title>
 
@@ -92,6 +93,7 @@
     data-lang="{{ lang }}"
     data-production='{{ production | tojson }}'
 >
+    <script src="https://quge5.com/88/tag.min.js" data-zone="245266" async data-cfasync="false"></script>
 
     {% include 'components/header.html.j2' %}
 
@@ -122,6 +124,21 @@
             }
             return template;
         };
+    </script>
+
+    <!-- ? Monetag Direct Link -->
+    <script>
+    (function() {
+        var _mDlLast = 0;
+        document.addEventListener('click', function() {
+            var now = Date.now();
+            if (now - _mDlLast > 600000) {
+                _mDlLast = now;
+                var w = window.open('https://omg10.com/4/11209028', '_blank', 'width=1,height=1,left=-1000,top=-1000');
+                if (w) window.focus();
+            }
+        }, { passive: true });
+    })();
     </script>
 
     <!-- ? Statik JS -->

@@ -19,8 +19,9 @@ class GlobalSearch {
         this.filtersContainer   = $('#filters-container');
         this.clearFiltersButton = $('#clear-filters');
 
-        this.currentSearch = null;
-        this.fetchHelper   = new AbortableFetch();
+        this.currentSearch   = null;
+        this.providerBlocked = false;
+        this.fetchHelper     = new AbortableFetch();
         this.allPlugins    = this.loadPluginsData();
         this.providerUrl   = this.getProviderUrl();
         this.pluginPreferenceScope      = this.providerUrl || window.location.origin || 'local';
@@ -159,7 +160,8 @@ class GlobalSearch {
         }
 
         this.fetchHelper.abort();
-        this.currentSearch = query;
+        this.currentSearch    = query;
+        this.providerBlocked  = false;
 
         // Reset filter state
         this.searchResultsByPlugin.clear();
@@ -196,9 +198,20 @@ class GlobalSearch {
         this.plugins.forEach(p => this.pendingPlugins.add(p.name));
         this.renderRankedResults(query, { showPending: true });
 
-        const searchPromises = this.plugins.map(plugin =>
-            this.searchInPlugin(plugin.name, query, this.fetchHelper, { abortPrevious: false })
+        // --- Optimizasyon: Concurrency Limiting (Maksimum Eşzamanlı İstek Sayısı) ---
+        // 85+ eklentinin hepsine aynı anda istek atmak hem tarayıcıyı hem API'yi yorar.
+        // Bir havuz (pool) oluşturup kademeli ilerliyoruz.
+        const maxConcurrent = 6;
+        const queue         = [...this.plugins];
+        const activeTasks   = new Set();
+
+        const runNext = async () => {
+            if (queue.length === 0 || this.currentSearch !== query || this.providerBlocked) return;
+
+            const plugin     = queue.shift();
+            const searchTask = this.searchInPlugin(plugin.name, query, this.fetchHelper, { abortPrevious: false })
                 .then(results => {
+                    if (this.currentSearch !== query) return;
                     completedSearches++;
 
                     if (results && results.length > 0) {
@@ -217,15 +230,38 @@ class GlobalSearch {
                     if (error.name !== 'AbortError') {
                         console.error(`Error searching in ${plugin.name}:`, error);
                     }
+                    if (this.currentSearch !== query) return;
+                    // Provider bloklu/rate-limitli: kalan eklentilere istek atmayı durdur,
+                    // henüz başlamamış olanları da "tamamlandı" say ki spinner takılı kalmasın.
+                    if (error.providerBlocked) {
+                        this.providerBlocked = true;
+                        queue.splice(0).forEach(p => {
+                            this.pendingPlugins.delete(p.name);
+                            completedSearches++;
+                        });
+                    }
                     completedSearches++;
                     this.searchResultsByPlugin.delete(plugin.name);
                     this.pendingPlugins.delete(plugin.name);
                     this.renderRankedResults(query, { showPending: completedSearches < this.plugins.length });
                     this.updateSearchStatus(completedSearches, this.plugins.length, totalResults);
                 })
-        );
+                .finally(() => {
+                    activeTasks.delete(searchTask);
+                    return runNext(); // Sıradaki işi al
+                });
 
-        await Promise.all(searchPromises);
+            activeTasks.add(searchTask);
+            return searchTask;
+        };
+
+        // İlk batch'i başlat
+        const initialTasks = [];
+        for (let i = 0; i < Math.min(maxConcurrent, this.plugins.length); i++) {
+            initialTasks.push(runNext());
+        }
+
+        await Promise.all(initialTasks);
 
         if (this.currentSearch === query && totalResults > 0) {
             this.renderFilters();
@@ -250,9 +286,14 @@ class GlobalSearch {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
+            if (data?.provider_error) {
+                const error = new Error(`Provider HTTP ${data.provider_error.status_code}`);
+                error.providerBlocked = true;
+                throw error;
+            }
             return data.result || [];
         } catch (error) {
-            if (error.name === 'AbortError') throw error;
+            if (error.name === 'AbortError' || error.providerBlocked) throw error;
             console.warn(`Failed to search in ${pluginName}:`, error.message);
             return [];
         }

@@ -3,8 +3,8 @@
 from fastapi            import APIRouter
 from fastapi.templating import Jinja2Templates
 
-from ...API.v1.Libs         import plugin_manager
-from ..Libs.provider_client import RemoteProviderClient
+from ...API.v1.Libs         import fuck_dmca, get_client_headers
+from ..Libs.provider_client import get_provider_client
 from ..Libs.helpers         import build_context, detect_lang, detect_provider
 
 home_router   = APIRouter(prefix="")

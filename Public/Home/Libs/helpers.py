@@ -7,7 +7,7 @@ from fastapi      import Request
 from urllib.parse import quote, unquote
 
 from Settings         import PROVIDER_NAME, PRODUCTION
-from .provider_client import RemoteProviderClient
+from .provider_client import get_provider_client
 
 _TRANSLATIONS    = {}
 _SUPPORTED_LANGS = ("tr", "en", "fr", "ru", "uk", "hi", "zh")
@@ -94,8 +94,8 @@ async def build_context(request: Request, **extra):
     # Remote provider ise schema'dan provider_name çek
     if provider_url:
         try:
-            async with RemoteProviderClient(provider_url) as client:
-                provider_name = await client.get_provider_name()
+            client        = await get_provider_client(provider_url)
+            provider_name = await client.get_provider_name()
         except:
             # Schema çekilemezse default kullan
             provider_name = "Remote Provider"
