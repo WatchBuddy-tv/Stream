@@ -1,13 +1,13 @@
 # Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 from Core import Request, HTMLResponse, JSONResponse
-from .    import home_router, home_template, build_context, RemoteProviderClient, plugin_manager
+from .    import home_router, home_template, build_context, get_provider_client, fuck_dmca, get_client_headers
 
 @home_router.get("/health")
 @home_router.head("/health")
 async def health_check():
     """API sağlık kontrolü"""
-    return JSONResponse({"success": True, "status": "healthy"})
+    return JSONResponse({"success" : True, "status" : "healthy"})
 
 @home_router.get("/", response_class=HTMLResponse)
 async def ana_sayfa(request: Request):
@@ -18,24 +18,16 @@ async def ana_sayfa(request: Request):
     plugins = []
     try:
         if provider_url:
-            async with RemoteProviderClient(provider_url) as client:
-                plugins = await client.get_plugins()
+            client  = await get_provider_client(provider_url)
+            plugins = await client.get_plugins()
         else:
-            for name in plugin_manager.get_plugin_names():
-                plugin = plugin_manager.select_plugin(name)
-                plugins.append({
-                    "name"        : plugin.name,
-                    "description" : plugin.description,
-                    "language"    : plugin.language,
-                    "main_url"    : plugin.main_url,
-                    "favicon"     : plugin.favicon
-                })
+            plugins = await fuck_dmca("/get_all_plugins", request.state.veri, client_headers=get_client_headers(request))
 
         context.update({
             "title"       : context["tr"]("home_title", provider_name=context["provider_name"]),
             "description" : context["tr"]("home_desc"),
             "title_key"   : "home_title",
-            "title_vars"  : {"provider_name": context["provider_name"]},
+            "title_vars"  : {"provider_name" : context["provider_name"]},
             "desc_key"    : "home_desc",
             "desc_vars"   : {},
             "plugins"     : plugins
@@ -54,7 +46,7 @@ async def ana_sayfa(request: Request):
             title       = "",
             description = "",
             title_key   = "title_error",
-            title_vars  = {"context": context["provider_name"]},
+            title_vars  = {"context" : context["provider_name"]},
             desc_key    = "error_desc",
             desc_vars   = {},
             hata        = hata

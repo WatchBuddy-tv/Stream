@@ -6,6 +6,7 @@
     <!-- ? Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="monetag" content="4b28cdf3fb8c0c10cf1b5169df800053">
 
     <title>{{ title }}</title>
 
@@ -62,7 +63,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mulish:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" crossorigin="anonymous">
 
     <!-- ? Statik CSS -->
-    <link rel="stylesheet" href="{{ url_for('static_home', path='CSS/style.bundle.min.css') }}" fetchpriority="high">
+    <link rel="stylesheet" href="{{ url_for('static_home', path='CSS/style.bundle.min.css') }}?v={{ asset_version() }}" fetchpriority="high">
 
     <!-- ? Ek CSS -->
     {%- block css %}
@@ -92,6 +93,7 @@
     data-lang="{{ lang }}"
     data-production='{{ production | tojson }}'
 >
+    <script src="https://quge5.com/88/tag.min.js" data-zone="245266" async data-cfasync="false"></script>
 
     {% include 'components/header.html.j2' %}
 
@@ -124,8 +126,23 @@
         };
     </script>
 
+    <!-- ? Monetag Direct Link -->
+    <script>
+    (function() {
+        var _mDlLast = 0;
+        document.addEventListener('click', function() {
+            var now = Date.now();
+            if (now - _mDlLast > 600000) {
+                _mDlLast = now;
+                var w = window.open('https://omg10.com/4/11209028', '_blank', 'width=1,height=1,left=-1000,top=-1000');
+                if (w) window.focus();
+            }
+        }, { passive: true });
+    })();
+    </script>
+
     <!-- ? Statik JS -->
-    <script type="module" src="{{ url_for('static_home', path='JS/main.min.js') }}" defer crossorigin="anonymous"></script>
+    <script type="module" src="{{ url_for('static_home', path='JS/main.min.js') }}?v={{ asset_version() }}" defer crossorigin="anonymous"></script>
 
     <!-- ? Ek JS -->
     {%- block js %}

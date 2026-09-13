@@ -15,16 +15,4 @@ async def get_api_v1_router(request: Request):
 
 
 # ! ----------------------------------------» Routers
-from . import (
-    health,
-    schema,
-    get_plugin_names,
-    get_all_plugins,
-    get_plugin,
-    get_main_page,
-    search,
-    load_item,
-    load_links,
-    extract,
-    ytdlp_extract
-)
+from . import health, schema, get_plugin_names, get_all_plugins, get_plugin, get_main_page, search, load_item, load_links, extract, ytdlp_extract

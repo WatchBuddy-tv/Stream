@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     async with _availability_lock:
         if not _availability_checked:
             try:
-                from Public.API.v1.Libs import plugin_manager
+                from Public.API.v1.Libs import plugin_manager  # noqa: lazy — circular: Core.Modules -> Public.API.v1.Libs -> Core
 
                 plugin_items = list(plugin_manager.plugins.items())
                 sem          = asyncio.Semaphore(10)
@@ -60,3 +60,16 @@ async def lifespan(app: FastAPI):
                 konsol.log(f"[yellow][!] Eklenti erişim kontrolü atlandı: {hata}")
 
     yield
+
+    # Shutdown
+    with suppress(Exception):
+        from Public.Proxy.Libs.helpers import shared_client  # noqa: lazy — circular: Core.Modules -> Public.Proxy.Libs -> Core
+        await shared_client.aclose()
+
+    with suppress(Exception):
+        from Public.Home.Libs.provider_client import close_all_provider_clients  # noqa: lazy — circular: Core.Modules -> Public.Home.Libs -> Core
+        await close_all_provider_clients()
+
+    with suppress(Exception):
+        from Public.API.v1.Libs import _client  # noqa: lazy — circular: Core.Modules -> Public.API.v1.Libs -> Core
+        await _client.aclose()

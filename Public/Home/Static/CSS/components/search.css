@@ -143,95 +143,7 @@
   transform: scale(0.96);
 }
 
-/* ==================== HERO SETTINGS ACTIONS ==================== */
-
-.hero-settings-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-  margin-top: var(--spacing-lg);
-}
-
-.hero-settings-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.hero-settings-toggle .toggle-chevron {
-  font-size: var(--font-size-xs);
-  transition: transform var(--transition-speed) var(--transition-timing);
-}
-
-/* ==================== INLINE SETTINGS PANELS ==================== */
-
-.settings-panel {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto var(--spacing-xxl);
-  transition: all 0.3s ease-out;
-}
-
-.settings-panel.is-hidden {
-  display: none;
-}
-
-.settings-panel-shell {
-  padding: clamp(18px, 3vw, 28px);
-  border: 1px solid var(--glass-edge);
-  border-radius: var(--border-radius-xl);
-  background: var(--glass-panel);
-  backdrop-filter: var(--glass-filter-hero);
-  -webkit-backdrop-filter: var(--glass-filter-hero);
-  box-shadow: var(--inner-shadow), var(--shadow-soft);
-}
-
-.settings-panel-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-}
-
-.settings-panel-copy {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-
-.settings-panel-kicker {
-  display: inline-flex;
-  align-self: flex-start;
-  padding: 4px 10px;
-  border-radius: var(--border-radius-pill);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--glass-edge);
-  color: var(--text-muted);
-  font-size: var(--font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.settings-panel-title {
-  margin: 0;
-  color: var(--primary-color);
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
-  font-family: var(--font-family-display);
-  letter-spacing: -0.03em;
-}
-
-.settings-panel-subtitle {
-  margin: 0;
-  max-width: 58ch;
-  color: var(--text-muted);
-  line-height: 1.55;
-}
+/* ==================== SETTINGS MODAL TAB BODY ==================== */
 
 .settings-panel-body {
   display: grid;
@@ -243,6 +155,7 @@
   flex-shrink: 0;
   min-width: min(100%, 220px);
   align-self: flex-start;
+  margin-bottom: var(--spacing-lg);
   border: 1px solid var(--glass-edge);
   border-left-width: 3px;
   border-radius: var(--border-radius-lg);
@@ -736,13 +649,172 @@
   overflow: hidden;
 }
 
-.card.is-plugin-hidden {
+.card.is-plugin-hidden,
+.card.is-plugin-filtered {
   display: none !important;
 }
 
 .plugin-grid-empty {
   grid-column: 1 / -1;
   width: 100%;
+}
+
+/* ==================== PLUGIN GRID TOOLBAR ==================== */
+
+.plugins-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-lg);
+}
+
+.plugins-list-head .section-heading {
+  margin-bottom: 0;
+}
+
+.plugin-grid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.plugin-grid-lang-filter {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.plugin-grid-search {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 420px;
+}
+
+.plugin-grid-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: var(--font-size-sm);
+  pointer-events: none;
+}
+
+.plugin-grid-search input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 38px;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-panel-soft);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-speed) var(--transition-timing);
+}
+
+.plugin-grid-search input:focus {
+  outline: none;
+  border-color: rgba(239, 127, 26, 0.4);
+}
+
+.plugin-grid-search input::placeholder {
+  color: var(--text-dim);
+}
+
+.filter-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-panel-soft);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-speed) var(--transition-timing),
+              border-color var(--transition-speed) var(--transition-timing);
+}
+
+.filter-trigger-btn:hover {
+  color: var(--text-color);
+}
+
+.filter-trigger-btn.is-active {
+  color: var(--primary-color);
+  border-color: rgba(239, 127, 26, 0.4);
+}
+
+.filter-trigger-btn i:last-child {
+  font-size: var(--font-size-xs);
+  opacity: 0.7;
+}
+
+.filter-sheet {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: var(--z-index-dropdown);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--glass-edge);
+  background: var(--glass-panel);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--inner-shadow), var(--shadow-strong);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 127, 26, 0.35) transparent;
+}
+
+.filter-sheet::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-sheet::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-sheet::-webkit-scrollbar-thumb {
+  background-color: rgba(239, 127, 26, 0.35);
+  border-radius: var(--border-radius-pill);
+}
+
+.filter-sheet-option {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--transition-speed) var(--transition-timing),
+              background var(--transition-speed) var(--transition-timing);
+}
+
+.filter-sheet-option:hover {
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.filter-sheet-option.active {
+  color: var(--primary-color);
+  background: var(--primary-soft);
 }
 
 /* ==================== SEARCH RESULT CARDS ==================== */
@@ -910,8 +982,20 @@
 
 .plugin-lang-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--spacing-xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.plugin-lang-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.plugin-lang-filters .filter-pill {
+  flex: 0 0 auto;
 }
 
 .filter-pill {
@@ -1096,27 +1180,8 @@
     min-width: 0;
   }
 
-  .settings-panel-head {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-  }
-
   .settings-panel-body {
     gap: var(--spacing-sm);
-  }
-
-  .settings-panel-shell {
-    padding: var(--spacing-md);
-  }
-
-  .settings-panel-title {
-    font-size: var(--font-size-lg);
-  }
-
-  .settings-panel-kicker {
-    font-size: 0.6rem;
-    padding: 3px 8px;
   }
 
   .plugin-preferences-list {
@@ -1211,20 +1276,6 @@
   .plugin-preference-toggle {
     min-height: 30px;
   }
-
-  /* Keep hero toggle buttons side-by-side — full-width stacked looks too large */
-  .hero-settings-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-    justify-content: center;
-  }
-
-  .hero-settings-toggle {
-    flex: 1;
-    min-width: 130px;
-    justify-content: center;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1242,10 +1293,6 @@
   .search-button {
     min-width: 48px;
     padding: 0 var(--spacing-lg);
-  }
-
-  .settings-panel-shell {
-    padding: var(--spacing-md);
   }
 
   .provider-help-card {
@@ -1315,10 +1362,6 @@
 }
 
 @media (min-width: 1200px) {
-  .settings-panel {
-    max-width: 900px;
-  }
-
   .plugin-preferences-list {
     grid-template-columns: repeat(2, 1fr);
   }

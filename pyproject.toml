@@ -1,7 +1,8 @@
 [project]
-name         = "Stream"
-version      = "0.1.0"
-dependencies = [
+name            = "Stream"
+version         = "0.1.0"
+requires-python = ">=3.14"
+dependencies    = [
     "Kekik",
     "httpx[http2]",
     "fastapi",
@@ -14,10 +15,6 @@ dependencies = [
     "Jinja2",
     "python-multipart",
     "python-dotenv",
-    "csscompressor",
-    "rjsmin",
-    "KekikStream>=3.2.0",
-    "yt-dlp[default,curl-cffi]",
 ]
 
 [build-system]

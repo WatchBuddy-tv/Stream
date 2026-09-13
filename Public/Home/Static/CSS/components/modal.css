@@ -58,6 +58,179 @@
   gap: var(--spacing-sm);
 }
 
+/* ==================== SETTINGS MODAL ==================== */
+
+.settings-modal-content {
+  max-width: 640px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: min(720px, 86vh);
+}
+
+.settings-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--glass-edge);
+  flex-shrink: 0;
+}
+
+.settings-modal-title {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.modal-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--border-radius-sm);
+  color: var(--text-muted);
+  background: var(--surface-glass);
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: color var(--transition-speed) var(--transition-timing),
+              background var(--transition-speed) var(--transition-timing);
+}
+
+.modal-close-btn:hover {
+  color: var(--primary-color);
+  background: var(--primary-soft);
+}
+
+.settings-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-xl);
+  border-bottom: 1px solid var(--glass-edge);
+  flex-shrink: 0;
+}
+
+.settings-tab-btn {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-sm);
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: color var(--transition-speed) var(--transition-timing),
+              border-color var(--transition-speed) var(--transition-timing);
+}
+
+.settings-tab-btn span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.settings-tab-btn:hover {
+  color: var(--text-color);
+}
+
+.settings-tab-btn.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.settings-modal-body {
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 127, 26, 0.35) transparent;
+}
+
+.settings-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-modal-body::-webkit-scrollbar-thumb {
+  background-color: rgba(239, 127, 26, 0.35);
+  border-radius: var(--border-radius-pill);
+}
+
+.settings-tab-pane {
+  display: none;
+}
+
+.settings-tab-pane.active {
+  display: block;
+}
+
+.settings-tab-subtitle {
+  margin: 0 0 var(--spacing-lg);
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+@media (max-width: 768px) {
+  .settings-modal-content {
+    max-width: 94vw;
+    max-height: 90vh;
+  }
+
+  .settings-modal-head,
+  .settings-tabs {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+
+  .settings-modal-body {
+    padding: var(--spacing-lg);
+  }
+
+  .settings-tab-btn {
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+
+  .settings-tab-btn i {
+    display: none;
+  }
+}
+
+.provider-recovery-modal .modal-content {
+  text-align: center;
+  max-width: 420px;
+  padding: var(--spacing-xl);
+}
+
+.provider-recovery-modal .modal-title i {
+  color: var(--primary);
+  margin-right: var(--spacing-xs);
+}
+
+.provider-recovery-modal .modal-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: stretch;
+}
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .modal-content {
@@ -71,6 +244,10 @@
 
   .modal-actions {
     flex-direction: column;
+  }
+
+  .provider-recovery-modal .modal-actions {
+    display: flex;
   }
 
   .modal-actions .button {

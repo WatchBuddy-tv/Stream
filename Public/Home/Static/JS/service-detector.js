@@ -64,11 +64,16 @@ const checkProxyHealth = async (baseUrl) => {
 };
 
 // Build full proxy URL for video/subtitle
-export const buildProxyUrl = (url, userAgent = '', referer = '', endpoint = 'video', proxyBase = null) => {
+export const buildProxyUrl = (url, userAgent = '', referer = '', endpoint = 'video', proxyBase = null, extraHeaders = null) => {
     const params = new URLSearchParams();
     params.append('url', url);
     if (userAgent) params.append('user_agent', userAgent);
     if (referer) params.append('referer', referer);
+    // User-Agent/Referer dışındaki ek başlıklar (Origin/Auth/Cookie vb.) — bazı
+    // kaynaklar proxy üzerinden izlerken de bunlara ihtiyaç duyuyor.
+    if (endpoint === 'video' && extraHeaders && Object.keys(extraHeaders).length > 0) {
+        params.append('extra_headers', JSON.stringify(extraHeaders));
+    }
 
     // Subtitle için her zaman aynı origin (Python proxy) kullan
     // Video <track> elementleri cross-origin kısıtlamalarına tabidir

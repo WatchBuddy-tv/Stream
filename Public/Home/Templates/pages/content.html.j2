@@ -73,7 +73,7 @@
         {% for s in seasons %}
         <div class="episode-grid season-panel{% if loop.first %} active{% endif %}" data-season="{{ s }}">
             {% for ep in content.episodes | selectattr('season', 'equalto', s) | sort(attribute='episode') %}
-            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card" data-season="{{ ep.season | default('', true) }}" data-episode="{{ ep.episode | default(loop.index, true) }}">
+            <a href="/izle/{{ eklenti_adi }}?url={{ ep.url }}&baslik={{ content.title | urlencode }}&bolum_adi={{ ep.title | urlencode }}&content_url={{ content.url }}&poster_url={{ content.poster | default('', true) | urlencode }}&year={{ content.year | default('', true) }}&rating={{ content.rating | default('', true) }}&season={{ ep.season | default('', true) }}&episode={{ ep.episode | default('', true) }}{{ provider_query_amp }}" class="episode-card" data-season="{{ ep.season | default('', true) }}" data-episode="{{ ep.episode | default(loop.index, true) }}">
                 <span class="episode-number">{{ ep.episode or loop.index }}</span>
                 <span class="episode-title">{{ ep.title or (tr('season_title').replace('{season}', s|string) ~ ' E' ~ (ep.episode or loop.index)|string) }}</span>
             </a>

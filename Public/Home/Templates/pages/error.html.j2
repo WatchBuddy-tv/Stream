@@ -13,10 +13,17 @@
 <div class="error-page" data-error-code="{{ error_code | default('!', true) }}">
     <div class="error-page-inner">
         <i class="fas fa-exclamation-triangle error-hero-icon"></i>
+        {% if hata.status_code is defined and hata.status_code in [403, 429] %}
+        <h1 class="error-page-title">{{ tr('provider_recovery_title') }}</h1>
+        <div class="error-box">
+            <p>{{ tr('provider_recovery_rate_limit') if hata.status_code == 429 else tr('provider_recovery_message') }}</p>
+        </div>
+        {% else %}
         <h1 class="error-page-title" data-i18n="error_heading">{{ tr('error_heading') }}</h1>
         <div class="error-box">
             <p>{{ hata }}</p>
         </div>
+        {% endif %}
         <div class="error-actions">
             <a href="/{{ provider_query if provider_query else '' }}" class="button button-primary">
                 <i class="fas fa-home"></i> <span data-i18n="back_home">{{ tr('back_home') }}</span>
@@ -24,4 +31,10 @@
         </div>
     </div>
 </div>
+{% if hata.status_code is defined and hata.status_code in [403, 429] %}
+<script type="module">
+    import { showProviderRecoveryModal } from "{{ url_for('static_home', path='JS/utils/fetch.min.js') }}";
+    showProviderRecoveryModal({ status_code: {{ hata.status_code }} });
+</script>
+{% endif %}
 {% endblock %}

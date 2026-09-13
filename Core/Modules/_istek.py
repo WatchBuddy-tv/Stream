@@ -7,6 +7,16 @@ from user_agents import parse
 from ._IP_Log    import ip_log
 import asyncio
 
+# asyncio.create_task()'in dönüş değeri saklanmazsa event loop task'a yalnızca weak reference
+# tutar - hiçbir güçlü referans kalmazsa GC task'ı ÇALIŞIRKEN silebilir. Fire-and-forget log.
+_log_tasks: set[asyncio.Task] = set()
+
+def _spawn_log(coro) -> asyncio.Task:
+    task = asyncio.create_task(coro)
+    _log_tasks.add(task)
+    task.add_done_callback(_log_tasks.discard)
+    return task
+
 @kekik_FastAPI.middleware("http")
 async def istekten_once_sonra(request: Request, call_next):
     baslangic_zamani = time()
@@ -37,15 +47,16 @@ async def istekten_once_sonra(request: Request, call_next):
     )
 
     log_veri = {
-        "id"     : request.headers.get("X-Request-ID") or "",
-        "method" : request.method,
-        "url"    : str(request.url).rstrip("?").split("?")[0],
-        "veri"   : request.state.veri,
-        "kod"    : None,
-        "sure"   : None,
-        "ip"     : client_ip,
-        "cihaz"  : cihaz,
-        "host"   : request.url.hostname
+        "id"         : request.headers.get("X-Request-ID") or "",
+        "method"     : request.method,
+        "url"        : str(request.url).rstrip("?").split("?")[0],
+        "veri"       : request.state.veri,
+        "kod"        : None,
+        "sure"       : None,
+        "ip"         : client_ip,
+        "ip_display" : ip_w_cf,
+        "cihaz"      : cihaz,
+        "host"       : request.url.hostname
     }
 
     # Dosya işlemleri için daha uzun timeout
@@ -56,10 +67,10 @@ async def istekten_once_sonra(request: Request, call_next):
         response = await asyncio.wait_for(call_next(request), timeout=timeout_suresi)
         log_veri["kod"] = response.status_code if response else 502
         if not response:
-            response = JSONResponse(status_code=502, content={"ups": "Yanıt Gelmedi.."})
+            response = JSONResponse(status_code=502, content={"ups" : "Yanıt Gelmedi.."})
     except asyncio.TimeoutError:
         log_veri["kod"] = 504
-        response        = JSONResponse(status_code=504, content={"ups": "Zaman Aşımı.."})
+        response        = JSONResponse(status_code=504, content={"ups" : "Zaman Aşımı.."})
         konsol.log(f"[red]⏱️ Timeout:[/] {request.url.path} - {timeout_suresi}sn aşıldı")
     except asyncio.CancelledError:
         log_veri["kod"] = 499  # Client Closed Request
@@ -72,7 +83,7 @@ async def istekten_once_sonra(request: Request, call_next):
         raise
     except Exception as exc:
         log_veri["kod"] = 500
-        response        = JSONResponse(status_code=500, content={"ups": "Sunucu Hatası.."})
+        response        = JSONResponse(status_code=500, content={"ups" : "Sunucu Hatası.."})
         konsol.log(f"[red]❌ Beklenmeyen hata:[/] {request.url.path} - {exc}")
 
     for skip_path in ("/favicon.ico", "/static", "/webfonts", "/manifest.json", "com.chrome.devtools.json", "/proxy", "/health"):
@@ -80,7 +91,7 @@ async def istekten_once_sonra(request: Request, call_next):
             return response
 
     log_veri["sure"] = round(time() - baslangic_zamani, 2)
-    await log_salla(log_veri, request)
+    _spawn_log(log_salla(log_veri, request))
 
     return response
 
@@ -116,10 +127,10 @@ async def log_salla(log_veri: dict, request: Request):
     if log_veri["id"]:
         ip_line = (
             f"  {ip_label} [bold bright_blue]{log_veri['id']}[/]"
-            f"[bold green]@[/][bold red]{log_veri['ip']}[/]"
+            f"[bold green]@[/][bold red]{log_veri['ip_display']}[/]"
         )
     else:
-        ip_line = f"  {ip_label} [bold red]{log_veri['ip']}[/]"
+        ip_line = f"  {ip_label} [bold red]{log_veri['ip_display']}[/]"
     log_lines.append(ip_line)
 
     ip_detay  = await ip_log(log_veri["ip"])
