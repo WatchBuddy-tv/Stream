@@ -2,19 +2,17 @@
 
 import json
 from pathlib      import Path
-from typing       import Optional, Any
 from fastapi      import Request
 from urllib.parse import quote, unquote
 
 from Settings         import PROVIDER_NAME, PRODUCTION
-from .provider_client import RemoteProviderClient
+from .provider_client import get_provider_client
 
 _TRANSLATIONS    = {}
 _SUPPORTED_LANGS = ("tr", "en", "fr", "ru", "uk", "hi", "zh")
 _DEFAULT_LANG    = "en"
 
 def _load_translations():
-    global _TRANSLATIONS
     if _TRANSLATIONS:
         return _TRANSLATIONS
     translations_dir = Path(__file__).resolve().parents[1] / "Translations"
@@ -54,7 +52,7 @@ def detect_lang(request: Request) -> str:
     # 4. Default dil
     return _DEFAULT_LANG
 
-def detect_provider(request: Request) -> Optional[str]:
+def detect_provider(request: Request) -> str | None:
     # Query param öncelikli (yeni provider seçimi için)
     provider = request.query_params.get("provider")
     if provider:
@@ -73,6 +71,14 @@ def detect_provider(request: Request) -> Optional[str]:
         return _url
 
     return None
+
+def resolve_asset_version(js_path: str, css_path: str) -> int:
+    js_asset  = Path(js_path)
+    css_asset = Path(css_path)
+    return int(max(
+        js_asset.stat().st_mtime if js_asset.exists() else 0,
+        css_asset.stat().st_mtime if css_asset.exists() else 0
+    ))
 
 async def build_context(request: Request, **extra):
     lang             = detect_lang(request)
@@ -94,8 +100,8 @@ async def build_context(request: Request, **extra):
     # Remote provider ise schema'dan provider_name çek
     if provider_url:
         try:
-            async with RemoteProviderClient(provider_url) as client:
-                provider_name = await client.get_provider_name()
+            client        = await get_provider_client(provider_url)
+            provider_name = await client.get_provider_name()
         except:
             # Schema çekilemezse default kullan
             provider_name = "Remote Provider"

@@ -30,6 +30,10 @@ RUN apt-get update -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# * esbuild kurulumu (JS/CSS bundle & minify — statik binary, Node/npm gerekmez)
+RUN curl -fsSL https://esbuild.github.io/dl/latest | sh && \
+    mv esbuild /usr/local/bin/esbuild
+
 # * Standart ortam değişkenleri
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

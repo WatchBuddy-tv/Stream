@@ -6,13 +6,14 @@ import asyncio
 class SegmentCache:
     """
     LRU cache - HLS video segmentleri için
-    - 128MB boyut limiti
+    - 32MB boyut limiti
     - En az kullanılan (LRU) segment'ler silinir
-    - 15 dakika hard TTL (stream token güvenliği için)
+    - 5 dakika hard TTL
     """
 
-    def __init__(self, max_size_mb: int = 128, hard_ttl_seconds: int = 900):  # 900s = 15 dakika
+    def __init__(self, max_size_mb: int = 32, hard_ttl_seconds: int = 300):
         self.max_size_bytes   = max_size_mb * 1024 * 1024
+        self.max_item_bytes   = 5 * 1024 * 1024  # 5MB tekil segment limiti
         self.hard_ttl_seconds = hard_ttl_seconds
 
         # Cache storage: {url: (content, created_at, last_access, size)}
@@ -28,34 +29,32 @@ class SegmentCache:
 
             content, created_at, _, size = self._cache[url]
 
-            # Hard TTL kontrolü (15 dakika)
+            # Hard TTL kontrolü
             if time() - created_at > self.hard_ttl_seconds:
-                # Süresi dolmuş, sil
                 del self._cache[url]
                 self._total_size -= size
                 return None
 
             # Last access time'ı güncelle (LRU için)
             self._cache[url] = (content, created_at, time(), size)
-
             return content
 
     async def set(self, url: str, content: bytes):
         """Segment'i cache'e ekle"""
+        content_size = len(content)
+
+        # Max item size ve max cache size kontrolü
+        if content_size > self.max_item_bytes or content_size > self.max_size_bytes:
+            return
+
         async with self._lock:
-            content_size = len(content)
-
-            # Max size kontrolü - yeni içerik çok büyükse cache'leme
-            if content_size > self.max_size_bytes:
-                return
-
             # Eğer bu URL zaten cache'deyse, önce eski boyutunu çıkar
             if url in self._cache:
                 _, _, _, old_size = self._cache[url]
                 self._total_size -= old_size
 
             # Yeni içeriği ekle (content, created_at, last_access, size)
-            current_time = time()
+            current_time     = time()
             self._cache[url] = (content, current_time, current_time, content_size)
             self._total_size += content_size
 
@@ -63,10 +62,10 @@ class SegmentCache:
             await self._evict_if_needed()
 
     async def _evict_if_needed(self):
-        """Gerekirse en az kullanılan itemları sil"""
+        """Gerekirse en az kullanılan ve süresi dolmuş itemları sil"""
         current_time = time()
 
-        # Hard TTL dolmuş itemları temizle (15 dakika)
+        # Hard TTL dolmuş itemları temizle
         expired_urls = [
             url for url, (_, created_at, _, _) in self._cache.items()
             if current_time - created_at > self.hard_ttl_seconds
@@ -76,13 +75,12 @@ class SegmentCache:
             del self._cache[url]
             self._total_size -= size
 
-        # Hala 128MB limiti aşılmışsa, en az kullanılan (LRU) itemları sil
+        # Hala limit aşılmışsa, en az kullanılan (LRU) itemları sil
         while self._total_size > self.max_size_bytes:
             if not self._cache:
                 break
 
-            # En az kullanılan item'ı bul (en küçük last_access)
-            lru_url = min(self._cache.items(), key=lambda x: x[1][2])[0]  # [1][2] = last_access
+            lru_url = min(self._cache.items(), key=lambda x: x[1][2])[0]
             _, _, _, size = self._cache[lru_url]
             del self._cache[lru_url]
             self._total_size -= size
@@ -97,4 +95,4 @@ class SegmentCache:
         }
 
 # Global cache instance
-segment_cache = SegmentCache(max_size_mb=128, hard_ttl_seconds=900)
+segment_cache = SegmentCache(max_size_mb=32, hard_ttl_seconds=300)

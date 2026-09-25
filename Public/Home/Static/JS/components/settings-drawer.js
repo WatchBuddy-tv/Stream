@@ -16,41 +16,183 @@ class SettingsManager {
 
     init() {
         this.loadPlugins();
-        this.bindPanelToggles();
+        this.bindModal();
         this.bindProvider();
         this._buildPreferences();
+        this.bindGridFilter();
     }
 
-    /* ── Collapsible panel toggles ── */
-    bindPanelToggles() {
-        const providerBtn   = $('#toggle-provider-settings');
-        const pluginBtn     = $('#toggle-plugin-settings');
-        const providerPanel = $('#provider-settings-panel');
-        const pluginPanel   = $('#plugin-settings-panel');
+    /* ── Settings modal (Provider / Plugins tabs) ── */
+    bindModal() {
+        const openBtn  = $('#open-settings-modal');
+        const closeBtn = $('#close-settings-modal');
+        const overlay  = $('#settings-modal');
+        const tabs     = document.querySelectorAll('.settings-tab-btn');
 
-        const syncPanel = (button, panel, isVisible) => {
-            if (!button || !panel) return;
-            panel.classList.toggle('is-hidden', !isVisible);
-            const chevron = button.querySelector('.toggle-chevron');
-            if (chevron) chevron.className = isVisible ? 'fas fa-chevron-up toggle-chevron' : 'fas fa-chevron-down toggle-chevron';
-            button.setAttribute('aria-expanded', String(isVisible));
+        if (!overlay) return;
+
+        const open = () => {
+            overlay.classList.add('is-active');
+            overlay.setAttribute('aria-hidden', 'false');
+        };
+        const close = () => {
+            overlay.classList.remove('is-active');
+            overlay.setAttribute('aria-hidden', 'true');
         };
 
-        if (providerBtn && providerPanel) {
-            providerBtn.addEventListener('click', () => {
-                const willOpen = providerPanel.classList.contains('is-hidden');
-                syncPanel(providerBtn, providerPanel, willOpen);
-                if (willOpen) syncPanel(pluginBtn, pluginPanel, false);
+        if (openBtn) openBtn.addEventListener('click', open);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('is-active')) close();
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(other => {
+                    const isActive = other === tab;
+                    other.classList.toggle('active', isActive);
+                    other.setAttribute('aria-selected', String(isActive));
+                });
+                document.querySelectorAll('.settings-tab-pane').forEach(pane => {
+                    pane.classList.toggle('active', pane.id === tab.dataset.tabTarget);
+                });
+            });
+        });
+    }
+
+    /* ── Main plugin grid: search + language filter trigger ── */
+    bindGridFilter() {
+        const searchInput = $('#plugin-grid-search-input');
+        const langTrigger  = $('#plugin-grid-lang-trigger');
+        const langLabel    = $('#plugin-grid-lang-trigger-label');
+        const langSheet    = $('#plugin-grid-lang-sheet');
+        const emptyState   = $('#plugin-grid-empty-state');
+        const getCards     = () => Array.from(document.querySelectorAll('#plugins-list .card[data-plugin-name]'));
+
+        if (!searchInput && !langTrigger) return;
+
+        const languages = [...new Set(this.plugins.map(p => (p.language || '').toUpperCase()).filter(Boolean))].sort();
+        let activeLang  = null;
+        let searchTerm  = '';
+
+        // Kart giriş animasyonu (stagger fade-in) sadece ilk sayfa yüklemesi içindir.
+        // display:none <-> block geçişi animasyonu yeniden tetikler — filtreleme
+        // başlar başlamaz kalıcı olarak kapatılır, aksi halde her tuş vuruşunda
+        // eşleşen kartlar titreyerek yeniden belirir.
+        let animationsDisabled = false;
+        const disableCardAnimations = () => {
+            if (animationsDisabled) return;
+            animationsDisabled = true;
+            getCards().forEach(card => { card.style.animation = 'none'; });
+        };
+
+        const countEl = $('#plugins-list .section-count');
+
+        const applyFilter = () => {
+            if (searchTerm || activeLang) disableCardAnimations();
+
+            const cards = getCards();
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const name = (card.dataset.pluginName || '').toLowerCase();
+                const lang = (card.querySelector('.badge-lang')?.textContent || '').trim().toUpperCase();
+                const matchesSearch = !searchTerm || name.includes(searchTerm);
+                const matchesLang   = !activeLang || lang === activeLang;
+                const filteredOut   = !(matchesSearch && matchesLang);
+                card.classList.toggle('is-plugin-filtered', filteredOut);
+                if (!filteredOut && !card.classList.contains('is-plugin-hidden')) visibleCount += 1;
+            });
+            if (emptyState) emptyState.classList.toggle('is-hidden', visibleCount > 0 || cards.length === 0);
+            if (countEl) countEl.textContent = String(visibleCount);
+        };
+
+        // Ana "Tüm eklentilerde ara" (search.js/GlobalSearch) bu filtreyi
+        // window üzerinden okur — esbuild her <script type="module"> girişini
+        // ayrı bundle ettiği için iki dosya arasında doğrudan import paylaşımı yok.
+        window.__pluginGridFilter = {
+            getVisibleNames: () => {
+                if (!searchTerm && !activeLang) return null;
+                return new Set(
+                    this.plugins
+                        .filter(p => {
+                            const name = String(p.name || '').toLowerCase();
+                            const lang = String(p.language || '').toUpperCase();
+                            const matchesSearch = !searchTerm || name.includes(searchTerm);
+                            const matchesLang   = !activeLang || lang === activeLang;
+                            return matchesSearch && matchesLang;
+                        })
+                        .map(p => p.name)
+                );
+            }
+        };
+
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                searchTerm = searchInput.value.trim().toLowerCase();
+                applyFilter();
             });
         }
 
-        if (pluginBtn && pluginPanel) {
-            pluginBtn.addEventListener('click', () => {
-                const willOpen = pluginPanel.classList.contains('is-hidden');
-                syncPanel(pluginBtn, pluginPanel, willOpen);
-                if (willOpen) syncPanel(providerBtn, providerPanel, false);
+        if (langTrigger && langSheet && languages.length > 1) {
+            langTrigger.classList.remove('is-hidden');
+
+            const counts = {};
+            this.plugins.forEach(p => {
+                const lang = (p.language || '').toUpperCase();
+                if (lang) counts[lang] = (counts[lang] || 0) + 1;
             });
+
+            const closeSheet = () => {
+                langSheet.classList.add('is-hidden');
+                langTrigger.setAttribute('aria-expanded', 'false');
+            };
+            const openSheet = () => {
+                langSheet.classList.remove('is-hidden');
+                langTrigger.setAttribute('aria-expanded', 'true');
+            };
+
+            const renderSheet = () => {
+                langSheet.innerHTML = '';
+
+                const allBtn = document.createElement('button');
+                allBtn.type = 'button';
+                allBtn.className = `filter-sheet-option${!activeLang ? ' active' : ''}`;
+                allBtn.textContent = t('plugin_language_filter_all');
+                allBtn.addEventListener('click', () => selectLang(null));
+                langSheet.appendChild(allBtn);
+
+                languages.forEach(lang => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `filter-sheet-option${activeLang === lang ? ' active' : ''}`;
+                    btn.textContent = `${lang} · ${counts[lang] || 0}`;
+                    btn.addEventListener('click', () => selectLang(lang));
+                    langSheet.appendChild(btn);
+                });
+            };
+
+            const selectLang = (lang) => {
+                activeLang = lang;
+                if (langLabel) langLabel.textContent = lang || t('plugin_language_filter_all');
+                langTrigger.classList.toggle('is-active', !!lang);
+                renderSheet();
+                closeSheet();
+                applyFilter();
+            };
+
+            langTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langSheet.classList.contains('is-hidden') ? openSheet() : closeSheet();
+            });
+            document.addEventListener('click', (e) => {
+                if (!langSheet.contains(e.target) && e.target !== langTrigger) closeSheet();
+            });
+
+            renderSheet();
         }
+
+        applyFilter();
     }
 
     loadPlugins() {

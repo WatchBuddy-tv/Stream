@@ -53,7 +53,7 @@ async def ip_log(hedef_ip: str) -> dict[str, str]:
     if hedef_ip in _ip_cache:
         return _ip_cache[hedef_ip]
 
-    sonuc = {"hata": "Veri Bulunamadı.."}
+    sonuc = {"hata" : "Veri Bulunamadı.."}
 
     async with AsyncClient(follow_redirects=True) as oturum:
         for provider in _PROVIDERS:

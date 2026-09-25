@@ -535,15 +535,18 @@ class ContentBrowser {
 
         // Skeleton loading — show what we already know instantly
         body.innerHTML = '';
-        const skelWrap = createElement('div', { className: 'preview-skeleton' });
+        body.classList.add('preview-body');
+
+        // Skeleton loading — show what we already know instantly
+        const mainRowSkel = createElement('div', { className: 'preview-main-row preview-skeleton' });
 
         // Hero with poster (already available)
+        const heroSkel = createElement('div', { className: 'preview-hero' });
         if (item.poster) {
-            const heroSkel = createElement('div', { className: 'preview-hero' });
             const img = createElement('img', { className: 'preview-hero-img', src: item.poster, alt: item.title || '' });
             heroSkel.appendChild(img);
-            skelWrap.appendChild(heroSkel);
         }
+        mainRowSkel.appendChild(heroSkel);
 
         const infoSkel = createElement('div', { className: 'preview-info' });
 
@@ -551,6 +554,9 @@ class ContentBrowser {
         if (item.title) {
             const title = createElement('h3', { className: 'preview-title' }, item.title);
             infoSkel.appendChild(title);
+        } else {
+            const titleSkel = createElement('div', { className: 'skeleton-line', style: 'width: 50%; height: 20px; margin-bottom: 15px;' });
+            infoSkel.appendChild(titleSkel);
         }
 
         // Skeleton lines for meta/description/tags
@@ -561,8 +567,21 @@ class ContentBrowser {
             skelLines.appendChild(line);
         }
         infoSkel.appendChild(skelLines);
-        skelWrap.appendChild(infoSkel);
-        body.appendChild(skelWrap);
+        mainRowSkel.appendChild(infoSkel);
+        body.appendChild(mainRowSkel);
+
+        // Pre-render similar section skeleton to prevent layout jumps
+        const similarSection = createElement('section', { className: 'similar-section' });
+        const titleEl = createElement('h2', { className: 'section-title' });
+        titleEl.innerHTML = `<i class="fas fa-film" style="color:var(--primary-color);margin-right:var(--spacing-sm)"></i>${escapeHtml(t('similar_content_title'))}`;
+        similarSection.appendChild(titleEl);
+
+        const similarSkel = createElement('div', { className: 'similar-loading' });
+        for (let i = 0; i < 6; i++) {
+            similarSkel.appendChild(createElement('div', { className: 'similar-skeleton-card' }));
+        }
+        similarSection.appendChild(similarSkel);
+        body.appendChild(similarSection);
 
         this.previewOverlay.classList.add('is-open');
         document.body.style.overflow = 'hidden';

@@ -91,14 +91,36 @@
 }
 
 /* Desktop: 6 sabit sütun */
-.preview-body .similar-section .grid {
+.preview-body .similar-section .grid,
+.preview-body .similar-section .similar-loading {
     grid-template-columns: repeat(6, 1fr);
     gap: var(--spacing-md);
 }
 
-/* Mobil ≤480px: 3 sütun */
+@media (max-width: 768px) {
+    .preview-main-row {
+        gap: var(--spacing-md);
+    }
+}
+
+/* Mobil ≤480px: 3 sütun ve dikey düzen */
 @media (max-width: 480px) {
-    .preview-body .similar-section .grid {
+    .preview-main-row {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--spacing-md);
+    }
+
+    .preview-main-row .preview-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .preview-body .similar-section .grid,
+    .preview-body .similar-section .similar-loading {
         grid-template-columns: repeat(3, 1fr);
         gap: var(--spacing-sm);
     }

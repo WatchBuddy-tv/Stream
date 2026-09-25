@@ -65,6 +65,18 @@ Disallow: /
         }
     )
 
+@home_router.get("/ads.txt")
+async def ads_txt():
+    """ads.txt - web yayıncı kimliği doğrulaması."""
+    return Response(
+        content    = "",
+        media_type = "text/plain; charset=utf-8",
+        headers    = {
+            "Cache-Control" : "public, max-age=86400"
+        }
+    )
+
+
 @home_router.get("/.well-known/security.txt")
 @home_router.get("/security.txt")
 async def security_txt(request: Request):

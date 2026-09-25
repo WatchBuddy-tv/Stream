@@ -60,5 +60,5 @@
 {% endblock %}
 
 {% block js %}
-<script type="module" src="{{ url_for('static_home', path='JS/components/content-browser.min.js') }}" defer></script>
+<script type="module" src="{{ url_for('static_home', path='JS/components/content-browser.min.js') }}?v={{ asset_version() }}" defer></script>
 {% endblock %}
