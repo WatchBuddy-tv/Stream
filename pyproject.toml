@@ -3,7 +3,7 @@ name            = "Stream"
 version         = "0.1.0"
 requires-python = ">=3.14"
 dependencies    = [
-    "Kekik",
+    "Kekik>=2.0.2",
     "httpx[http2]",
     "fastapi",
     "uvicorn",
